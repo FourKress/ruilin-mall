@@ -98,6 +98,8 @@ const list = ref<any[]>([
   min-h-2.9rem
   p-0.16rem;
 
+  padding-bottom: env(safe-area-inset-bottom);
+
   background-color: rgba(198, 156, 109, 0.3);
 
   .item {

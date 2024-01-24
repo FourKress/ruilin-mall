@@ -167,6 +167,8 @@ const list = ref<any[]>([
     top-0.64rem
     z-99;
 
+    padding-bottom: env(safe-area-inset-bottom);
+
     transition: all 0.5s;
 
     .menu {

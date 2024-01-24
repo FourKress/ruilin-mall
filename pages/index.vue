@@ -42,7 +42,83 @@ const images = ref<any[]>([
     </div>
 
     <div class="product-container">
-      <div class="title"></div>
+      <div class="top">
+        <div class="label">Products Recommended</div>
+        <div class="picker">
+          <span class="label">Hot</span>
+          <span class="icon"></span>
+        </div>
+      </div>
+      <div class="list">
+        <div class="item" v-for="(item, index) in 10" :key="index">
+          <div class="image">
+            <img src="" alt="" />
+          </div>
+          <div class="info">
+            <div class="title">Cinnamon Dolce (Clip-in)</div>
+            <div class="row">
+              <span class="unit">$</span>
+              <span class="price">10.00</span>
+              <span class="tag">满100减10</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="jump-btn">
+        <span>View more products</span>
+        <span class="icon"></span>
+      </div>
+    </div>
+
+    <div class="blog-container">
+      <div class="top">
+        <div class="label">Blog</div>
+      </div>
+      <div class="list">
+        <div class="item" v-for="(item, index) in 10" :key="index">
+          <div class="image">
+            <img src="" alt="" />
+          </div>
+          <div class="info">
+            <div class="title">Customers like us</div>
+            <div class="details">
+              Malibu Dream (Hair Weft)Malibu Dream (Hair Weft)Malibu Dream (Hair Weft)Malibu Dream
+              (Hair Weft)Malibu Dream (Hair Weft)Malibu Dream (Hair Weft)Malibu Dream (Hair
+              Weft)Malibu Dream (Hair Weft)Malibu Dream (Hair Weft)Malibu Dream (Hair Weft)
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="jump-btn">
+        <span>View more blogs</span>
+        <span class="icon"></span>
+      </div>
+    </div>
+
+    <div class="about-container">
+      <div class="top">
+        <div class="label">About Us</div>
+      </div>
+      <div class="list"></div>
+
+      <div class="jump-btn">
+        <span>@RuiLinHair</span>
+        <span class="icon"></span>
+      </div>
+
+      <div class="tabs">
+        <div class="btn active">
+          <img src="" alt="" />
+        </div>
+        <div class="btn">
+          <img src="" alt="" />
+        </div>
+        <div class="btn">
+          <img src="" alt="" />
+        </div>
+      </div>
     </div>
   </div>
 </template>
@@ -50,6 +126,8 @@ const images = ref<any[]>([
 <style scoped lang="scss">
 .home {
   @apply w-screen;
+
+  background-color: $view-color;
 
   .swipe-container {
     @apply w-full
@@ -90,6 +168,322 @@ const images = ref<any[]>([
           &.active {
             background-color: $white-color;
           }
+        }
+      }
+    }
+  }
+
+  .jump-btn {
+    @apply w-2.2rem
+    h-0.4rem
+    rd-0.2rem
+    text-center
+    flex
+    items-center
+    justify-center
+    m-t-0.24rem
+    m-x-auto;
+
+    @include english-font;
+    @include primary-font-16;
+
+    color: $text-high-color;
+    border: 1px solid $text-mid-color;
+
+    .icon {
+      @apply w-0.16rem
+      h-0.16rem
+      m-l-0.02rem;
+
+      background-color: red;
+    }
+  }
+
+  .product-container {
+    @apply w-full
+    p-x-0.16rem
+    p-t-0.14rem
+    m-t-0.16rem;
+
+    background-color: $view-color;
+
+    .top {
+      @apply w-full
+      flex
+      items-center
+      justify-between;
+
+      .label {
+        @include english-font;
+        @include title-font-22;
+        color: $text-high-color;
+      }
+
+      .picker {
+        @apply h-0.3rem
+        min-w-0.66rem
+        rd-0.2rem
+        flex
+        items-center
+        justify-center
+        cursor-pointer;
+
+        color: $text-mid-color;
+        border: 1px solid $text-mid-color;
+
+        .label {
+          @include english-font;
+          @include general-font-14;
+        }
+
+        .icon {
+          @apply w-0.16rem
+          h-0.16rem
+          m-l-0.02rem;
+
+          background-color: red;
+        }
+      }
+    }
+
+    .list {
+      @apply w-full
+      flex
+      flex-wrap
+      justify-between
+      items-start;
+
+      .item {
+        @apply w-1.71rem
+        h-3.1rem
+        m-t-0.16rem;
+
+        background-color: black;
+
+        .image {
+          @apply w-full
+          h-2.28rem;
+
+          img {
+            @apply block
+            w-full
+            h-full;
+          }
+        }
+
+        .info {
+          @apply w-full
+          h-0.82rem
+          p-x-0.12rem
+          p-y-0.08rem;
+
+          background-color: $white-color;
+
+          .title {
+            @apply w-full
+            h-0.36rem
+            overflow-hidden
+            text-ellipsis
+            m-b-0.08rem;
+
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            /*! autoprefixer: off */
+            -webkit-box-orient: vertical;
+
+            @include english-font;
+            @include primary-font-14;
+
+            color: $text-high-color;
+          }
+
+          .row {
+            @apply flex
+            items-center
+            justify-start;
+
+            color: $red-color;
+
+            .unit {
+              @include general-font-14;
+            }
+
+            .price {
+              @apply p-l-0.02rem
+              p-r-0.08rem;
+
+              @include number-font;
+              @include primary-font-16;
+            }
+
+            .tag {
+              @apply h-0.18rem
+              p-x-0.05rem
+              rd-0.02rem;
+
+              @include number-font;
+              @include general-font-12;
+
+              border: 1px solid $red-color;
+            }
+          }
+        }
+      }
+    }
+  }
+
+  .blog-container {
+    @apply w-full
+    p-t-0.14rem
+    m-t-0.16rem;
+
+    .top {
+      @apply w-full
+      p-x-0.16rem
+      flex
+      items-center
+      justify-between;
+
+      .label {
+        @include english-font;
+        @include title-font-22;
+        color: $text-high-color;
+      }
+    }
+
+    .list {
+      @apply w-full
+      p-x-0.16rem
+      flex
+      justify-start
+      items-start
+      m-t-0.16rem
+      overflow-x-auto
+      overflow-y-hidden;
+
+      .item {
+        @apply w-3.2rem
+        min-w-3.2rem
+        h-3.2rem
+        m-r-0.16rem;
+
+        &:last-child {
+          @apply m-r-0;
+        }
+
+        background-color: black;
+
+        .image {
+          @apply w-full
+          h-1.8rem;
+
+          img {
+            @apply block
+            w-full
+            h-full;
+          }
+        }
+
+        .info {
+          @apply w-full
+          h-1.42rem
+          p-x-0.16rem;
+
+          background-color: $white-color;
+
+          .title {
+            @apply w-full
+            h-0.38rem
+            overflow-hidden
+            text-ellipsis
+            p-y-0.08rem;
+
+            white-space: nowrap;
+
+            @include title-font-18;
+
+            color: $text-high-color;
+          }
+
+          .details {
+            @apply w-full
+            overflow-hidden
+            text-ellipsis;
+
+            display: -webkit-box;
+            -webkit-line-clamp: 4;
+            /*! autoprefixer: off */
+            -webkit-box-orient: vertical;
+
+            color: $text-high-color;
+
+            @include general-font-loose-14;
+          }
+        }
+      }
+    }
+  }
+
+  .about-container {
+    @apply w-full
+    p-t-0.14rem
+    p-x-0.16rem
+    m-t-0.16rem;
+
+    .top {
+      @apply w-full
+      flex
+      items-center
+      justify-between;
+
+      .label {
+        @include english-font;
+        @include title-font-22;
+        color: $text-high-color;
+      }
+    }
+
+    .list {
+      @apply w-full
+      h-3.38rem
+      m-t-0.16rem;
+
+      background-color: black;
+    }
+
+    .tabs {
+      @apply w-full
+      h-0.72rem
+      flex
+      items-center
+      justify-center
+      p-y-0.18rem;
+
+      .btn {
+        @apply w-0.36rem
+        h-0.36rem
+        rd-0.08rem
+        flex
+        items-center
+        justify-center
+        m-r-0.16rem;
+
+        &:last-child {
+          @apply m-r-0;
+        }
+
+        img {
+          @apply block
+          w-0.24rem
+          h-0.24rem;
+
+          background-color: black;
+        }
+
+        border: 1px solid $view-color;
+
+        &.active {
+          border-color: $border-color;
         }
       }
     }
