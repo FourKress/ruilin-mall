@@ -1,0 +1,117 @@
+// color
+$primary-color: #C69C6D;
+$auxiliary-color: #4E8991;
+
+$bg-color: #FFFFFF;
+$view-color: #F5F5F5;
+
+$border-color: #DDDDDD;
+
+$placeholder-color: #EFEFEF;
+
+$text-special-color: #101010;
+$text-high-color: #1E1E1E;
+$text-mid-color: #444444;
+$text-low-color: #999999;
+
+$red-color: #D84639;
+$green-color: #5BB318;
+$yellow-color: #FFAA00;
+
+// font
+$chinese-ios-font: 'PingFang SC';
+$chinese-android-font: 'Noto Sans';
+
+$english-android-font: 'Roboto';
+
+@mixin chinese-font() {
+  font-family: $chinese-ios-font, $chinese-android-font, -apple-system, BlinkMacSystemFont microsoft yahei, sans-serif;
+}
+
+@mixin english-font() {
+  font-family: $english-android-font, -apple-system, BlinkMacSystemFont, Arial, sans-serif;
+}
+
+@mixin number-font() {
+  font-family: 'Helvetica Neue', -apple-system, BlinkMacSystemFont Arial, sans-serif;
+}
+
+// font-weight
+@mixin regular {
+  font-weight: normal;
+}
+@mixin medium {
+  font-weight: 500;
+}
+@mixin android-bold {
+  font-weight: bold;
+}
+
+// title
+@mixin title-font-26 {
+  font-size: 26px;
+  line-height: 32px;
+  @include medium;
+}
+
+@mixin title-font-22 {
+  font-size: 22px;
+  line-height: 27px;
+  @include medium;
+}
+
+@mixin title-font-18 {
+  font-size: 18px;
+  line-height: 22px;
+  @include medium;
+}
+
+@mixin title-font-14 {
+  font-size: 14px;
+  line-height: 17px;
+  @include regular;
+}
+
+// primary
+@mixin primary-font-16 {
+  font-size: 16px;
+  line-height: 22px;
+  @include medium;
+}
+
+@mixin primary-font-14 {
+  font-size: 14px;
+  line-height: 18px;
+  @include medium;
+}
+
+@mixin primary-font-12 {
+  font-size: 12px;
+  line-height: 16px;
+  @include medium;
+}
+
+// general
+@mixin general-font-loose-14 {
+  font-size: 14px;
+  line-height: 24px;
+  @include regular;
+}
+
+@mixin general-font-14 {
+  font-size: 14px;
+  line-height: 18px;
+  @include regular;
+}
+
+@mixin general-font-loose-12 {
+  font-size: 12px;
+  line-height: 20px;
+  @include regular;
+}
+
+@mixin general-font-12 {
+  font-size: 12px;
+  line-height: 16px;
+  @include regular;
+}

@@ -2,13 +2,51 @@
 export default defineNuxtConfig({
   devtools: { enabled: true },
   modules: ['@unocss/nuxt'],
+  alias: {
+    '@': './'
+  },
   app: {
     head: {
-      meta: [],
+      meta: [
+        { charset: 'utf-8' },
+        { name: 'format-detection', content: 'telephone=no' },
+        {
+          name: 'viewport',
+          content:
+            'width=device-width,initial-scale=1.0,minimum-scale=1.0,maximum-scale=1.0,user-scalable=0'
+        }
+      ],
       title: 'Hello Nuxt'
     }
   },
   devServer: {
-    port: 4444,
+    port: 7777,
+    host: '192.168.2.6'
+  },
+  css: ['@/assets/styles/base.scss'],
+  vite: {
+    css: {
+      preprocessorOptions: {
+        scss: {
+          additionalData: '@use "~/assets/styles/variable.scss" as *;'
+        }
+      }
+    }
+  },
+  postcss: {
+    plugins: {
+      'postcss-pxtorem': {
+        autoprefixer: {
+          overrideBrowserslist: ['last 5 version', '>1%', 'ie >=8']
+        },
+        rootValue: 100,
+        propList: ['*'],
+        mediaQuery: false,
+        exclude: /(node_module)/,
+        minPixelValue: 1,
+        unitPrecision: 6,
+        selectorBlackList: ['html', '.rem-ignore']
+      }
+    }
   }
 })

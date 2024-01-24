@@ -12,6 +12,8 @@
   "devDependencies": {
     "@unocss/nuxt": "^0.58.3",
     "nuxt": "^3.9.0",
+    "postcss-pxtorem": "^6.0.0",
+    "prettier": "^3.2.4",
     "sass": "^1.69.7",
     "sass-loader": "^13.3.3",
     "vue": "^3.4.5",

@@ -11,6 +11,12 @@ devDependencies:
   nuxt:
     specifier: ^3.9.0
     version: 3.9.1(sass@1.69.7)(vite@5.0.11)
+  postcss-pxtorem:
+    specifier: ^6.0.0
+    version: 6.0.0(postcss@8.4.33)
+  prettier:
+    specifier: ^3.2.4
+    version: 3.2.4
   sass:
     specifier: ^1.69.7
     version: 1.69.7
@@ -5120,6 +5126,14 @@ packages:
       postcss-value-parser: 4.2.0
     dev: true
 
+  /postcss-pxtorem@6.0.0(postcss@8.4.33):
+    resolution: {integrity: sha512-ZRXrD7MLLjLk2RNGV6UA4f5Y7gy+a/j1EqjAfp9NdcNYVjUMvg5HTYduTjSkKBkRkfqbg/iKrjMO70V4g1LZeg==}
+    peerDependencies:
+      postcss: ^8.0.0
+    dependencies:
+      postcss: 8.4.33
+    dev: true
+
   /postcss-reduce-initial@6.0.2(postcss@8.4.33):
     resolution: {integrity: sha512-YGKalhNlCLcjcLvjU5nF8FyeCTkCO5UtvJEt0hrPZVCTtRLSOH4z00T1UntQPj4dUmIYZgMj8qK77JbSX95hSw==}
     engines: {node: ^14 || ^16 || >=18.0}
@@ -5181,6 +5195,12 @@ packages:
       nanoid: 3.3.7
       picocolors: 1.0.0
       source-map-js: 1.0.2
+    dev: true
+
+  /prettier@3.2.4:
+    resolution: {integrity: sha512-FWu1oLHKCrtpO1ypU6J0SbK2d9Ckwysq6bHj/uaCP26DxrPpppCLQRGVuqAxSTvhF00AcvDRyYrLNW7ocBhFFQ==}
+    engines: {node: '>=14'}
+    hasBin: true
     dev: true
 
   /pretty-bytes@6.1.1:
