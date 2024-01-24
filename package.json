@@ -10,7 +10,9 @@
     "postinstall": "nuxt prepare"
   },
   "devDependencies": {
+    "@element-plus/nuxt": "^1.0.7",
     "@unocss/nuxt": "^0.58.3",
+    "element-plus": "^2.5.3",
     "nuxt": "^3.9.0",
     "postcss-pxtorem": "^6.0.0",
     "prettier": "^3.2.4",

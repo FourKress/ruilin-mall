@@ -141,6 +141,8 @@ const list = ref<any[]>([
     .list {
       @apply w-full;
 
+      transition: all 1s;
+
       .row {
         @apply m-b-0.18rem;
 

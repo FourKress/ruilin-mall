@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref } from 'vue'
+import { ref, Transition } from 'vue'
 
 const drawerStatus = ref(false)
 
@@ -76,25 +76,29 @@ const list = ref<any[]>([
       <img src="" alt="" />
     </div>
     <div class="right">
-      <div class="badge"></div>
+      <div class="badge">
+        <div class="count">99</div>
+      </div>
     </div>
 
-    <div class="drawer" v-if="drawerStatus">
-      <div class="menu">
-        <div class="menu-item" v-for="(item, index) in list" :key="index">
-          <div class="top">
-            <span class="label">{{ item.label }}</span>
-            <span class="btn" v-if="!item.children"></span>
-          </div>
-          <div class="list">
-            <div class="row" v-for="row in item.children" :key="item.link">
-              <span class="label">{{ row.label }}</span>
-              <span class="btn"></span>
+    <Transition name="fade" :duration="0.5">
+      <div class="drawer" v-if="drawerStatus">
+        <div class="menu">
+          <div class="menu-item" v-for="(item, index) in list" :key="index">
+            <div class="top">
+              <span class="label">{{ item.label }}</span>
+              <span class="btn" v-if="!item.children"></span>
+            </div>
+            <div class="list">
+              <div class="row" v-for="row in item.children" :key="item.link">
+                <span class="label">{{ row.label }}</span>
+                <span class="btn"></span>
+              </div>
             </div>
           </div>
         </div>
       </div>
-    </div>
+    </Transition>
   </div>
 </template>
 
@@ -107,7 +111,7 @@ const list = ref<any[]>([
   items-center;
   padding: 0 16px;
 
-  background-color: $bg-color;
+  background-color: $white-color;
 
   .left,
   .right {
@@ -115,7 +119,41 @@ const list = ref<any[]>([
     h-0.24rem
     cursor-pointer;
 
-    background-color: red;
+    background-color: black;
+  }
+
+  .right {
+    @apply relative;
+
+    .badge {
+      @apply absolute
+      left--0.14rem
+      top--0.05rem
+      min-w-0.15rem
+      h-0.19rem
+      p-1PX
+      overflow-hidden;
+
+      background-color: $white-color;
+
+      .count {
+        @apply p-0.04rem
+        p-y-0
+        h-full
+        text-center;
+
+        background-color: $red-color;
+        color: $white-color;
+
+        @include english-font;
+        @include primary-font-12;
+
+        border-radius: 8px;
+      }
+
+      border: 1px solid rgba(216, 70, 57, 0.2);
+      border-radius: 8px;
+    }
   }
 
   .logo {
@@ -138,12 +176,14 @@ const list = ref<any[]>([
     left-0
     top-0.64rem;
 
+    transition: all 0.5s;
+
     .menu {
       @apply p-0.16rem overflow-y-auto;
 
       height: calc(100% - 0.64rem);
 
-      background-color: $bg-color;
+      background-color: $white-color;
 
       .menu-item {
         @apply w-full
@@ -196,6 +236,12 @@ const list = ref<any[]>([
         }
       }
     }
+  }
+
+  .fade-enter-from,
+  .fade-leave-to {
+    transform: translateX(20px);
+    opacity: 0;
   }
 }
 </style>
