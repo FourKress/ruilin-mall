@@ -3,68 +3,55 @@ import { ref } from 'vue'
 import { Transition } from 'vue'
 const active = ref<number>(-1)
 
-const handleActive = (index: number): void => {
+const router = useRouter()
+const route = useRoute()
+
+const handleActive = (link: string, index: number) => {
+  if (link) {
+    if (route.path === link) {
+      return location.reload()
+    }
+    return router.push(link)
+  }
   active.value = active.value === index ? -1 : index
 }
 
 const list = ref<any[]>([
   {
     label: 'Home',
-    btnIcon: '',
-    children: [
-      {
-        label: 'FAQ',
-        link: ''
-      },
-      {
-        label: 'Blog',
-        link: ''
-      },
-      {
-        label: 'About Us',
-        link: ''
-      }
-    ]
+    link: '/'
   },
   {
     label: 'Product',
-    btnIcon: '',
     children: [
       {
-        label: 'FAQ',
+        label: 'Tape-in Extension    ',
         link: ''
       },
       {
-        label: 'Blog',
+        label: 'Prebonded Tips',
         link: ''
       },
       {
-        label: 'About Us',
+        label: 'Hair Weft',
+        link: ''
+      },
+      {
+        label: 'Clip-in',
+        link: ''
+      },
+      {
+        label: 'Hair Accessories',
         link: ''
       }
     ]
   },
   {
     label: 'Customer service',
-    btnIcon: '',
-    children: [
-      {
-        label: 'FAQ',
-        link: ''
-      },
-      {
-        label: 'Blog',
-        link: ''
-      },
-      {
-        label: 'About Us',
-        link: ''
-      }
-    ]
+    link: ''
   },
   {
     label: 'Customer Support',
-    btnIcon: '',
     children: [
       {
         label: 'FAQ',
@@ -76,6 +63,10 @@ const list = ref<any[]>([
       },
       {
         label: 'About Us',
+        link: ''
+      },
+      {
+        label: 'Contact Us',
         link: ''
       }
     ]
@@ -86,9 +77,9 @@ const list = ref<any[]>([
 <template>
   <div class="main-footer">
     <div class="item" v-for="(item, index) in list" :key="index">
-      <div class="top">
+      <div class="top" @click="handleActive(item.link, index)">
         <span class="label">{{ item.label }}</span>
-        <span class="btn" @click="handleActive(index)"></span>
+        <span class="btn"></span>
       </div>
       <Transition name="fade" :duration="0.5">
         <div class="list" v-show="active === index">
@@ -164,7 +155,7 @@ const list = ref<any[]>([
 
   .fade-enter-from,
   .fade-leave-to {
-    transform: translateX(20px);
+    transform: translateX(0.2rem);
     opacity: 0;
   }
 }

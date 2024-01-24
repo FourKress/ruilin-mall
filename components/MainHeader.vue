@@ -1,10 +1,29 @@
 <script setup lang="ts">
-import { ref, Transition } from 'vue'
+import { ref, Transition, defineEmits } from 'vue'
+
+const router = useRouter()
+const route = useRoute()
+
+const emits = defineEmits<{
+  openModal: [status: boolean]
+}>()
 
 const drawerStatus = ref(false)
 
 const handleSwitchDrawerStatus = () => {
-  drawerStatus.value = !drawerStatus.value
+  const status = !drawerStatus.value
+  emits('openModal', status)
+  drawerStatus.value = status
+}
+
+const handleJumpMenu = (link: string) => {
+  if (link) {
+    handleSwitchDrawerStatus()
+    if (route.path === link) {
+      return location.reload()
+    }
+    return router.push(link)
+  }
 }
 
 const list = ref<any[]>([
@@ -14,7 +33,7 @@ const list = ref<any[]>([
   },
   {
     label: 'Home',
-    link: ''
+    link: '/'
   },
   {
     label: 'Product',
@@ -42,11 +61,11 @@ const list = ref<any[]>([
     ]
   },
   {
-    label: 'Customer service'
+    label: 'Customer service',
+    link: ''
   },
   {
     label: 'Customer Support',
-    btnIcon: '',
     children: [
       {
         label: 'FAQ',
@@ -72,25 +91,28 @@ const list = ref<any[]>([
 <template>
   <div class="main-header">
     <div class="left" @click="handleSwitchDrawerStatus"></div>
-    <div class="logo">
-      <img src="" alt="" />
+    <div class="logo" @click="handleJumpMenu('/')">
+      <img src="~/assets/images/Logo.png" alt="" />
     </div>
-    <div class="right">
-      <div class="badge">
-        <div class="count">99</div>
-      </div>
-    </div>
+    <van-badge :content="10" max="99" position="top-left">
+      <div class="right"></div>
+    </van-badge>
 
     <Transition name="fade" :duration="0.5">
       <div class="drawer" v-if="drawerStatus">
         <div class="menu">
           <div class="menu-item" v-for="(item, index) in list" :key="index">
-            <div class="top">
+            <div class="top" @click="handleJumpMenu(item.link)">
               <span class="label">{{ item.label }}</span>
               <span class="btn" v-if="!item.children"></span>
             </div>
             <div class="list">
-              <div class="row" v-for="row in item.children" :key="item.link">
+              <div
+                class="row"
+                v-for="row in item.children"
+                :key="item.link"
+                @click="handleJumpMenu(row.link)"
+              >
                 <span class="label">{{ row.label }}</span>
                 <span class="btn"></span>
               </div>
@@ -105,11 +127,11 @@ const list = ref<any[]>([
 <style scoped lang="scss">
 .main-header {
   @apply w-screen
-  h-64px
+  h-0.64rem
   flex
   justify-between
-  items-center;
-  padding: 0 16px;
+  items-center
+  p-x-0.16rem;
 
   background-color: $white-color;
 
@@ -124,48 +146,16 @@ const list = ref<any[]>([
 
   .right {
     @apply relative;
-
-    .badge {
-      @apply absolute
-      left--0.14rem
-      top--0.05rem
-      min-w-0.15rem
-      h-0.19rem
-      p-1PX
-      overflow-hidden;
-
-      background-color: $white-color;
-
-      .count {
-        @apply p-0.04rem
-        p-y-0
-        h-full
-        text-center;
-
-        background-color: $red-color;
-        color: $white-color;
-
-        @include english-font;
-        @include primary-font-12;
-
-        border-radius: 8px;
-      }
-
-      border: 1px solid rgba(216, 70, 57, 0.2);
-      border-radius: 8px;
-    }
   }
 
   .logo {
-    @apply w-80px
-    h-40px;
+    @apply w-0.8rem
+    h-0.4rem;
 
     img {
       @apply block
       w-full
       h-full;
-
-      background-color: red;
     }
   }
 
@@ -174,7 +164,8 @@ const list = ref<any[]>([
     w-screen
     h-full
     left-0
-    top-0.64rem;
+    top-0.64rem
+    z-99;
 
     transition: all 0.5s;
 
@@ -240,7 +231,7 @@ const list = ref<any[]>([
 
   .fade-enter-from,
   .fade-leave-to {
-    transform: translateX(20px);
+    transform: translateX(0.2rem);
     opacity: 0;
   }
 }

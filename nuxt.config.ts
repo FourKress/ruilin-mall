@@ -1,7 +1,7 @@
 // https://nuxt.com/docs/api/configuration/nuxt-config
 export default defineNuxtConfig({
   devtools: { enabled: true },
-  modules: ['@element-plus/nuxt', '@unocss/nuxt'],
+  modules: ['@vant/nuxt', '@unocss/nuxt'],
   alias: {
     '@': './'
   },
@@ -39,7 +39,9 @@ export default defineNuxtConfig({
         autoprefixer: {
           overrideBrowserslist: ['last 5 version', '>1%', 'ie >=8']
         },
-        rootValue: 100,
+        rootValue({ file }: any) {
+          return file.indexOf('vant') !== -1 ? 37.5 : 100
+        },
         propList: ['*'],
         mediaQuery: false,
         exclude: /(node_module)/,

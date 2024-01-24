@@ -10,14 +10,14 @@
     "postinstall": "nuxt prepare"
   },
   "devDependencies": {
-    "@element-plus/nuxt": "^1.0.7",
     "@unocss/nuxt": "^0.58.3",
-    "element-plus": "^2.5.3",
+    "@vant/nuxt": "^1.0.4",
     "nuxt": "^3.9.0",
     "postcss-pxtorem": "^6.0.0",
     "prettier": "^3.2.4",
     "sass": "^1.69.7",
     "sass-loader": "^13.3.3",
+    "vant": "^4.8.3",
     "vue": "^3.4.5",
     "vue-router": "^4.2.5"
   }
