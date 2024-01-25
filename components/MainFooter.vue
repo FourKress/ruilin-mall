@@ -1,6 +1,5 @@
 <script setup lang="ts">
-import { ref } from 'vue'
-import { Transition } from 'vue'
+import { menuConfig } from '~/utils/menuConfig'
 const active = ref<number>(-1)
 
 const router = useRouter()
@@ -16,62 +15,7 @@ const handleActive = (link: string, index: number) => {
   active.value = active.value === index ? -1 : index
 }
 
-const list = ref<any[]>([
-  {
-    label: 'Home',
-    link: '/'
-  },
-  {
-    label: 'Product',
-    children: [
-      {
-        label: 'Tape-in Extension    ',
-        link: ''
-      },
-      {
-        label: 'Prebonded Tips',
-        link: ''
-      },
-      {
-        label: 'Hair Weft',
-        link: ''
-      },
-      {
-        label: 'Clip-in',
-        link: ''
-      },
-      {
-        label: 'Hair Accessories',
-        link: ''
-      }
-    ]
-  },
-  {
-    label: 'Customer service',
-    link: ''
-  },
-  {
-    label: 'Customer Support',
-    children: [
-      {
-        label: 'FAQ',
-        link: ''
-      },
-      {
-        label: 'Blog',
-        link: ''
-      },
-      {
-        label: 'About Us',
-        link: ''
-      },
-      {
-        label: 'Contact Us',
-        link: ''
-      }
-    ]
-  }
-])
+const list = ref<any[]>(menuConfig)
 </script>
 
 <template>

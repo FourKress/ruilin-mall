@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, Transition, defineEmits } from 'vue'
+import { menuConfig } from '~/utils/menuConfig'
 
 const router = useRouter()
 const route = useRoute()
@@ -31,60 +31,7 @@ const list = ref<any[]>([
     label: 'Log in/Sign up',
     link: ''
   },
-  {
-    label: 'Home',
-    link: '/'
-  },
-  {
-    label: 'Product',
-    children: [
-      {
-        label: 'Tape-in Extension    ',
-        link: ''
-      },
-      {
-        label: 'Prebonded Tips',
-        link: ''
-      },
-      {
-        label: 'Hair Weft',
-        link: ''
-      },
-      {
-        label: 'Clip-in',
-        link: ''
-      },
-      {
-        label: 'Hair Accessories',
-        link: ''
-      }
-    ]
-  },
-  {
-    label: 'Customer service',
-    link: ''
-  },
-  {
-    label: 'Customer Support',
-    children: [
-      {
-        label: 'FAQ',
-        link: ''
-      },
-      {
-        label: 'Blog',
-        link: ''
-      },
-      {
-        label: 'About Us',
-        link: ''
-      },
-      {
-        label: 'Contact us',
-        link: ''
-      }
-    ]
-  }
+  ...menuConfig
 ])
 </script>
 

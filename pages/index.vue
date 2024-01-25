@@ -1,6 +1,4 @@
 <script setup lang="ts">
-import { ref } from 'vue'
-
 const images = ref<any[]>([
   {
     imgUrl:
@@ -306,6 +304,8 @@ const images = ref<any[]>([
 
             .unit {
               @include general-font-14;
+
+              transform: translateY(0.5px);
             }
 
             .price {

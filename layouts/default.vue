@@ -1,7 +1,4 @@
 <script setup lang="ts">
-import { ref } from 'vue'
-import { MainFooter, MainHeader } from '#components'
-
 const warpRef = ref<HTMLDivElement>()
 
 const handleOpenModal = (status: boolean) => {

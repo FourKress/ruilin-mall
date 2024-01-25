@@ -2,9 +2,6 @@
 export default defineNuxtConfig({
   devtools: { enabled: true },
   modules: ['@vant/nuxt', '@unocss/nuxt'],
-  alias: {
-    '@': './'
-  },
   app: {
     head: {
       meta: [
@@ -23,7 +20,7 @@ export default defineNuxtConfig({
     port: 7777,
     host: '192.168.2.6'
   },
-  css: ['@/assets/styles/base.scss'],
+  css: ['~/assets/styles/base.scss'],
   vite: {
     css: {
       preprocessorOptions: {
@@ -45,7 +42,7 @@ export default defineNuxtConfig({
         propList: ['*'],
         mediaQuery: false,
         exclude: /(node_module)/,
-        minPixelValue: 1,
+        minPixelValue: 2,
         unitPrecision: 6,
         selectorBlackList: ['html', '.rem-ignore']
       }
