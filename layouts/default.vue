@@ -13,22 +13,26 @@ const handleOpenModal = (status: boolean) => {
 
 <template>
   <div class="warp" ref="warpRef">
-    <div class="header">
-      <main-header @openModal="handleOpenModal" />
-    </div>
-    <div class="main">
+    <main-header @openModal="handleOpenModal" />
+    <div class="main-container">
       <slot />
     </div>
-    <div class="footer">
-      <main-footer />
-    </div>
+    <main-footer />
   </div>
 </template>
 
 <style scoped lang="scss">
-.fixed {
-  @apply fixed
-  left-0
-  top-0;
+.warp {
+  @apply w-screen;
+
+  &.fixed {
+    @apply fixed
+    left-0
+    top-0;
+  }
+
+  .main-container {
+    @apply p-t-0.64rem;
+  }
 }
 </style>

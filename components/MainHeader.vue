@@ -78,7 +78,11 @@ const list = ref<any[]>([
   flex
   justify-between
   items-center
-  p-x-0.16rem;
+  p-x-0.16rem
+  fixed
+  left-0
+  top-0
+  z-99;
 
   background-color: $white-color;
 

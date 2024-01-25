@@ -16,6 +16,19 @@ const images = ref<any[]>([
     link: ''
   }
 ])
+
+const productColumns = [
+  { text: 'Hot', value: 1 },
+  { text: 'New', value: 2 }
+]
+
+const showPicker = ref(false)
+const productType = ref<number[]>([productColumns[0].value])
+
+const onConfirm = ({ selectedOptions }: { selectedOptions: any[] }) => {
+  showPicker.value = false
+  console.log(selectedOptions)
+}
 </script>
 
 <template>
@@ -42,8 +55,10 @@ const images = ref<any[]>([
     <div class="product-container">
       <div class="top">
         <div class="label">Products Recommended</div>
-        <div class="picker">
-          <span class="label">Hot</span>
+        <div class="picker" @click="showPicker = true">
+          <span class="label">{{
+            productColumns.find((d) => d.value === productType[0]).text
+          }}</span>
           <span class="icon"></span>
         </div>
       </div>
@@ -118,6 +133,18 @@ const images = ref<any[]>([
         </div>
       </div>
     </div>
+
+    <van-popup v-model:show="showPicker" round position="bottom">
+      <van-picker
+        v-model="productType"
+        :columns="productColumns"
+        :visible-option-num="4"
+        cancel-button-text="Cancel"
+        confirm-button-text="Confirm"
+        @cancel="showPicker = false"
+        @confirm="onConfirm"
+      />
+    </van-popup>
   </div>
 </template>
 
