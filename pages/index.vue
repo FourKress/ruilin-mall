@@ -72,7 +72,7 @@ const onConfirm = ({ selectedOptions }: { selectedOptions: any[] }) => {
             <div class="row">
               <span class="unit">$</span>
               <span class="price">10.00</span>
-              <span class="tag">满100减10</span>
+              <span class="tag">$10 off $100</span>
             </div>
           </div>
         </div>
@@ -348,7 +348,7 @@ const onConfirm = ({ selectedOptions }: { selectedOptions: any[] }) => {
               p-x-0.05rem
               rd-0.02rem;
 
-              @include number-font;
+              //@include number-font;
               @include general-font-12;
 
               border: 1px solid $red-color;
