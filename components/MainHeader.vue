@@ -12,9 +12,8 @@ const emits = defineEmits<{
 
 const drawerStatus = ref(false)
 const openShoppingCart = ref(false)
-const productsNum = ref(10)
-const moneyOff = ref(10.11)
-const totalPrice = ref(0)
+const moneyOff = ref(0.0)
+const totalPrice = ref(0.0)
 const selectList = ref<any[]>([])
 const productList = ref<any[]>([
   {
@@ -192,6 +191,13 @@ const handleCheckOut = () => {
       message: "You haven't selected any products yet!",
       duration: 3000
     })
+    return
+  }
+  const token = sessionStorage.getItem('token')
+  console.log(token)
+  if (!token) {
+    handleSwitchShoppingCart(false)
+    router.push('/pay')
   }
 }
 </script>
@@ -240,7 +246,9 @@ const handleCheckOut = () => {
             <span>All</span>
           </span>
           <span class="label">购物车 </span>
-          <span class="count">({{ productsNum }})</span>
+          <span class="count"
+            >({{ productList.reduce((pre, cur) => (pre += cur.children.length), 0) }})</span
+          >
           <span class="btn" @click="handleSwitchShoppingCart(false)"></span>
         </div>
         <div class="container">
