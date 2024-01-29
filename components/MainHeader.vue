@@ -36,6 +36,7 @@ const list = ref<any[]>([
   },
   ...menuConfig
 ])
+const showDialog = ref(false)
 
 const handleSwitchDrawerStatus = () => {
   const status = !drawerStatus.value
@@ -253,7 +254,7 @@ const handleCheckOut = () => {
         </div>
         <div class="container">
           <div class="main" v-if="productList.length">
-            <div class="product-list">
+            <div class="product-list" :style="{ height: `calc(100% - ${0.8 + 0.4}rem)` }">
               <div class="item" v-for="product in productList" :key="product.id">
                 <div class="item-top">
                   <span class="icon" @click="handleSelect(product.id)">
@@ -271,7 +272,7 @@ const handleCheckOut = () => {
                     </div>
                     <div class="info-container">
                       <div class="info-title">lnjection Tape-in</div>
-                      <div class="tips">
+                      <div class="tips" @click="showDialog = true">
                         <span>color ; Length&nbsp;</span><van-icon name="arrow-down" />
                       </div>
                       <div class="row">
@@ -288,6 +289,10 @@ const handleCheckOut = () => {
                 </div>
               </div>
             </div>
+            <div class="money-off">
+              <span class="tag">$10 off $100</span>
+              <span>Already $90 off</span>
+            </div>
             <div class="footer">
               <div class="info">
                 <span class="row">
@@ -301,6 +306,41 @@ const handleCheckOut = () => {
               </div>
               <div class="btn" @click="handleCheckOut">Check Out</div>
             </div>
+
+            <van-overlay :show="showDialog" @click.self.stop="showDialog = false">
+              <div class="dialog">
+                <div class="dialog-top">
+                  <span class="label">Product specifications</span>
+                  <span class="btn" @click="showDialog = false"></span>
+                </div>
+                <div class="dialog-main">
+                  <div class="card">
+                    <div class="panel">
+                      <div class="pic">
+                        <img src="" alt="" />
+                      </div>
+                      <div class="info">
+                        <div class="info-title">lnjection Tape-in</div>
+                        <div class="row">
+                          <span class="unit">$</span>
+                          <span class="price">{{ 12 }}</span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="card">
+                    <div class="card-top">Length</div>
+                    <div class="unit-list">
+                      <div class="item active">12"</div>
+                      <div class="item">22"</div>
+                      <div class="item">32"</div>
+                    </div>
+                  </div>
+                </div>
+                <div class="dialog-footer" @click="showDialog = false">Save</div>
+              </div>
+            </van-overlay>
           </div>
           <div class="not-data" v-else>
             <img src="~/assets/images/not-data.png" alt="" />
@@ -542,6 +582,213 @@ const handleCheckOut = () => {
         @apply w-full
         h-full
         relative;
+
+        .money-off {
+          @apply absolute
+          left-0
+          bottom-0.8rem
+          w-full
+          h-0.4rem
+          flex
+          items-center
+          justify-start
+          p-x-0.12rem;
+
+          color: $red-color;
+          background-color: #ffdedb;
+
+          @include primary-font-14;
+
+          .tag {
+            @apply w-0.96rem
+            h-0.2rem
+            p-x-0.08rem
+            rd-0.02rem
+            m-r-0.04rem
+            text-center;
+
+            @include general-font-12;
+
+            border: 1px solid $red-color;
+          }
+        }
+
+        .dialog {
+          @apply absolute
+          left-0
+          bottom-0
+          w-full
+          h-5.85rem
+          flex
+          flex-col
+          justify-between
+          items-start
+          p-0.16rem
+          overflow-hidden;
+
+          border-radius: 8px 8px 0 0;
+          background-color: $view-color;
+
+          .dialog-top {
+            @apply w-full
+            h-0.24rem
+            flex
+            items-center
+            justify-between
+            m-b-0.15rem;
+
+            .label {
+              @include title-font-18;
+              color: $text-high-color;
+            }
+
+            .btn {
+              @apply w-0.24rem
+              h-0.24rem;
+
+              background-color: black;
+            }
+          }
+
+          .dialog-footer {
+            @apply w-full
+            h-0.48rem
+            text-center
+            rd-0.48rem;
+
+            color: $white-color;
+
+            @include title-font-18;
+
+            line-height: 48px;
+
+            background-color: $primary-color;
+          }
+
+          .dialog-main {
+            @apply w-full
+            flex-1
+            overflow-y-auto;
+
+            .card {
+              @apply rd-0.04rem
+              p-x-0.16rem
+              p-b-0.16rem
+              p-t-0.12rem
+              m-b-0.12rem;
+
+              &:last-child {
+                @apply m-b-0;
+              }
+
+              background-color: $white-color;
+
+              .card-top {
+                @apply w-full
+                h-0.17rem;
+
+                @include title-font-14;
+
+                color: $text-high-color;
+              }
+
+              .unit-list {
+                @apply flex
+                flex-wrap
+                justify-between
+                items-start;
+
+                .item {
+                  @apply w-1.55rem
+                  h-0.3rem
+                  lh-0.3rem
+                  rd-0.04rem
+                  m-t-0.16rem
+                  p-x-0.12rem;
+
+                  color: $text-high-color;
+                  background-color: $placeholder-color;
+
+                  &.active {
+                    color: $white-color;
+                    background-color: $primary-color;
+                  }
+                }
+              }
+            }
+
+            .panel {
+              @apply w-full
+              h-full
+              flex
+              items-center
+              justify-between
+              p-t-0.02rem;
+
+              .pic {
+                @apply w-0.6rem
+                h-0.80rem;
+
+                img {
+                  @apply block
+                  w-full
+                  h-full;
+
+                  background-color: black;
+                }
+              }
+
+              .info {
+                @apply h-0.8rem
+                flex-1
+                flex
+                flex-col
+                justify-start
+                items-start
+                m-l-0.08rem;
+
+                .info-title {
+                  @apply w-full
+                  h-0.22rem
+                  overflow-hidden
+                  text-ellipsis;
+
+                  white-space: nowrap;
+
+                  @include title-font-18;
+                  color: $text-high-color;
+                }
+
+                .row {
+                  @apply w-full
+                  h-0.22rem
+                  flex
+                  items-center
+                  justify-start
+                  m-t-0.08rem;
+
+                  color: $red-color;
+
+                  .unit {
+                    @apply p-r-0.02rem;
+
+                    @include general-font-14;
+
+                    transform: translateY(0.5px);
+                  }
+
+                  .price {
+                    @apply flex-1
+                    p-l-0.02rem;
+
+                    @include number-font;
+                    @include primary-font-16;
+                  }
+                }
+              }
+            }
+          }
+        }
 
         .footer {
           @apply absolute
