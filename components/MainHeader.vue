@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import { Decimal } from 'decimal.js'
+
 import { menuConfig } from '~/utils/menuConfig'
 
 const router = useRouter()
@@ -9,6 +11,32 @@ const emits = defineEmits<{
 }>()
 
 const drawerStatus = ref(false)
+const openShoppingCart = ref(false)
+const productsNum = ref(10)
+const moneyOff = ref(10.11)
+const totalPrice = ref(0)
+const selectList = ref<any[]>([])
+const productList = ref<any[]>([
+  {
+    id: '1',
+    select: false,
+    children: [
+      { id: '111', select: false, price: 0.1, count: 1 },
+      { id: '444', select: false, price: 0.2, count: 1 }
+    ]
+  },
+  { id: '2', select: false, children: [{ id: '132', select: false, price: 0.1, count: 1 }] },
+  { id: '3', select: false, children: [{ id: '43', select: false, price: 0.7, count: 1 }] },
+  { id: '4', select: false, children: [{ id: '123', select: false, price: 0.4, count: 1 }] }
+])
+const isSelectAll = ref(false)
+const list = ref<any[]>([
+  {
+    label: 'Log in/Sign up',
+    link: ''
+  },
+  ...menuConfig
+])
 
 const handleSwitchDrawerStatus = () => {
   const status = !drawerStatus.value
@@ -26,13 +54,146 @@ const handleJumpMenu = (link: string) => {
   }
 }
 
-const list = ref<any[]>([
-  {
-    label: 'Log in/Sign up',
-    link: ''
-  },
-  ...menuConfig
-])
+const handleSwitchShoppingCart = (status: boolean) => {
+  handleSwitchDrawerStatus()
+  openShoppingCart.value = status
+}
+
+const computedTotalPrice = () => {
+  const total = selectList.value.map((d) => d.price).reduce((a, b) => new Decimal(a).plus(b), 0)
+  totalPrice.value = total.valueOf()
+}
+
+const handleSelectAll = () => {
+  const status = !isSelectAll.value
+  isSelectAll.value = status
+
+  const list: any[] = []
+  productList.value = productList.value.map((d) => {
+    const { children, select, ...other } = d
+    if (status) {
+      list.push(...children)
+    }
+    return {
+      ...other,
+      select: status,
+      children: children.map((c: any) => {
+        return {
+          ...c,
+          select: status
+        }
+      })
+    }
+  })
+  selectList.value = list
+  computedTotalPrice()
+}
+
+const handleSelect = (targetId: string) => {
+  let tempSelectCount = 0
+  productList.value = productList.value.map((d) => {
+    const { children, select, id } = d
+    tempSelectCount += children.length
+    if (id === targetId) {
+      if (!select) {
+        selectList.value.push(...children)
+      } else {
+        const childrenIds = children.map((c: any) => c.id)
+        selectList.value = selectList.value.filter((s) => !childrenIds.includes(s.id))
+      }
+      return {
+        ...d,
+        select: !select,
+        children: children.map((c: any) => {
+          return {
+            ...c,
+            select: !select
+          }
+        })
+      }
+    }
+    const childrenTarget = children.find((c: any) => c.id === targetId)
+    if (childrenTarget) {
+      const temp = children.map((c: any) => {
+        return {
+          ...c,
+          select: c.id === targetId ? !c.select : c.select
+        }
+      })
+      const tempSelectCount = temp.filter((t: any) => t.select).length
+      if (!childrenTarget.select) {
+        selectList.value.push(childrenTarget)
+      } else {
+        selectList.value = selectList.value.filter((s) => s.id !== targetId)
+      }
+      return {
+        ...d,
+        select: tempSelectCount === temp.length,
+        children: temp
+      }
+    }
+    return {
+      ...d
+    }
+  })
+  computedTotalPrice()
+  const selectCount = selectList.value.length
+  isSelectAll.value = selectCount === tempSelectCount
+}
+
+const handleChangeCount = (targetId: string, type: string) => {
+  productList.value = productList.value.map((d) => {
+    const { children, ...other } = d
+    return {
+      ...other,
+      children: children.map((c: any) => {
+        const { count, id } = c
+        if (id !== targetId)
+          return {
+            ...c
+          }
+        if (type === 'ADD') {
+          return {
+            ...c,
+            count: count + 1
+          }
+        }
+        if (count - 1 <= 1) {
+          showConfirmDialog({
+            message: 'Are you sure you want to delete this product?',
+            theme: 'round-button'
+          })
+            .then(() => {
+              // on confirm
+            })
+            .catch(() => {
+              // on cancel
+            })
+        }
+        return {
+          ...c,
+          count: Math.max(count - 1, 1)
+        }
+      })
+    }
+  })
+}
+const handleAddCount = (id: string) => {
+  handleChangeCount(id, 'ADD')
+}
+
+const handleReduceCount = (id: string) => {
+  handleChangeCount(id, 'REDUCE')
+}
+
+const handleCheckOut = () => {
+  if (selectList.value?.length <= 0) {
+    showToast({
+      message: "You haven't selected any products yet!",
+      duration: 3000
+    })
+  }
+}
 </script>
 
 <template>
@@ -42,7 +203,7 @@ const list = ref<any[]>([
       <img src="~/assets/images/Logo.png" alt="" />
     </div>
     <van-badge :content="10" max="99" position="top-left">
-      <div class="right"></div>
+      <div class="right" @click="handleSwitchShoppingCart(true)"></div>
     </van-badge>
 
     <Transition name="fade" :duration="0.5">
@@ -64,6 +225,78 @@ const list = ref<any[]>([
                 <span class="btn"></span>
               </div>
             </div>
+          </div>
+        </div>
+      </div>
+    </Transition>
+
+    <Transition name="fade" :duration="0.5">
+      <div class="shopping-cart" v-if="openShoppingCart">
+        <div class="top">
+          <span class="left-btn" @click="handleSelectAll">
+            <span class="icon">
+              <van-icon :name="isSelectAll ? 'checked' : 'circle'" />
+            </span>
+            <span>All</span>
+          </span>
+          <span class="label">购物车 </span>
+          <span class="count">({{ productsNum }})</span>
+          <span class="btn" @click="handleSwitchShoppingCart(false)"></span>
+        </div>
+        <div class="container">
+          <div class="main" v-if="productList.length">
+            <div class="product-list">
+              <div class="item" v-for="product in productList" :key="product.id">
+                <div class="item-top">
+                  <span class="icon" @click="handleSelect(product.id)">
+                    <van-icon :name="product.select ? 'checked' : 'circle'" />
+                  </span>
+                  <span>Tape-in Extension</span>
+                </div>
+                <div class="panel" v-for="item in product.children" :key="item.id">
+                  <div class="select-btn" @click="handleSelect(item.id)">
+                    <van-icon :name="item.select ? 'checked' : 'circle'" />
+                  </div>
+                  <div class="panel-right">
+                    <div class="pic">
+                      <img src="" alt="" />
+                    </div>
+                    <div class="info-container">
+                      <div class="info-title">lnjection Tape-in</div>
+                      <div class="tips">
+                        <span>color ; Length&nbsp;</span><van-icon name="arrow-down" />
+                      </div>
+                      <div class="row">
+                        <span class="unit">$</span>
+                        <span class="price">{{ item.price }}</span>
+                        <span class="stepper">
+                          <span class="pre" @click="handleReduceCount(item.id)"></span>
+                          <span class="count">{{ item.count }}</span>
+                          <span class="next" @click="handleAddCount(item.id)"></span>
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="footer">
+              <div class="info">
+                <span class="row">
+                  <span class="label">{{ selectList.length }} Items Selected, Total:</span>
+                  <span class="unit">$</span>
+                  <span class="price">{{ totalPrice }}</span>
+                </span>
+                <span class="tips"
+                  >Money Off：$ <span class="price">{{ moneyOff }}</span></span
+                >
+              </div>
+              <div class="btn" @click="handleCheckOut">Check Out</div>
+            </div>
+          </div>
+          <div class="not-data" v-else>
+            <img src="~/assets/images/not-data.png" alt="" />
+            <div class="tips">— No products —</div>
           </div>
         </div>
       </div>
@@ -176,6 +409,401 @@ const list = ref<any[]>([
             @include english-font;
 
             color: $text-high-color;
+          }
+        }
+      }
+    }
+  }
+
+  .shopping-cart {
+    @apply fixed
+    w-screen
+    h-full
+    left-0
+    top-0
+    z-99;
+
+    transition: all 0.5s;
+
+    .top {
+      @apply w-full
+      h-0.5rem
+      flex
+      items-center
+      justify-center
+      text-center
+      relative;
+
+      background-color: $white-color;
+
+      .label {
+        @apply p-r-0.04rem;
+
+        @include title-font-18;
+
+        color: $text-high-color;
+      }
+
+      .count {
+        @include english-font;
+        @include general-font-14;
+
+        color: $text-mid-color;
+      }
+
+      .btn {
+        @apply w-0.24rem
+        h-0.24rem
+        right-0.16rem
+        top-50%
+        absolute;
+
+        transform: translateY(-50%);
+
+        background-color: black;
+      }
+
+      .left-btn {
+        @apply h-0.24rem
+        flex
+        items-center
+        justify-center
+        absolute
+        top-50%
+        left-0.16rem;
+
+        @include general-font-14;
+
+        color: $text-mid-color;
+        transform: translateY(-50%);
+
+        .icon {
+          @apply h-0.24rem
+          w-0.24rem
+          block
+          m-r-0.04rem
+          flex
+          items-center
+          justify-center;
+
+          font-size: 0.2rem;
+
+          color: $primary-color;
+        }
+      }
+    }
+
+    .container {
+      @apply w-full
+      relative;
+
+      height: calc(100% - 0.5rem);
+
+      background-color: $view-color;
+
+      .not-data {
+        @apply fixed
+        left-50%
+        top-50%
+        w-1.6rem;
+
+        transform: translateX(-50%) translateY(-50%);
+
+        img {
+          @apply w-1.6rem
+          h-1.6rem
+          block;
+
+          background-color: black;
+        }
+
+        .tips {
+          @apply p-t-0.16rem
+          text-center
+          flex
+          items-center
+          justify-center;
+
+          @include general-font-14;
+
+          color: $text-low-color;
+        }
+      }
+
+      .main {
+        @apply w-full
+        h-full
+        relative;
+
+        .footer {
+          @apply absolute
+          left-0
+          bottom-0
+          w-full
+          h-0.8rem
+          flex
+          justify-between
+          items-start;
+
+          padding: 0.14rem 0.16rem 0.18rem;
+          background-color: $white-color;
+
+          .btn {
+            @apply w-1.16rem
+            h-0.48rem
+            rd-0.5rem
+            text-center
+            flex
+            items-center
+            justify-center;
+
+            color: $white-color;
+            background-color: $primary-color;
+
+            @include title-font-18;
+          }
+
+          .info {
+            @apply flex
+            flex-col
+            justify-center
+            items-start
+            h-0.48rem;
+
+            .row {
+              @apply h-0.18rem
+              flex-1
+              flex
+              items-center
+              justify-start;
+
+              color: $red-color;
+
+              .label {
+                @include primary-font-14;
+                color: $text-high-color;
+              }
+
+              .unit {
+                @apply p-l-0.04rem;
+
+                @include general-font-14;
+
+                transform: translateY(0.5px);
+              }
+
+              .price {
+                @apply p-l-0.02rem;
+
+                @include number-font;
+                @include title-font-18;
+              }
+            }
+
+            .tips {
+              @include general-font-12;
+
+              color: $text-mid-color;
+
+              .price {
+                @include number-font;
+              }
+            }
+          }
+        }
+
+        .product-list {
+          @apply w-full
+          overflow-x-hidden
+          overflow-y-auto
+          p-x-0.16rem
+          p-y-0.12rem;
+
+          height: calc(100% - 0.8rem);
+
+          .item {
+            @apply w-full
+            min-h-1.5rem
+            rd-0.08rem
+            p-x-0.16rem
+            m-b-0.12rem;
+
+            &:last-child {
+              @apply m-b-0;
+            }
+
+            background-color: $white-color;
+
+            .item-top {
+              @apply w-full
+              h-0.4rem
+              flex
+              items-center
+              justify-start;
+
+              @include general-font-14;
+
+              color: $text-high-color;
+
+              .icon {
+                @apply h-0.24rem
+                w-0.24rem
+                block
+                m-r-0.04rem
+                flex
+                items-center
+                justify-center
+                m-r-0.04rem;
+
+                font-size: 0.2rem;
+
+                color: $primary-color;
+              }
+            }
+
+            .panel {
+              @apply w-full
+              h-1.1rem
+              flex
+              justify-between
+              items-center;
+
+              .select-btn {
+                @apply h-0.24rem
+                w-0.24rem
+                block
+                m-r-0.04rem
+                flex
+                items-center
+                justify-center;
+
+                font-size: 0.2rem;
+
+                color: $primary-color;
+              }
+
+              .panel-right {
+                @apply flex-1
+                flex
+                items-center
+                justify-between
+                p-t-0.14rem
+                p-b-0.16rem
+                overflow-hidden;
+
+                border-top: 1px solid $border-color;
+
+                .pic {
+                  @apply w-0.6rem
+                  h-0.8rem
+                  m-r-0.08rem;
+
+                  img {
+                    @apply block
+                    w-full
+                    h-full;
+                  }
+
+                  background-color: black;
+                }
+
+                .info-container {
+                  @apply flex-1
+                  flex
+                  flex-col
+                  justify-center
+                  items-start
+                  overflow-hidden;
+
+                  .info-title {
+                    @apply w-full
+                    h-0.22rem
+                    overflow-hidden
+                    text-ellipsis;
+
+                    white-space: nowrap;
+
+                    @include title-font-18;
+                    color: $text-high-color;
+                  }
+
+                  .tips {
+                    @apply w-auto
+                    max-w-full
+                    h-0.2rem
+                    m-y-0.06rem
+                    overflow-hidden
+                    text-ellipsis
+                    rd-0.02rem
+                    p-x-0.08rem
+                    flex
+                    justify-start
+                    items-center;
+
+                    white-space: nowrap;
+
+                    @include general-font-14;
+
+                    color: $text-mid-color;
+                    background-color: $placeholder-color;
+                  }
+
+                  .row {
+                    @apply w-full
+                    h-0.26rem
+                    flex
+                    items-center
+                    justify-start;
+
+                    color: $red-color;
+
+                    .unit {
+                      @apply p-r-0.02rem;
+
+                      @include general-font-14;
+
+                      transform: translateY(0.5px);
+                    }
+
+                    .price {
+                      @apply flex-1
+                      p-l-0.02rem;
+
+                      @include number-font;
+                      @include primary-font-16;
+                    }
+
+                    .stepper {
+                      @apply flex
+                      items-center
+                      justify-center;
+
+                      .pre,
+                      .next {
+                        @apply w-0.26rem
+                        h-0.26rem
+                        rd-0.02rem
+                        flex
+                        items-center
+                        justify-center;
+
+                        background-color: $placeholder-color;
+                      }
+
+                      .count {
+                        @apply w-0.26rem
+                        h-0.18rem
+                        m-x-0.02rem
+                        text-center;
+
+                        @include primary-font-14;
+                        color: $text-high-color;
+                      }
+                    }
+                  }
+                }
+              }
+            }
           }
         }
       }

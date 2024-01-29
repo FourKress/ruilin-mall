@@ -9,15 +9,30 @@ const handleOpenModal = (status: boolean) => {
     warpDom.classList.remove('fixed')
   }
 }
+
+const isLayout = ref(true)
+const router = useRouter()
+watch(
+  () => router.currentRoute.value.path,
+  (toPath) => {
+    //要执行的方法
+    const query = router.currentRoute.value.query
+    console.log(toPath)
+    isLayout.value = toPath !== '/shopping-cart'
+  },
+  { immediate: true, deep: true }
+)
 </script>
 
 <template>
   <div class="warp" ref="warpRef">
-    <main-header @openModal="handleOpenModal" />
+    <div class="header-container" v-if="isLayout">
+      <main-header @openModal="handleOpenModal" />
+    </div>
     <div class="main-container">
       <slot />
     </div>
-    <main-footer />
+    <main-footer v-if="isLayout" />
   </div>
 </template>
 
@@ -31,8 +46,8 @@ const handleOpenModal = (status: boolean) => {
     top-0;
   }
 
-  .main-container {
-    @apply p-t-0.64rem;
+  .header-container {
+    @apply h-0.64rem;
   }
 }
 </style>
