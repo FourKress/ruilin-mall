@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import Rules from '~/components/Rules.vue'
+
 const totalPrice = ref(11)
 const productList = ref<any[]>([
   {
@@ -13,6 +15,14 @@ const productList = ref<any[]>([
   { id: '3', select: false, children: [{ id: '43', select: false, price: 0.7, count: 1 }] },
   { id: '4', select: false, children: [{ id: '123', select: false, price: 0.4, count: 1 }] }
 ])
+
+const showRulesDialog = ref(false)
+const showCodeDialog = ref(false)
+const promoCode = ref('')
+
+const handleCodeClose = () => {
+  showCodeDialog.value = false
+}
 
 const handlePay = () => {}
 </script>
@@ -68,14 +78,26 @@ const handlePay = () => {}
       <div class="card-row">
         <div class="row">
           <div class="label">Money off</div>
+          <div class="promo-code" @click="showRulesDialog = true">
+            <span class="row-active" v-if="true">
+              <span class="price">Reduced $10.00</span>
+              <span class="tag">$100 off $1000</span>
+            </span>
+            <span class="row-text" v-else>Condition not met</span>
+            <van-icon name="arrow" />
+          </div>
         </div>
       </div>
       <div class="card-row">
         <div class="row">
           <div class="label">Promo Code</div>
-          <div class="promo-code">
-            <span class="tag">$100 off $1000</span>
-            <van-field placeholder="Please enter" input-align="right" />
+          <div class="promo-code" @click="showCodeDialog = true">
+            <span class="row-active" v-if="true">
+              <span class="price">RRUILIN666</span>
+              <span class="tag">$100 off $1000</span>
+            </span>
+            <span class="row-text" v-else>Please enter</span>
+            <van-icon name="arrow" />
           </div>
         </div>
       </div>
@@ -93,13 +115,48 @@ const handlePay = () => {}
     <div class="footer">
       <div class="info">
         <span class="row">
-          <span class="label">Total:</span>
+          <span class="label">Total Price:</span>
           <span class="unit">$</span>
           <span class="price">{{ totalPrice }}</span>
         </span>
       </div>
       <div class="btn" @click="handlePay">Pay</div>
     </div>
+
+    <van-overlay
+      :show="showRulesDialog"
+      :lock-scroll="false"
+      @click.self.stop="showRulesDialog = false"
+    >
+      <Rules @close="showRulesDialog = false" />
+    </van-overlay>
+
+    <van-overlay
+      :show="showCodeDialog"
+      :lock-scroll="false"
+      @click.self.stop="showCodeDialog = false"
+    >
+      <div class="code-dialog">
+        <div class="dialog-top">
+          <span class="label">Promo Code</span>
+          <span class="btn" @click="handleCodeClose"></span>
+        </div>
+        <div class="dialog-main">
+          <div class="input">
+            <van-field v-model="promoCode" center clearable placeholder="Please enter">
+              <template #button>
+                <van-button size="small" type="success" :disabled="!promoCode">Confirm</van-button>
+              </template>
+            </van-field>
+          </div>
+          <div class="title">History:</div>
+          <div class="row" v-for="item in 3" :key="item">
+            <div class="code">SpendSDWA</div>
+            <span class="tag"> $100 off $1000 </span>
+          </div>
+        </div>
+      </div>
+    </van-overlay>
   </div>
 </template>
 
@@ -316,7 +373,7 @@ const handlePay = () => {}
 
       .row {
         @apply w-full
-        h-0.5rem
+        min-h-0.5rem
         flex
         items-center
         justify-between;
@@ -325,6 +382,26 @@ const handlePay = () => {}
 
         &:first-child {
           border-top: none;
+        }
+
+        .van-icon-arrow {
+          @apply m-l-0.08rem;
+        }
+
+        .row-active {
+          @apply flex-col
+          flex
+          items-end
+          justify-center
+          h-0.77rem;
+
+          .tag {
+            @apply m-t-0.04rem;
+          }
+        }
+        .row-text {
+          color: $text-low-color;
+          @include general-font-14;
         }
 
         .label {
@@ -340,6 +417,7 @@ const handlePay = () => {}
           @include primary-font-12;
           color: $red-color;
           border: 1px solid $red-color;
+          line-height: 0.17rem;
         }
 
         .price {
@@ -347,12 +425,20 @@ const handlePay = () => {}
           color: $text-high-color;
         }
 
+        .money-off {
+          @apply flex
+          items-center
+          justify-center;
+
+          transform: translateX(0.04rem);
+        }
+
         .promo-code {
           @apply flex
           items-center
           justify-center;
 
-          transform: translateX(0.16rem);
+          transform: translateX(0.04rem);
 
           .van-field {
             @apply w-1.2rem;
@@ -442,6 +528,100 @@ const handlePay = () => {}
 
           @include number-font;
           @include title-font-18;
+        }
+      }
+    }
+  }
+
+  .code-dialog {
+    @apply absolute
+    left-0
+    bottom-0
+    w-full
+    h-3.4rem
+    flex
+    flex-col
+    justify-between
+    items-start
+    p-0.16rem
+    overflow-hidden;
+
+    border-radius: 8px 8px 0 0;
+    background-color: $view-color;
+
+    .dialog-top {
+      @apply w-full
+      h-0.24rem
+      flex
+      items-center
+      justify-between
+      m-b-0.15rem;
+
+      .label {
+        @include title-font-18;
+        color: $text-high-color;
+      }
+
+      .btn {
+        @apply w-0.24rem
+        h-0.24rem;
+
+        background-color: black;
+      }
+    }
+
+    .dialog-main {
+      @apply w-full
+      flex-1
+      overflow-hidden;
+
+      .van-cell {
+        @apply rd-0.04rem;
+        border: 1px solid $border-color;
+      }
+
+      .title {
+        @apply m-t-0.24rem;
+        @include primary-font-14;
+        color: $text-mid-color;
+      }
+
+      .row {
+        @apply w-full
+        h-0.4rem
+        flex
+        m-t-0.16rem
+        flex
+        justify-between
+        items-center
+        rd-0.04rem
+        p-x-0.12rem;
+
+        background-color: $placeholder-color;
+
+        .code {
+          @include title-font-14;
+          color: $text-high-color;
+        }
+
+        .tag {
+          @apply h-0.21rem
+          flex
+          items-center
+          justify-between
+          rd-0.04rem
+          p-x-0.08rem;
+
+          @include primary-font-12;
+
+          line-height: 0.17rem;
+          color: $red-color;
+          border: 1px solid $red-color;
+        }
+
+        .tips {
+          @include general-font-14;
+          color: $text-high-color;
         }
       }
     }

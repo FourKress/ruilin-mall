@@ -2,6 +2,7 @@
 import { Decimal } from 'decimal.js'
 
 import { menuConfig } from '~/utils/menuConfig'
+import Rules from '~/components/Rules.vue'
 
 const router = useRouter()
 const route = useRoute()
@@ -36,7 +37,8 @@ const list = ref<any[]>([
   },
   ...menuConfig
 ])
-const showDialog = ref(false)
+const showUnitDialog = ref(false)
+const showRulesDialog = ref(false)
 
 const handleSwitchDrawerStatus = () => {
   const status = !drawerStatus.value
@@ -272,7 +274,7 @@ const handleCheckOut = () => {
                     </div>
                     <div class="info-container">
                       <div class="info-title">lnjection Tape-in</div>
-                      <div class="tips" @click="showDialog = true">
+                      <div class="tips" @click="showUnitDialog = true">
                         <span>color ; Length&nbsp;</span><van-icon name="arrow-down" />
                       </div>
                       <div class="row">
@@ -291,7 +293,8 @@ const handleCheckOut = () => {
             </div>
             <div class="money-off">
               <span class="tag">$10 off $100</span>
-              <span>Already $90 off</span>
+              <span class="text">Already $90 off</span>
+              <span class="btn" @click="showRulesDialog = true"></span>
             </div>
             <div class="footer">
               <div class="info">
@@ -307,11 +310,15 @@ const handleCheckOut = () => {
               <div class="btn" @click="handleCheckOut">Check Out</div>
             </div>
 
-            <van-overlay :show="showDialog" @click.self.stop="showDialog = false">
+            <van-overlay
+              :show="showUnitDialog"
+              :lock-scroll="false"
+              @click.self.stop="showUnitDialog = false"
+            >
               <div class="dialog">
                 <div class="dialog-top">
                   <span class="label">Product specifications</span>
-                  <span class="btn" @click="showDialog = false"></span>
+                  <span class="btn" @click="showUnitDialog = false"></span>
                 </div>
                 <div class="dialog-main">
                   <div class="card">
@@ -329,7 +336,7 @@ const handleCheckOut = () => {
                     </div>
                   </div>
 
-                  <div class="card">
+                  <div class="card" v-for="item in 4" :key="item">
                     <div class="card-top">Length</div>
                     <div class="unit-list">
                       <div class="item active">12"</div>
@@ -338,8 +345,16 @@ const handleCheckOut = () => {
                     </div>
                   </div>
                 </div>
-                <div class="dialog-footer" @click="showDialog = false">Save</div>
+                <div class="dialog-footer" @click="showUnitDialog = false">Save</div>
               </div>
+            </van-overlay>
+
+            <van-overlay
+              :show="showRulesDialog"
+              :lock-scroll="false"
+              @click.self.stop="showRulesDialog = false"
+            >
+              <Rules @close="showRulesDialog = false" />
             </van-overlay>
           </div>
           <div class="not-data" v-else>
@@ -609,12 +624,29 @@ const handleCheckOut = () => {
 
             @include general-font-12;
 
+            line-height: unset;
+
             border: 1px solid $red-color;
+          }
+
+          .text {
+            @apply flex-1;
+          }
+
+          .btn {
+            @apply w-0.14rem
+            h-0.14rem
+            m-r-0.04rem
+            flex
+            items-center
+            justify-center;
+
+            background-color: black;
           }
         }
 
         .dialog {
-          @apply absolute
+          @apply fixed
           left-0
           bottom-0
           w-full
@@ -668,7 +700,8 @@ const handleCheckOut = () => {
           .dialog-main {
             @apply w-full
             flex-1
-            overflow-y-auto;
+            overflow-y-auto
+            m-b-0.16rem;
 
             .card {
               @apply rd-0.04rem

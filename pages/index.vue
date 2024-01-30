@@ -72,7 +72,6 @@ const onConfirm = ({ selectedOptions }: { selectedOptions: any[] }) => {
             <div class="row">
               <span class="unit">$</span>
               <span class="price">10.00</span>
-              <span class="tag">$10 off every $100</span>
             </div>
           </div>
         </div>
@@ -341,17 +340,6 @@ const onConfirm = ({ selectedOptions }: { selectedOptions: any[] }) => {
 
               @include number-font;
               @include primary-font-16;
-            }
-
-            .tag {
-              @apply h-0.18rem
-              p-x-0.05rem
-              rd-0.02rem;
-
-              //@include number-font;
-              @include general-font-12;
-
-              border: 1px solid $red-color;
             }
           }
         }
