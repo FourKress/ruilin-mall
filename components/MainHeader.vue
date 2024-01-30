@@ -800,7 +800,7 @@ const handleCheckOut = () => {
           justify-between
           items-start;
 
-          padding: 0.14rem 0.16rem 0.18rem;
+          padding: 0.16rem;
           background-color: $white-color;
 
           .btn {

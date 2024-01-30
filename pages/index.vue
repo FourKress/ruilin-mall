@@ -72,7 +72,7 @@ const onConfirm = ({ selectedOptions }: { selectedOptions: any[] }) => {
             <div class="row">
               <span class="unit">$</span>
               <span class="price">10.00</span>
-              <span class="tag">$10 off $100</span>
+              <span class="tag">$10 off every $100</span>
             </div>
           </div>
         </div>

@@ -17,8 +17,7 @@ watch(
   (toPath) => {
     //要执行的方法
     const query = router.currentRoute.value.query
-    console.log(toPath)
-    isLayout.value = toPath !== '/shopping-cart'
+    isLayout.value = !['/shopping-cart', '/pay'].includes(toPath)
   },
   { immediate: true, deep: true }
 )
@@ -31,14 +30,16 @@ watch(
     </div>
     <div class="main-container">
       <slot />
+      <main-footer v-if="isLayout" />
     </div>
-    <main-footer v-if="isLayout" />
   </div>
 </template>
 
 <style scoped lang="scss">
 .warp {
-  @apply w-screen;
+  @apply w-screen
+  h-full
+  overflow-y-auto;
 
   &.fixed {
     @apply fixed
@@ -48,6 +49,10 @@ watch(
 
   .header-container {
     @apply h-0.64rem;
+  }
+
+  .main-container {
+    @apply h-full;
   }
 }
 </style>
