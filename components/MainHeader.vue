@@ -200,7 +200,7 @@ const handleCheckOut = () => {
   console.log(token)
   if (!token) {
     handleSwitchShoppingCart(false)
-    router.push('/pay')
+    router.push('/payment')
   }
 }
 </script>

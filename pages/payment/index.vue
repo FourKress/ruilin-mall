@@ -24,18 +24,20 @@ const handleCodeClose = () => {
   showCodeDialog.value = false
 }
 
-const handlePay = () => {}
+const handlePayment = () => {}
+
+const handleActivePromoCode = () => {
+  if (!promoCode) return
+  showToast({
+    message: 'Invalid promo code!',
+    duration: 3000
+  })
+}
 </script>
 
 <template>
-  <div class="pay-page">
+  <div class="payment-page">
     <main-nav-bar />
-    <div class="address">
-      <div class="details"></div>
-      <div class="split">
-        <div class="item" v-for="index in 10" :key="index"></div>
-      </div>
-    </div>
     <div class="container">
       <div class="product-list">
         <div class="item" v-for="product in productList" :key="product.id">
@@ -105,7 +107,7 @@ const handlePay = () => {}
         <div class="row">
           <div class="label">Payment method</div>
           <div class="method">
-            <img class="logo" src="~/assets/images/pay.png" alt="" />
+            <img class="logo" src="../../assets/images/paypal.png" alt="" />
             <span class="label">PayPal</span>
             <van-icon name="checked" />
           </div>
@@ -120,7 +122,7 @@ const handlePay = () => {}
           <span class="price">{{ totalPrice }}</span>
         </span>
       </div>
-      <div class="btn" @click="handlePay">Pay</div>
+      <div class="btn" @click="handlePayment">Payment</div>
     </div>
 
     <van-overlay
@@ -145,7 +147,13 @@ const handlePay = () => {}
           <div class="input">
             <van-field v-model="promoCode" center clearable placeholder="Please enter">
               <template #button>
-                <van-button size="small" type="success" :disabled="!promoCode">Confirm</van-button>
+                <van-button
+                  size="small"
+                  type="success"
+                  :disabled="!promoCode"
+                  @click="handleActivePromoCode"
+                  >Confirm</van-button
+                >
               </template>
             </van-field>
           </div>
@@ -161,61 +169,21 @@ const handlePay = () => {}
 </template>
 
 <style scoped lang="scss">
-.pay-page {
+.payment-page {
   @apply w-screen
   h-full
-  max-h-full
-  overflow-hidden;
+  overflow-y-auto;
 
-  .address {
-    @apply w-full
-    h-1.1rem;
-
-    background-color: $white-color;
-
-    .split {
-      @apply h-0.04rem
-      flex
-      items-center
-      justify-between;
-
-      width: calc(100% + 0.02rem);
-
-      .item {
-        @apply h-0.04rem
-        w-0.32rem
-        min-w-0.32rem;
-
-        &:nth-child(odd) {
-          background-image: url('@/assets/images/split-1.png');
-          background-size: 100% 100%;
-        }
-
-        &:nth-child(even) {
-          background-image: url('@/assets/images/split-2.png');
-          background-size: 100% 100%;
-        }
-      }
-    }
-
-    .details {
-      @apply w-full
-      h-1.06rem;
-    }
-  }
+  max-height: calc(100% - 0.8rem);
 
   .container {
-    @apply overflow-y-auto
-    p-x-0.16rem
+    @apply p-x-0.16rem
     p-y-0.12rem;
 
-    max-height: calc(100% - 2.4rem);
     background-color: $view-color;
 
     .product-list {
-      @apply w-full
-      overflow-x-hidden
-      overflow-y-auto;
+      @apply w-full;
 
       .item {
         @apply w-full

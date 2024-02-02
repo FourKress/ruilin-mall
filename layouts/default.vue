@@ -17,7 +17,7 @@ watch(
   (toPath) => {
     //要执行的方法
     const query = router.currentRoute.value.query
-    isLayout.value = !['/shopping-cart', '/pay'].includes(toPath)
+    isLayout.value = !['/shopping-cart', '/payment', '/result'].includes(toPath)
   },
   { immediate: true, deep: true }
 )

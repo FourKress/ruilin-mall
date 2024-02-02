@@ -1,35 +1,53 @@
-<script setup lang="ts"></script>
+<script setup lang="ts">
+const router = useRouter()
+const handleBack = () => {
+  router.back()
+}
+</script>
 
 <template>
   <div class="main-nav-bar">
-    <div class="left"></div>
-    <div class="label">Order settlement</div>
-    <div class="right"></div>
+    <div class="container">
+      <div class="left" @click="handleBack"></div>
+      <div class="label">Order settlement</div>
+      <div class="right"></div>
+    </div>
   </div>
 </template>
 
 <style scoped lang="scss">
 .main-nav-bar {
   @apply w-screen
-  h-0.5rem
-  flex
-  items-center
-  justify-between
-  p-x-0.16rem;
+  h-0.5rem;
 
-  .left,
-  .right {
-    @apply w-0.24rem
-    h-0.24rem
+  .container {
+    @apply w-full
+    h-0.5rem
+    fixed
+    left-0
+    top-0
     flex
-    justify-center
-    items-center;
+    items-center
+    justify-between
+    p-x-0.16rem
+    z-9;
 
-    background-color: black;
+    background-color: $white-color;
 
-    .title {
-      @include title-font-18;
-      color: $text-high-color;
+    .left,
+    .right {
+      @apply w-0.24rem
+      h-0.24rem
+      flex
+      justify-center
+      items-center;
+
+      background-color: black;
+
+      .title {
+        @include title-font-18;
+        color: $text-high-color;
+      }
     }
   }
 }

@@ -38,7 +38,7 @@ const handleClose = () => {
   flex-col
   justify-between
   items-start
-  p-0.16rem
+  p-y-0.16rem
   overflow-hidden;
 
   border-radius: 8px 8px 0 0;
@@ -50,7 +50,8 @@ const handleClose = () => {
     flex
     items-center
     justify-between
-    m-b-0.15rem;
+    m-b-0.15rem
+    p-x-0.16rem;
 
     .label {
       @include title-font-18;
@@ -69,7 +70,8 @@ const handleClose = () => {
     @apply w-full
     h-0.48rem
     text-center
-    rd-0.48rem;
+    rd-0.48rem
+    p-x-0.16rem;
 
     color: $white-color;
 
@@ -84,7 +86,8 @@ const handleClose = () => {
     @apply w-full
     flex-1
     overflow-y-auto
-    m-b-0.16rem;
+    m-b-0.16rem
+    p-x-0.16rem;
 
     .row {
       @apply w-full
