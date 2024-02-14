@@ -18,7 +18,7 @@ export default defineNuxtConfig({
   },
   devServer: {
     port: 7777,
-    host: '192.168.10.178'
+    host: '192.168.10.186'
     // host: '172.20.10.4'
   },
   css: ['~/assets/styles/base.scss'],
