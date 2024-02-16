@@ -1,6 +1,6 @@
 // https://nuxt.com/docs/api/configuration/nuxt-config
 
-const BASE_URL = 'http://172.20.10.4:4000/api/v1'
+const BASE_URL = 'http://localhost:4000/api/v1'
 
 export default defineNuxtConfig({
   devtools: { enabled: true },
