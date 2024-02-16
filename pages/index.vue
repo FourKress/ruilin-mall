@@ -1,25 +1,17 @@
 <script setup lang="ts">
-const images = ref<any[]>([
-  {
-    imgUrl:
-      'https://images.unsplash.com/photo-1682685796014-2f342188a635?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDF8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
-    link: ''
-  },
-  {
-    imgUrl:
-      'https://plus.unsplash.com/premium_photo-1702834008804-578cea8e1155?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
-    link: ''
-  },
-  {
-    imgUrl:
-      'https://images.unsplash.com/photo-1682687221213-56e250b36fdd?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDF8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
-    link: ''
+const runtimeConfig = useRuntimeConfig()
+const baseUrl = runtimeConfig.public.baseUrl
+
+const { data: swipeData }: any = await useFetch(`${baseUrl}/banner/list`, {
+  method: 'get',
+  transform: (res: any) => {
+    return res.data
   }
-])
+})
 
 const productColumns = [
-  { text: 'Hot', value: 1 },
-  { text: 'New', value: 2 }
+  { text: 'New', value: 1 },
+  { text: 'Hot', value: 2 }
 ]
 
 const showPicker = ref(false)
@@ -35,8 +27,8 @@ const onConfirm = ({ selectedOptions }: { selectedOptions: any[] }) => {
   <div class="home">
     <div class="swipe-container">
       <van-swipe :autoplay="3000" lazy-render>
-        <van-swipe-item v-for="item in images" :key="item.imgUrl">
-          <img :src="item.imgUrl" alt="" />
+        <van-swipe-item v-for="item in swipeData" :key="item.id">
+          <img :src="item.url" :alt="item.objectKey" />
         </van-swipe-item>
 
         <template #indicator="{ active, total }">
@@ -44,7 +36,7 @@ const onConfirm = ({ selectedOptions }: { selectedOptions: any[] }) => {
             <div
               class="indicator"
               v-for="(item, index) in images"
-              :key="item.imgUrl"
+              :key="item.id"
               :class="active === index ? 'active' : ''"
             ></div>
           </div>

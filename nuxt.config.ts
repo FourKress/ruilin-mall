@@ -1,7 +1,16 @@
 // https://nuxt.com/docs/api/configuration/nuxt-config
+
+const BASE_URL = 'http://localhost:3000/api/v1'
+
 export default defineNuxtConfig({
   devtools: { enabled: true },
   modules: ['@vant/nuxt', '@unocss/nuxt'],
+  runtimeConfig: {
+    baseUrl: BASE_URL,
+    public: {
+      baseUrl: BASE_URL
+    }
+  },
   app: {
     head: {
       meta: [
@@ -18,8 +27,8 @@ export default defineNuxtConfig({
   },
   devServer: {
     port: 7777,
-    host: '192.168.10.186'
-    // host: '172.20.10.4'
+    // host: '192.168.10.186'
+    host: '172.20.10.4'
   },
   css: ['~/assets/styles/base.scss'],
   vite: {
