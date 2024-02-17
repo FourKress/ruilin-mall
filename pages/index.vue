@@ -21,6 +21,11 @@ const onConfirm = ({ selectedOptions }: { selectedOptions: any[] }) => {
   showPicker.value = false
   console.log(selectedOptions)
 }
+
+const handleJump = (url: string) => {
+  if (!url) return
+  window.open(url, '_blank')
+}
 </script>
 
 <template>
@@ -28,14 +33,14 @@ const onConfirm = ({ selectedOptions }: { selectedOptions: any[] }) => {
     <div class="swipe-container">
       <van-swipe :autoplay="3000" lazy-render>
         <van-swipe-item v-for="item in swipeData" :key="item.id">
-          <img :src="item.url" :alt="item.objectKey" />
+          <img :src="item.url" :alt="item.objectKey" @click="handleJump(item.url)" />
         </van-swipe-item>
 
         <template #indicator="{ active, total }">
           <div class="indicator-container">
             <div
               class="indicator"
-              v-for="(item, index) in images"
+              v-for="(item, index) in swipeData"
               :key="item.id"
               :class="active === index ? 'active' : ''"
             ></div>
