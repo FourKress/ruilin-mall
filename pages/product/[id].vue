@@ -33,7 +33,7 @@ import Pagination from '~/components/Pagination.vue'
             </div>
           </div>
 
-          <div class="tag yellow">Inventory shortage</div>
+          <div class="tag yellow">Low Stock</div>
           <!--          <div class="tag grey">Out of stock</div>-->
         </div>
       </div>
