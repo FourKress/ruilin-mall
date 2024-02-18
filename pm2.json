@@ -9,10 +9,7 @@
     "name": "ruilin-mall",
     "port": "8888",
     "script": "./.output/server/index.mjs",
-    "watch": true,
-    "ignore_watch": [
-      ".nuxt"
-    ],
+    "watch": false,
     "merge_logs": true,
     "log_date_format": "YYYY-MM-DD HH:mm:ss",
     "min_uptime": "60s",
