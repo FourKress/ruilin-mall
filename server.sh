@@ -8,4 +8,6 @@ echo '---git pull执行完毕，pnpm install---'
 pnpm i
 echo '---pnpm install执行完毕，开始执行pnpm build---'
 pnpm build
-echo '---pnpm build执行完毕 服务启动成功---'
+echo '---开始执行pnpm build执行完毕 开始执行pnpm pm2---'
+pnpm pm2:prod
+echo '---pnpm pm2执行完毕 服务启动成功---'

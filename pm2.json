@@ -7,7 +7,8 @@
       "NODE_ENV": "prod"
     },
     "name": "ruilin-mall",
-    "script": "dist/main.js",
+    "port": "8888",
+    "script": "./.output/server/index.mjs",
     "watch": true,
     "ignore_watch": [
       ".nuxt"
