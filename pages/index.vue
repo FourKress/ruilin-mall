@@ -9,17 +9,15 @@ const { data: swipeData }: any = await useFetch(`${baseUrl}/banner/list`, {
   }
 })
 
-const productColumns = [
-  { text: 'New', value: 1 },
-  { text: 'Hot', value: 2 }
+const actions = [
+  { name: 'New', value: 1 },
+  { name: 'Hot', value: 2 }
 ]
 
 const showPicker = ref(false)
-const productType = ref<number[]>([productColumns[0].value])
-
-const onConfirm = ({ selectedOptions }: { selectedOptions: any[] }) => {
-  showPicker.value = false
-  console.log(selectedOptions)
+const currentAction = ref<any>(actions[0])
+const onSelect = (item: any) => {
+  currentAction.value = item
 }
 
 const handleJump = (url: string) => {
@@ -33,7 +31,7 @@ const handleJump = (url: string) => {
     <div class="swipe-container">
       <van-swipe :autoplay="3000" lazy-render>
         <van-swipe-item v-for="item in swipeData" :key="item.id">
-          <img :src="item.url" :alt="item.objectKey" @click="handleJump(item.url)" />
+          <img :src="item.url" :alt="item['objectKey']" @click="handleJump(item.url)" />
         </van-swipe-item>
 
         <template #indicator="{ active, total }">
@@ -53,10 +51,8 @@ const handleJump = (url: string) => {
       <div class="top">
         <div class="label">Products Recommended</div>
         <div class="picker" @click="showPicker = true">
-          <span class="label">{{
-            productColumns.find((d) => d.value === productType[0]).text
-          }}</span>
-          <span class="icon"></span>
+          <span class="label">{{ currentAction.name }}</span>
+          <van-icon name="arrow-down" />
         </div>
       </div>
       <div class="list">
@@ -74,10 +70,10 @@ const handleJump = (url: string) => {
         </div>
       </div>
 
-      <div class="jump-btn">
+      <nuxt-link class="jump-btn" to="/product/0">
         <span>View more products</span>
-        <span class="icon"></span>
-      </div>
+        <van-icon name="arrow" />
+      </nuxt-link>
     </div>
 
     <div class="blog-container">
@@ -102,7 +98,7 @@ const handleJump = (url: string) => {
 
       <div class="jump-btn">
         <span>View more blogs</span>
-        <span class="icon"></span>
+        <van-icon name="arrow" />
       </div>
     </div>
 
@@ -110,17 +106,13 @@ const handleJump = (url: string) => {
       <FollowUs />
     </div>
 
-    <van-popup v-model:show="showPicker" round position="bottom">
-      <van-picker
-        v-model="productType"
-        :columns="productColumns"
-        :visible-option-num="4"
-        cancel-button-text="Cancel"
-        confirm-button-text="Confirm"
-        @cancel="showPicker = false"
-        @confirm="onConfirm"
-      />
-    </van-popup>
+    <van-action-sheet
+      v-model:show="showPicker"
+      :actions="actions"
+      cancel-text="Cancel"
+      close-on-click-action
+      @select="onSelect"
+    />
   </div>
 </template>
 
@@ -191,12 +183,9 @@ const handleJump = (url: string) => {
     color: $text-high-color;
     border: 1px solid $text-mid-color;
 
-    .icon {
-      @apply w-0.16rem
-      h-0.16rem
-      m-l-0.02rem;
-
-      background-color: red;
+    .van-icon {
+      @apply m-l-0.02rem;
+      font-size: 16px;
     }
   }
 
@@ -226,8 +215,9 @@ const handleJump = (url: string) => {
         rd-0.2rem
         flex
         items-center
-        justify-center
-        cursor-pointer;
+        justify-between
+        cursor-pointer
+        px-0.09rem;
 
         color: $text-mid-color;
         border: 1px solid $text-mid-color;
@@ -235,14 +225,6 @@ const handleJump = (url: string) => {
         .label {
           @include english-font;
           @include general-font-14;
-        }
-
-        .icon {
-          @apply w-0.16rem
-          h-0.16rem
-          m-l-0.02rem;
-
-          background-color: red;
         }
       }
     }

@@ -23,7 +23,7 @@ const list = ref<any[]>(menuConfig)
     <div class="item" v-for="(item, index) in list" :key="index">
       <div class="top" @click="handleActive(item.link, index)">
         <span class="label">{{ item.label }}</span>
-        <span class="btn"></span>
+        <van-icon :name="active === index ? 'cross' : 'plus'" />
       </div>
       <Transition name="fade" :duration="0.5">
         <div class="list" v-show="active === index">
@@ -64,14 +64,6 @@ const list = ref<any[]>(menuConfig)
       .label {
         @include primary-font-14;
         @include english-font;
-      }
-
-      .btn {
-        @apply w-0.14rem
-        h-0.14rem
-        cursor-pointer;
-
-        background-color: red;
       }
     }
 

@@ -123,38 +123,38 @@ const handleSelect = () => {
       </van-collapse>
     </div>
 
-    <div class="card reviews">
-      <div class="top">
-        <span class="title">Customer Reviews</span>
-        <span class="count">100+ </span>
-        <span class="tips">Reviews</span>
-      </div>
-      <div class="select" @click="handleSelect">
-        <van-icon :name="isSelect ? 'checked' : 'circle'" />
-        <span class="label">Just look at the current item</span>
-      </div>
-      <div class="list">
-        <div class="item" v-for="item in 5" :key="item">
-          <div class="top">
-            <div class="info">
-              <span class="name">Nickname</span>
-              <span class="tips">City/Country</span>
-            </div>
-            <span class="tips">02/12/2024</span>
-          </div>
-          <div class="start">
-            <van-rate v-model="startValue" readonly />
-            <span class="unit">Color ; Length</span>
-          </div>
-          <div class="content">
-            The content display area of customer reviews.The length limit is 500 characters
-          </div>
-        </div>
-      </div>
-      <div class="jump-btn">
-        <Pagination />
-      </div>
-    </div>
+    <!--    <div class="card reviews">-->
+    <!--      <div class="top">-->
+    <!--        <span class="title">Customer Reviews</span>-->
+    <!--        <span class="count">100+ </span>-->
+    <!--        <span class="tips">Reviews</span>-->
+    <!--      </div>-->
+    <!--      <div class="select" @click="handleSelect">-->
+    <!--        <van-icon :name="isSelect ? 'checked' : 'circle'" />-->
+    <!--        <span class="label">Just look at the current item</span>-->
+    <!--      </div>-->
+    <!--      <div class="list">-->
+    <!--        <div class="item" v-for="item in 5" :key="item">-->
+    <!--          <div class="top">-->
+    <!--            <div class="info">-->
+    <!--              <span class="name">Nickname</span>-->
+    <!--              <span class="tips">City/Country</span>-->
+    <!--            </div>-->
+    <!--            <span class="tips">02/12/2024</span>-->
+    <!--          </div>-->
+    <!--          <div class="start">-->
+    <!--            <van-rate v-model="startValue" readonly />-->
+    <!--            <span class="unit">Color ; Length</span>-->
+    <!--          </div>-->
+    <!--          <div class="content">-->
+    <!--            The content display area of customer reviews.The length limit is 500 characters-->
+    <!--          </div>-->
+    <!--        </div>-->
+    <!--      </div>-->
+    <!--      <div class="jump-btn">-->
+    <!--        <Pagination />-->
+    <!--      </div>-->
+    <!--    </div>-->
 
     <div class="card follow-container">
       <FollowUs />

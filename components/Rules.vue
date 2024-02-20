@@ -12,7 +12,7 @@ const handleClose = () => {
   <div class="rules-dialog">
     <div class="dialog-top">
       <span class="label">Money off rules</span>
-      <span class="btn" @click="handleClose"></span>
+      <van-icon name="cross" @click="handleClose" />
     </div>
     <div class="dialog-main">
       <div class="row" v-for="item in 10" :key="item">
@@ -56,13 +56,6 @@ const handleClose = () => {
     .label {
       @include title-font-18;
       color: $text-high-color;
-    }
-
-    .btn {
-      @apply w-0.24rem
-      h-0.24rem;
-
-      background-color: black;
     }
   }
 

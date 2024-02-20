@@ -141,7 +141,7 @@ const handleActivePromoCode = () => {
       <div class="code-dialog">
         <div class="dialog-top">
           <span class="label">Promo Code</span>
-          <span class="btn" @click="handleCodeClose"></span>
+          <van-icon name="cross" @click="handleCodeClose" />
         </div>
         <div class="dialog-main">
           <div class="input">
@@ -528,13 +528,6 @@ const handleActivePromoCode = () => {
       .label {
         @include title-font-18;
         color: $text-high-color;
-      }
-
-      .btn {
-        @apply w-0.24rem
-        h-0.24rem;
-
-        background-color: black;
       }
     }
 

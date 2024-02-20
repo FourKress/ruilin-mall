@@ -1,12 +1,48 @@
 <script setup lang="ts">
 import Pagination from '~/components/Pagination.vue'
+
+const runtimeConfig = useRuntimeConfig()
+const baseUrl = runtimeConfig.public.baseUrl
+
+const route = useRoute()
+const productId = ref(route.params.id as string)
+
+const { data: productList }: any = await useFetch(`${baseUrl}/product/list`, {
+  method: 'get',
+  transform: (res: any) => {
+    console.log(res.data)
+    return res.data
+  }
+})
+
+const showAction = ref(false)
+const showProductAction = ref(false)
+const actions = [
+  { name: 'New', value: 1 },
+  { name: 'Hot', value: 2 }
+]
+const productActions = productList.value.map((d: any) => {
+  return {
+    name: d.name,
+    value: d.id
+  }
+})
+
+const currentAction = ref<any>(actions[0])
+const currentProductAction = ref<any>(productActions[0])
+const onSelect = (item: any) => {
+  currentAction.value = item
+}
+const onProductSelect = (item: any) => {
+  currentProductAction.value = item
+}
 </script>
 
 <template>
   <div class="product-page">
     <div class="top">
       <div class="title">All Products</div>
-      <div class="details">
+      <div class="details" v-if="productId !== '0'">
         Ruilin is aiming to be one of the most reliable China luxury human cuticle hair
         manufacturers since 2008. The philosophy of Ruilin is to create value for customers rather
         than only buy & sell. We are trying our best to meet or even beyond the needs of the
@@ -16,9 +52,31 @@ import Pagination from '~/components/Pagination.vue'
 
     <div class="product-container">
       <div class="btn-list">
-        <div class="btn">All Products<van-icon name="arrow-down" /></div>
-        <div class="btn">Hot<van-icon name="arrow-down" /></div>
+        <div class="btn" @click="showProductAction = true">
+          <span class="label">{{ currentProductAction.name }}</span
+          ><van-icon name="arrow-down" />
+        </div>
+        <div class="btn" @click="showAction = true">
+          <span class="label">{{ currentAction.name }}</span
+          ><van-icon name="arrow-down" />
+        </div>
       </div>
+
+      <van-action-sheet
+        v-model:show="showAction"
+        :actions="actions"
+        cancel-text="Cancel"
+        close-on-click-action
+        @select="onSelect"
+      />
+
+      <van-action-sheet
+        v-model:show="showProductAction"
+        :actions="productActions"
+        cancel-text="Cancel"
+        close-on-click-action
+        @select="onProductSelect"
+      />
 
       <div class="list">
         <div class="item" v-for="(item, index) in 10" :key="index">
@@ -94,6 +152,12 @@ import Pagination from '~/components/Pagination.vue'
         .van-icon {
           @apply m-l-0.02rem;
           font-size: 16px;
+        }
+
+        &:last-child {
+          .label {
+            @apply w-0.3rem;
+          }
         }
       }
     }

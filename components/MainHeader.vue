@@ -221,7 +221,7 @@ const handleCheckOut = () => {
           <div class="menu-item" v-for="(item, index) in list" :key="index">
             <div class="top" @click="handleJumpMenu(item.link)">
               <span class="label">{{ item.label }}</span>
-              <span class="btn" v-if="!item.children"></span>
+              <van-icon name="arrow" v-if="!item.children" />
             </div>
             <div class="list">
               <div
@@ -294,7 +294,7 @@ const handleCheckOut = () => {
             <div class="money-off">
               <span class="tag">$10 off $100</span>
               <span class="text">Already $90 off</span>
-              <span class="btn" @click="showRulesDialog = true"></span>
+              <van-icon name="arrow" @click="showRulesDialog = true" />
             </div>
             <div class="footer">
               <div class="info">
@@ -318,7 +318,7 @@ const handleCheckOut = () => {
               <div class="dialog">
                 <div class="dialog-top">
                   <span class="label">Product specifications</span>
-                  <span class="btn" @click="showUnitDialog = false"></span>
+                  <van-icon name="cross" @click="showUnitDialog = false" />
                 </div>
                 <div class="dialog-main">
                   <div class="card">
@@ -447,14 +447,6 @@ const handleCheckOut = () => {
           .label {
             @include primary-font-14;
             @include english-font;
-          }
-
-          .btn {
-            @apply w-0.16rem
-            h-0.16rem
-            cursor-pointer;
-
-            background-color: red;
           }
         }
 
@@ -633,15 +625,9 @@ const handleCheckOut = () => {
             @apply flex-1;
           }
 
-          .btn {
-            @apply w-0.14rem
-            h-0.14rem
-            m-r-0.04rem
-            flex
-            items-center
-            justify-center;
-
-            background-color: black;
+          .van-icon {
+            font-size: 16px;
+            color: $red-color;
           }
         }
 
@@ -672,13 +658,6 @@ const handleCheckOut = () => {
             .label {
               @include title-font-18;
               color: $text-high-color;
-            }
-
-            .btn {
-              @apply w-0.24rem
-              h-0.24rem;
-
-              background-color: black;
             }
           }
 

@@ -9,7 +9,7 @@
 
     <div class="jump-btn">
       <span>@RuiLinHair</span>
-      <span class="icon"></span>
+      <van-icon name="arrow" />
     </div>
 
     <div class="tabs">
@@ -68,12 +68,9 @@
     color: $text-high-color;
     border: 1px solid $text-mid-color;
 
-    .icon {
-      @apply w-0.16rem
-      h-0.16rem
-      m-l-0.02rem;
-
-      background-color: red;
+    .van-icon {
+      @apply m-l-0.02rem;
+      font-size: 16px;
     }
   }
 
