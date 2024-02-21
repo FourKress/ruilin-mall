@@ -104,10 +104,10 @@ const handleSelect = () => {
           <img :src="item.imgUrl" alt="" />
         </van-swipe-item>
       </van-swipe>
-      <div class="switch-btn left" @click="swipe.prev">
+      <div class="switch-btn left" @click="swipe['prev']">
         <van-icon name="arrow-left" />
       </div>
-      <div class="switch-btn right" @click="swipe.next">
+      <div class="switch-btn right" @click="swipe['next']">
         <van-icon name="arrow" />
       </div>
     </div>
