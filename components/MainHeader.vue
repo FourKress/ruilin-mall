@@ -36,7 +36,7 @@ const isSelectAll = ref(false)
 const menuList = ref<any[]>([
   {
     label: 'Log in/Sign up',
-    link: ''
+    link: '/enter'
   },
   ...menuConfig.map((d) => {
     if (d.label === 'Product') {
@@ -260,7 +260,9 @@ const handleCheckOut = () => {
           <span class="count"
             >({{ skuList.reduce((pre, cur) => (pre += cur.children.length), 0) }})</span
           >
-          <span class="btn" @click="handleSwitchShoppingCart(false)"></span>
+          <span class="btn" @click="handleSwitchShoppingCart(false)">
+            <van-icon name="cross" />
+          </span>
         </div>
         <div class="container">
           <div class="main" v-if="skuList.length">
@@ -395,12 +397,18 @@ const handleCheckOut = () => {
     @apply w-0.24rem
     h-0.24rem
     cursor-pointer;
+    background-repeat: no-repeat;
+    background-size: 100% 100%;
+  }
 
-    background-color: black;
+  .left {
+    background-image: url('@/assets/images/menu.png');
   }
 
   .right {
     @apply relative;
+
+    background-image: url('@/assets/images/car.png');
   }
 
   .logo {
@@ -517,13 +525,13 @@ const handleCheckOut = () => {
       .btn {
         @apply w-0.24rem
         h-0.24rem
+        lh-0.24rem
         right-0.16rem
         top-50%
-        absolute;
+        absolute
+        font-size-0.18rem;
 
         transform: translateY(-50%);
-
-        background-color: black;
       }
 
       .left-btn {

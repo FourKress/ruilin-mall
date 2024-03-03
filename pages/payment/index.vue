@@ -238,8 +238,6 @@ const handleActivePromoCode = () => {
                 w-full
                 h-full;
               }
-
-              background-color: black;
             }
 
             .info-container {

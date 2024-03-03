@@ -1,11 +1,39 @@
-<script setup lang="ts"></script>
+<script setup lang="ts">
+// const runtimeConfig = useRuntimeConfig()
+// const baseUrl = runtimeConfig.public.baseUrl
+
+const { data: insMediaList } = await useFetch(
+  `https://service.vinnhair.com/api/v1/media/ins/list`,
+  {
+    method: 'get',
+    transform: (res: any) => {
+      return res.data
+    }
+  }
+)
+
+const jumpIns = () => {
+  window.open('https://www.instagram.com/vinnhairextensions/', '_blank')
+}
+const jumpFaceBook = () => {
+  window.open('https://www.facebook.com/vinnhair/', '_blank')
+}
+</script>
 
 <template>
   <div class="follow-us">
     <div class="top">
       <div class="label">Follow Us</div>
     </div>
-    <div class="list"></div>
+    <div class="list">
+      <div class="item" v-for="item in insMediaList" :key="item.id">
+        <img v-if="item['media_type'] === 'IMAGE'" :src="item['media_url']" alt="" />
+        <video v-if="item['media_type'] === 'VIDEO'" width="100%" height="100%" controls>
+          <source :src="item['media_url']" type="video/mp4" />
+          Your browser does not support the Video tag
+        </video>
+      </div>
+    </div>
 
     <div class="jump-btn">
       <span>@RuiLinHair</span>
@@ -13,10 +41,10 @@
     </div>
 
     <div class="tabs">
-      <div class="btn active">
+      <div class="btn active" @click="jumpIns">
         <img src="" alt="" />
       </div>
-      <div class="btn">
+      <div class="btn" @click="jumpFaceBook">
         <img src="" alt="" />
       </div>
       <div class="btn">
@@ -45,10 +73,25 @@
 
   .list {
     @apply w-full
-    h-3.38rem
-    m-t-0.16rem;
+    m-t-0.16rem
+    grid
+    justify-between;
 
-    background-color: black;
+    grid-template-columns: repeat(3, 1.18rem);
+    row-gap: 0.02rem;
+    column-gap: 0.02rem;
+
+    .item {
+      @apply w-1.18rem
+      h-1.18rem;
+
+      img,
+      video {
+        @apply block
+        w-full
+        h-full;
+      }
+    }
   }
 
   .jump-btn {

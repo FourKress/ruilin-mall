@@ -14,29 +14,13 @@ const productList = useProductStore().getProductList()
 const currentPage = ref(1)
 const skuInfo = ref({})
 
-watchEffect(async () => {
-  const { data } = await useFetch<Record<string, any>>(`${baseUrl}/product-sku/online-page`, {
-    method: 'post',
-    body: {
-      size: 10,
-      current: currentPage.value,
-      productId: productId === '0' ? undefined : productId
-    },
-    transform: (res: any) => {
-      return res.data
-    }
-  })
-  if (data.value) {
-    skuInfo.value = data.value
-  }
-})
-
 const showAction = ref(false)
 const showProductAction = ref(false)
 const actions = [
   { name: 'New', value: 1 },
   { name: 'Hot', value: 2 }
 ]
+
 const productActions = productList.map((d: Record<string, any>) => {
   return {
     name: d.online_name,
@@ -52,6 +36,25 @@ productActions.unshift({
 
 const currentAction = ref<any>(actions[0])
 const currentProductAction = ref<any>(productActions.find((d: any) => d.value === productId))
+
+watchEffect(async () => {
+  const { data } = await useFetch<Record<string, any>>(`${baseUrl}/product-sku/online-page`, {
+    method: 'post',
+    body: {
+      size: 10,
+      current: currentPage.value,
+      productId: productId === '0' ? undefined : productId,
+      isHot: currentAction.value.value === 2
+    },
+    transform: (res: any) => {
+      return res.data
+    }
+  })
+  if (data.value) {
+    skuInfo.value = data.value
+  }
+})
+
 const onSelect = (item: any) => {
   currentAction.value = item
 }
@@ -124,8 +127,8 @@ const jumpSku = (sku: any) => {
             </div>
           </div>
 
-          <div class="tag yellow">Low Stock</div>
-          <!--          <div class="tag grey">Out of stock</div>-->
+          <div class="tag grey" v-if="item['online_stock'] <= 0">Out of Stock</div>
+          <div class="tag yellow" v-else-if="item['online_stock'] <= 100">Low Stock</div>
         </div>
       </div>
 

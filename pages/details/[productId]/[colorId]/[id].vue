@@ -74,7 +74,7 @@ const { data: bannerList } = await useFetch(`${baseUrl}/product-banner/online-li
     return res.data
   }
 })
-bannerList.value.forEach((d) => {
+bannerList.value.forEach((d: any) => {
   if (d.type === 'image') {
     imageList.value.push(d)
   } else {
@@ -87,7 +87,7 @@ const { data: summaryList } = await useFetch(
   {
     method: 'get',
     transform: (res: any) => {
-      return res.data.map((d) => {
+      return res.data.map((d: any) => {
         return {
           ...d,
           desc: d.desc.replace(/\n/g, '<br />')
@@ -229,7 +229,7 @@ const handleSelectTag = (unitId: string, tagId: string) => {
 
       <div class="video-container" v-if="videoInfo">
         <video width="100%" height="100%" controls>
-          <source :src="videoInfo.url" type="video/mp4" />
+          <source :src="videoInfo['url']" type="video/mp4" />
           Your browser does not support the Video tag
         </video>
       </div>
@@ -279,12 +279,25 @@ const handleSelectTag = (unitId: string, tagId: string) => {
     <div class="card follow-container">
       <FollowUs />
     </div>
+
+    <div class="add-cart">
+      <div class="count btn">
+        <van-icon name="minus" />
+        <span class="value">1</span>
+        <van-icon name="plus" />
+      </div>
+      <div class="add btn">
+        <van-icon name="plus" />
+        <span>&nbsp;Add Cart</span>
+      </div>
+    </div>
   </div>
 </template>
 
 <style scoped lang="scss">
 .details-page {
-  @apply w-full;
+  @apply w-full
+  relative;
   background-color: $view-color;
 
   .card {
@@ -304,7 +317,7 @@ const handleSelectTag = (unitId: string, tagId: string) => {
 
   .sku {
     .page-title {
-      @apply m-t-0.32rem
+      @apply p-t-0.32rem
       m-b-0.24rem;
       @include title-font-26;
       color: $text-high-color;
@@ -496,9 +509,9 @@ const handleSelectTag = (unitId: string, tagId: string) => {
         grid
         justify-between;
 
-        grid-template-columns: repeat(5, 56px);
-        row-gap: 16px;
-        column-gap: 16px;
+        grid-template-columns: repeat(5, 0.56rem);
+        row-gap: 0.16rem;
+        column-gap: 0.16rem;
 
         .item {
           @apply w-0.56rem
@@ -789,6 +802,48 @@ const handleSelectTag = (unitId: string, tagId: string) => {
 
   .follow-container {
     @apply p-t-0.32rem;
+  }
+
+  .add-cart {
+    @apply w-full
+    h-1rem
+    p-x-0.16rem
+    p-t-0.12rem
+    flex
+    justify-between
+    items-center
+    fixed
+    left-0
+    bottom-0
+    z-1;
+
+    background-color: $white-color;
+
+    .btn {
+      @apply h-0.48rem
+      flex
+      justify-center
+      items-center
+      rd-0.48rem;
+
+      @include title-font-18;
+      border: 2px solid $primary-color;
+    }
+
+    .count {
+      @apply w-1.2rem
+      justify-around
+      px-0.14rem;
+
+      color: $text-high-color;
+    }
+
+    .add {
+      @apply w-2.23rem;
+
+      background-color: $primary-color;
+      color: $white-color;
+    }
   }
 }
 </style>

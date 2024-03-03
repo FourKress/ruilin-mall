@@ -11,6 +11,7 @@
     "pm2:prod": "pm2 start pm2.json --env production"
   },
   "devDependencies": {
+    "@types/md5": "^2.3.5",
     "@unocss/nuxt": "^0.58.3",
     "@vant/nuxt": "^1.0.4",
     "nuxt": "^3.9.0",
@@ -24,6 +25,7 @@
   },
   "dependencies": {
     "@pinia/nuxt": "^0.5.1",
-    "decimal.js": "^10.4.3"
+    "decimal.js": "^10.4.3",
+    "md5": "^2.3.0"
   }
 }

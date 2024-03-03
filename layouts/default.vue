@@ -15,12 +15,12 @@ const handleOpenModal = (status: boolean) => {
 }
 
 const isLayout = ref(true)
+const isDetails = ref(false)
 const router = useRouter()
 watch(
   () => router.currentRoute.value.path,
   (toPath) => {
-    //要执行的方法
-    const query = router.currentRoute.value.query
+    isDetails.value = toPath.includes('/details/')
     isLayout.value = !['/shopping-cart', '/payment', '/result'].includes(toPath)
   },
   { immediate: true, deep: true }
@@ -28,11 +28,11 @@ watch(
 </script>
 
 <template>
-  <div class="warp" ref="warpRef">
+  <div class="app-warp" ref="warpRef">
     <div class="header-container" v-if="isLayout">
       <main-header @openModal="handleOpenModal" />
     </div>
-    <div class="main-container">
+    <div class="main-container" :class="isDetails && 'has-padding'">
       <div class="page-container">
         <slot />
       </div>
@@ -42,7 +42,7 @@ watch(
 </template>
 
 <style scoped lang="scss">
-.warp {
+.app-warp {
   @apply w-screen
   h-full
   overflow-y-auto;
@@ -61,10 +61,16 @@ watch(
     @apply flex
     flex-col;
 
+    &.has-padding {
+      padding-bottom: 1.2rem;
+    }
+
     min-height: calc(100% - 0.64rem);
 
     .page-container {
-      @apply flex-1;
+      @apply flex-1
+      flex
+      flex-col;
     }
   }
 }
