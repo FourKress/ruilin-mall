@@ -9,7 +9,7 @@ const handleBack = () => {
   <div class="main-nav-bar">
     <div class="container">
       <div class="left" @click="handleBack"></div>
-      <div class="label">Order settlement</div>
+      <div class="label">Order Settlement</div>
       <div class="right"></div>
     </div>
   </div>

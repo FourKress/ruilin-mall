@@ -20,14 +20,31 @@ const showRulesDialog = ref(false)
 const showCodeDialog = ref(false)
 const promoCode = ref('')
 
+const promoCodeList = ref<any[]>([])
+
 const handleCodeClose = () => {
   showCodeDialog.value = false
+}
+
+const handleCodeOpen = () => {
+  promoCodeList.value = JSON.parse(localStorage.getItem('promoCodeList') || '[]')
+  showCodeDialog.value = true
 }
 
 const handlePayment = () => {}
 
 const handleActivePromoCode = () => {
   if (!promoCode) return
+  const historyList = promoCodeList.value
+  historyList.unshift({
+    code: promoCode.value,
+    faceValue: '100',
+    thresholdValue: '1000'
+  })
+  const saveList = historyList.slice(0, 3)
+  promoCode.value = ''
+  promoCodeList.value = saveList
+  localStorage.setItem('promoCodeList', JSON.stringify(saveList))
   showToast({
     message: 'Invalid promo code!',
     duration: 3000
@@ -93,7 +110,7 @@ const handleActivePromoCode = () => {
       <div class="card-row">
         <div class="row">
           <div class="label">Promo Code</div>
-          <div class="promo-code" @click="showCodeDialog = true">
+          <div class="promo-code" @click="handleCodeOpen">
             <span class="row-active" v-if="true">
               <span class="price">RRUILIN666</span>
               <span class="tag">$100 off $1000</span>
@@ -150,17 +167,17 @@ const handleActivePromoCode = () => {
                 <van-button
                   size="small"
                   type="success"
-                  :disabled="!promoCode"
+                  :disabled="!promoCode || promoCode.length < 4"
                   @click="handleActivePromoCode"
                   >Confirm</van-button
                 >
               </template>
             </van-field>
           </div>
-          <div class="title">History:</div>
-          <div class="row" v-for="item in 3" :key="item">
-            <div class="code">SpendSDWA</div>
-            <span class="tag"> $100 off $1000 </span>
+          <div class="title" v-if="promoCodeList.length">History:</div>
+          <div class="row" v-for="item in promoCodeList" :key="item">
+            <div class="code">{{ item.code }}</div>
+            <span class="tag"> ${{ item['faceValue'] }} off ${{ item['thresholdValue'] }} </span>
           </div>
         </div>
       </div>
