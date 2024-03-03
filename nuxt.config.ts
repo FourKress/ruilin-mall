@@ -4,7 +4,7 @@ const BASE_URL = 'http://localhost:4000/api/v1'
 
 export default defineNuxtConfig({
   devtools: { enabled: true },
-  modules: ['@vant/nuxt', '@unocss/nuxt'],
+  modules: ['@vant/nuxt', '@unocss/nuxt', '@pinia/nuxt'],
   runtimeConfig: {
     baseUrl: BASE_URL,
     public: {

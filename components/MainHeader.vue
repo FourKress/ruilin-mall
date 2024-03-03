@@ -3,6 +3,9 @@ import { Decimal } from 'decimal.js'
 
 import { menuConfig } from '~/utils/menuConfig'
 import Rules from '~/components/Rules.vue'
+import { useProductStore } from '~/stores'
+
+const productList = useProductStore().getProductList()
 
 const router = useRouter()
 const route = useRoute()
@@ -16,7 +19,7 @@ const openShoppingCart = ref(false)
 const moneyOff = ref(0.0)
 const totalPrice = ref(0.0)
 const selectList = ref<any[]>([])
-const productList = ref<any[]>([
+const skuList = ref<any[]>([
   {
     id: '1',
     select: false,
@@ -30,12 +33,17 @@ const productList = ref<any[]>([
   { id: '4', select: false, children: [{ id: '123', select: false, price: 0.4, count: 1 }] }
 ])
 const isSelectAll = ref(false)
-const list = ref<any[]>([
+const menuList = ref<any[]>([
   {
     label: 'Log in/Sign up',
     link: ''
   },
-  ...menuConfig
+  ...menuConfig.map((d) => {
+    if (d.label === 'Product') {
+      d.children = productList.map((d) => ({ label: d.name, link: `/product/${d.id}` }))
+    }
+    return d
+  })
 ])
 const showUnitDialog = ref(false)
 const showRulesDialog = ref(false)
@@ -71,7 +79,7 @@ const handleSelectAll = () => {
   isSelectAll.value = status
 
   const list: any[] = []
-  productList.value = productList.value.map((d) => {
+  skuList.value = skuList.value.map((d) => {
     const { children, select, ...other } = d
     if (status) {
       list.push(...children)
@@ -93,7 +101,7 @@ const handleSelectAll = () => {
 
 const handleSelect = (targetId: string) => {
   let tempSelectCount = 0
-  productList.value = productList.value.map((d) => {
+  skuList.value = skuList.value.map((d) => {
     const { children, select, id } = d
     tempSelectCount += children.length
     if (id === targetId) {
@@ -144,7 +152,7 @@ const handleSelect = (targetId: string) => {
 }
 
 const handleChangeCount = (targetId: string, type: string) => {
-  productList.value = productList.value.map((d) => {
+  skuList.value = skuList.value.map((d) => {
     const { children, ...other } = d
     return {
       ...other,
@@ -218,7 +226,7 @@ const handleCheckOut = () => {
     <Transition name="fade" :duration="0.5">
       <div class="drawer" v-if="drawerStatus">
         <div class="menu">
-          <div class="menu-item" v-for="(item, index) in list" :key="index">
+          <div class="menu-item" v-for="(item, index) in menuList" :key="index">
             <div class="top" @click="handleJumpMenu(item.link)">
               <span class="label">{{ item.label }}</span>
               <van-icon name="arrow" v-if="!item.children" />
@@ -250,14 +258,14 @@ const handleCheckOut = () => {
           </span>
           <span class="label">购物车 </span>
           <span class="count"
-            >({{ productList.reduce((pre, cur) => (pre += cur.children.length), 0) }})</span
+            >({{ skuList.reduce((pre, cur) => (pre += cur.children.length), 0) }})</span
           >
           <span class="btn" @click="handleSwitchShoppingCart(false)"></span>
         </div>
         <div class="container">
-          <div class="main" v-if="productList.length">
+          <div class="main" v-if="skuList.length">
             <div class="product-list" :style="{ height: `calc(100% - ${0.8 + 0.4}rem)` }">
-              <div class="item" v-for="product in productList" :key="product.id">
+              <div class="item" v-for="product in skuList" :key="product.id">
                 <div class="item-top">
                   <span class="icon" @click="handleSelect(product.id)">
                     <van-icon :name="product.select ? 'checked' : 'circle'" />

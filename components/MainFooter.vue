@@ -1,5 +1,9 @@
 <script setup lang="ts">
 import { menuConfig } from '~/utils/menuConfig'
+import { useProductStore } from '~/stores'
+
+const productList = useProductStore().getProductList()
+
 const active = ref<number>(-1)
 
 const router = useRouter()
@@ -7,6 +11,7 @@ const route = useRoute()
 
 const handleActive = (link: string, index: number) => {
   if (link) {
+    active.value = -1
     if (route.path === link) {
       return location.reload()
     }
@@ -15,19 +20,33 @@ const handleActive = (link: string, index: number) => {
   active.value = active.value === index ? -1 : index
 }
 
-const list = ref<any[]>(menuConfig)
+const menuList = ref<any[]>(
+  menuConfig.map((d) => {
+    if (d.label === 'Product') {
+      d.children = productList.map((d) => ({ label: d.name, link: `/product/${d.id}` }))
+    }
+    return d
+  })
+)
 </script>
 
 <template>
   <div class="main-footer">
-    <div class="item" v-for="(item, index) in list" :key="index">
+    <div class="item" v-for="(item, index) in menuList" :key="index">
       <div class="top" @click="handleActive(item.link, index)">
         <span class="label">{{ item.label }}</span>
         <van-icon :name="active === index ? 'cross' : 'plus'" />
       </div>
       <Transition name="fade" :duration="0.5">
         <div class="list" v-show="active === index">
-          <div class="row" v-for="row in item.children" :key="item.link">{{ row.label }}</div>
+          <div
+            class="row"
+            v-for="row in item.children"
+            :key="item.link"
+            @click="handleActive(row.link, index)"
+          >
+            {{ row.label }}
+          </div>
         </div>
       </Transition>
     </div>

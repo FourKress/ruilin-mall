@@ -1,4 +1,8 @@
 <script setup lang="ts">
+import { useProductStore } from '~/stores/'
+
+await useProductStore().setProductList()
+
 const warpRef = ref<HTMLDivElement>()
 
 const handleOpenModal = (status: boolean) => {

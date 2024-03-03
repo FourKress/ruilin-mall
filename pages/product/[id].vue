@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import Pagination from '~/components/Pagination.vue'
+import { useProductStore } from '~/stores'
 
 const route = useRoute()
 const router = useRouter()
@@ -8,12 +9,7 @@ const productId = route.params.id
 const runtimeConfig = useRuntimeConfig()
 const baseUrl = runtimeConfig.public.baseUrl
 
-const { data: productList }: any = await useFetch(`${baseUrl}/product/list`, {
-  method: 'get',
-  transform: (res: any) => {
-    return res.data
-  }
-})
+const productList = useProductStore().getProductList()
 
 const currentPage = ref(1)
 const skuInfo = ref({})
@@ -41,7 +37,7 @@ const actions = [
   { name: 'New', value: 1 },
   { name: 'Hot', value: 2 }
 ]
-const productActions = productList.value.map((d: Record<string, any>) => {
+const productActions = productList.map((d: Record<string, any>) => {
   return {
     name: d.online_name,
     value: d.id,
