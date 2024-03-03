@@ -1,9 +1,26 @@
 <script setup lang="ts">
 const currentPage = ref(1)
+const props = defineProps({
+  pageTotal: Number
+})
+
+const handlePageChange = (current: number) => {
+  emits('pageChange', current)
+}
+
+const emits = defineEmits<{
+  pageChange: [current: number]
+}>()
 </script>
 
 <template>
-  <van-pagination v-model="currentPage" force-ellipses :total-items="125" :show-page-size="5">
+  <van-pagination
+    v-model="currentPage"
+    force-ellipses
+    :total-items="pageTotal"
+    :show-page-size="5"
+    @change="handlePageChange"
+  >
     <template #prev-text>
       <van-icon name="arrow-left" />
     </template>

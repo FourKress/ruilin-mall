@@ -29,7 +29,9 @@ watch(
       <main-header @openModal="handleOpenModal" />
     </div>
     <div class="main-container">
-      <slot />
+      <div class="page-container">
+        <slot />
+      </div>
       <main-footer v-if="isLayout" />
     </div>
   </div>
@@ -52,7 +54,14 @@ watch(
   }
 
   .main-container {
-    @apply h-full;
+    @apply flex
+    flex-col;
+
+    min-height: calc(100% - 0.64rem);
+
+    .page-container {
+      @apply flex-1;
+    }
   }
 }
 </style>

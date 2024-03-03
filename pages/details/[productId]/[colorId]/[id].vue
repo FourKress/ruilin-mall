@@ -1,44 +1,142 @@
 <script setup lang="ts">
-import Pagination from '~/components/Pagination.vue'
+import type { SwipeInstance } from 'vant'
 
-const images = ref<any[]>([
-  {
-    imgUrl:
-      'https://images.unsplash.com/photo-1682685796014-2f342188a635?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDF8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
-    link: ''
-  },
-  {
-    imgUrl:
-      'https://plus.unsplash.com/premium_photo-1702834008804-578cea8e1155?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
-    link: ''
-  },
-  {
-    imgUrl:
-      'https://images.unsplash.com/photo-1682687221213-56e250b36fdd?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDF8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
-    link: ''
+const runtimeConfig = useRuntimeConfig()
+const baseUrl = runtimeConfig.public.baseUrl
+
+const route = useRoute()
+const router = useRouter()
+const productId = route.params.productId
+
+const skuId = ref('')
+const colorId = ref('')
+const swipeData = ref<any[]>([])
+const currentColor = ref<Record<string, any>>({})
+const currentSwipeId = ref<string>('')
+const skuInfo = ref<Record<string, any>>({})
+const skuList = ref<Record<string, any>[]>([])
+const imageList = ref<any[]>([])
+const videoInfo = ref(null)
+
+watch([skuId], async (newSkuId, oldSkuId) => {
+  if (newSkuId !== oldSkuId) {
+    const { data: skuRes } = await useFetch(`${baseUrl}/product-sku/online-details`, {
+      method: 'post',
+      body: {
+        colorId: colorId.value,
+        skuId: skuId.value === '0' ? undefined : skuId.value
+      },
+      transform: (res: any) => {
+        return res.data
+      }
+    })
+    if (!skuRes.value) return
+    const { info, list } = skuRes.value
+    skuInfo.value = info
+    skuList.value = list
   }
-])
-const startValue = ref(4)
-const swipe = ref(null)
+})
+
+colorId.value = route.params.colorId as string
+skuId.value = route.params.skuId as string
+
+const { data: colorList }: any = await useFetch(
+  `${baseUrl}/product-color/online-list/${productId}`,
+  {
+    method: 'get',
+    transform: (res: any) => {
+      return res.data
+    }
+  }
+)
+
+if (colorList.value) {
+  const targetColor = colorList.value.find((d: any) => d.id === colorId.value)
+  const fileUrlList = (targetColor?.fileList || []).map((d: any) => ({ url: d.url, id: d.id }))
+  currentColor.value = {
+    ...targetColor,
+    productDesc: targetColor.productDesc.replace(/\n/g, '<br />')
+  }
+  swipeData.value = [{ url: targetColor.url, id: targetColor.id }, ...fileUrlList]
+  currentSwipeId.value = targetColor.id
+}
+
+const { data: unitList } = await useFetch(`${baseUrl}/product-unit/online-select/${productId}`, {
+  method: 'get',
+  transform: (res: any) => {
+    return res.data
+  }
+})
+
+const { data: bannerList } = await useFetch(`${baseUrl}/product-banner/online-list/${productId}`, {
+  method: 'get',
+  transform: (res: any) => {
+    return res.data
+  }
+})
+bannerList.value.forEach((d) => {
+  if (d.type === 'image') {
+    imageList.value.push(d)
+  } else {
+    videoInfo.value = d
+  }
+})
+
+const { data: summaryList } = await useFetch(
+  `${baseUrl}/product-summary/online-list/${productId}`,
+  {
+    method: 'get',
+    transform: (res: any) => {
+      return res.data.map((d) => {
+        return {
+          ...d,
+          desc: d.desc.replace(/\n/g, '<br />')
+        }
+      })
+    }
+  }
+)
+
+// const startValue = ref(4)
+const swipe = ref<SwipeInstance>()
+const topSwipe = ref<SwipeInstance>()
 const activeName = ref()
 const isSelect = ref(false)
 
-const route = useRoute()
-console.log(route.params.id)
-
 const handleSelect = () => {
   isSelect.value = !isSelect.value
+}
+
+const handleChangeSwipe = (index: number) => {
+  currentSwipeId.value = swipeData.value[index].id
+}
+const handleSwitchSwipe = (index: number) => {
+  if (!topSwipe.value) return
+  topSwipe.value.swipeTo(index)
+}
+
+const jumpSku = (item: any) => {
+  router.push(`/details/${item.productId}/${item.id}/0`)
+}
+
+const handleSelectTag = (unitId: string, tagId: string) => {
+  const targetSku: Record<string, any> | undefined = skuList.value.find(
+    (s) => s.unitIds.includes(unitId) && s.tagIds.includes(tagId)
+  )
+  if (targetSku) {
+    skuInfo.value = targetSku
+  }
 }
 </script>
 
 <template>
   <div class="details-page">
     <div class="card sku">
-      <div class="page-title">Obsidian (Genius Weft)</div>
+      <div class="page-title">{{ currentColor.name }} ({{ currentColor['productName'] }})</div>
       <div class="banner">
-        <van-swipe :autoplay="3000" lazy-render>
-          <van-swipe-item v-for="item in images" :key="item.imgUrl">
-            <img :src="item.imgUrl" alt="" />
+        <van-swipe ref="topSwipe" lazy-render @change="handleChangeSwipe">
+          <van-swipe-item v-for="item in swipeData" :key="item.id">
+            <img :src="item.url" :alt="item['online_objectKey']" />
           </van-swipe-item>
 
           <template #indicator="{ active, total }">
@@ -47,18 +145,24 @@ const handleSelect = () => {
         </van-swipe>
       </div>
       <div class="pic-list">
-        <div class="item" v-for="item in 8" :class="item === 2 && 'active'" :key="item">
-          <img src="" alt="" />
+        <div
+          class="item"
+          v-for="(item, index) in swipeData"
+          :class="item.id === currentSwipeId && 'active'"
+          :key="item.id"
+          @click="handleSwitchSwipe(index)"
+        >
+          <img :src="item.url" :alt="item['online_objectKey']" />
         </div>
       </div>
       <div class="info">
         <span class="unit">$</span>
-        <span class="price">123.00</span>
-        <span class="start">
-          <van-rate v-model="startValue" readonly />
-        </span>
-        <span class="count">100+ </span>
-        <span class="tips">Reviews</span>
+        <span class="price">{{ skuInfo['online_price'] }}</span>
+        <!--        <span class="start">-->
+        <!--          <van-rate v-model="startValue" readonly />-->
+        <!--        </span>-->
+        <!--        <span class="count">100+ </span>-->
+        <!--        <span class="tips">Reviews</span>-->
       </div>
 
       <div class="split-line"></div>
@@ -66,61 +170,77 @@ const handleSelect = () => {
       <div class="sku-type">
         <div class="title">COLOR：</div>
         <div class="tips">
-          <span class="type">Obsidian</span>(Obsidian has a neutral level 4 root that melts into
-          bright level 9 ends)
+          <span class="type">{{ currentColor.name }}</span
+          >({{ currentColor.desc }})
         </div>
 
         <div class="list">
-          <div class="item" v-for="item in 8" :class="item === 2 && 'active'" :key="item">
-            <img src="" alt="" />
+          <div
+            class="item"
+            v-for="item in colorList"
+            :class="item.id === currentColor.id && 'active'"
+            :key="item"
+            @click="jumpSku(item)"
+          >
+            <img :src="item.url" :alt="item['online_objectKey']" />
           </div>
         </div>
       </div>
 
       <div class="split-line"></div>
 
-      <div class="unit-container">
-        <div class="title">CHOOSE LENGTH：</div>
+      <div class="unit-container" v-if="unitList.length" v-for="unit in unitList" :key="unit.id">
+        <div class="title">{{ unit.name }}：</div>
         <div class="list">
-          <div class="item" v-for="item in 8" :class="item === 2 && 'active'" :key="item">18"</div>
+          <div
+            class="item"
+            v-for="item in unit.tags"
+            :class="[
+              skuInfo['tagIds'] && skuInfo['tagIds'].some((d) => d === item.id) && 'active',
+              skuList.every((d) => !d['tagIds'].includes(item.id)) && 'disabled'
+            ]"
+            :key="item.id"
+            @click="handleSelectTag(unit.id, item.id)"
+          >
+            {{ item['online_name'] }}
+          </div>
         </div>
       </div>
     </div>
 
-    <div class="card product-details">
+    <div class="product-details">
       <div class="top">Product Introduction</div>
-      <div class="title">Genius Wefts</div>
-      <div class="details">
-        Genius Wefts combine the best attributes from hand-tied wefts and flat wefts to create the
-        most perfect weft imaginable. This virtually invisible weft is almost as thin as a hand-tied
-        weft but can be cut for easy customization like a flat weft, and has no return hairs that
-        can irritate the scalp. Some might just call it, Genius!
+      <div class="swipe-container">
+        <van-swipe ref="swipe" lazy-render :show-indicators="false">
+          <van-swipe-item v-for="item in imageList" :key="item.url">
+            <img :src="item.url" :alt="item['online_objectKey']" />
+          </van-swipe-item>
+        </van-swipe>
+        <div class="switch-btn left" @click="swipe['prev']">
+          <van-icon name="arrow-left" />
+        </div>
+        <div class="switch-btn right" @click="swipe['next']">
+          <van-icon name="arrow" />
+        </div>
       </div>
-    </div>
 
-    <div class="swipe-container">
-      <van-swipe ref="swipe" lazy-render :show-indicators="false">
-        <van-swipe-item v-for="item in images" :key="item.imgUrl">
-          <img :src="item.imgUrl" alt="" />
-        </van-swipe-item>
-      </van-swipe>
-      <div class="switch-btn left" @click="swipe['prev']">
-        <van-icon name="arrow-left" />
-      </div>
-      <div class="switch-btn right" @click="swipe['next']">
-        <van-icon name="arrow" />
-      </div>
-    </div>
+      <div class="title">{{ currentColor['productName'] }}</div>
+      <div class="details" v-html="currentColor['productDesc']"></div>
 
-    <div class="card menu">
-      <van-collapse v-model="activeName" accordion :border="false">
-        <van-collapse-item :title="`title_${item}`" :name="item" v-for="item in 5">
-          We recommend installing Ruilin genius wefts using the natural beaded row method (Original
-          or Flip Up), where wefts are sewn onto beaded rows to create a comfortable, natural and
-          beautiful result. This method creates maximum length and fullness while resulting in zero
-          damage, making it perfect for the most fine-haired of clients.
-        </van-collapse-item>
-      </van-collapse>
+      <div class="video-container" v-if="videoInfo">
+        <video width="100%" height="100%" controls>
+          <source :src="videoInfo.url" type="video/mp4" />
+          Your browser does not support the Video tag
+        </video>
+      </div>
+
+      <div class="menu">
+        <van-collapse v-model="activeName" accordion :border="false">
+          <van-collapse-item :title="item.name" :name="item.id" v-for="item in summaryList">
+            <div v-html="item.desc"></div>
+          </van-collapse-item>
+        </van-collapse>
+      </div>
     </div>
 
     <!--    <div class="card reviews">-->
@@ -256,8 +376,6 @@ const handleSelect = () => {
         &.active {
           border-color: $text-special-color;
         }
-
-        background-color: yellow;
       }
     }
 
@@ -352,16 +470,12 @@ const handleSelect = () => {
             h-full
             rd-50%
             overflow-hidden;
-
-            background-color: black;
           }
 
           &.active {
             @apply p-0.02rem;
             border-color: $text-special-color;
           }
-
-          background-color: yellow;
         }
       }
     }
@@ -406,115 +520,143 @@ const handleSelect = () => {
             color: $white-color;
             background-color: $primary-color;
           }
+
+          &.disabled {
+            opacity: 0.5;
+          }
         }
       }
     }
   }
 
   .product-details {
+    @apply m-b-0.1rem;
+
+    background-color: $white-color;
+
     .top {
       @apply w-full
       p-b-0.24rem
       p-t-0.32rem
+      p-x-0.16rem
       text-center;
 
       @include title-font-22;
       color: $text-high-color;
     }
+
+    .swipe-container {
+      @apply w-full
+      h-5.2rem
+      relative;
+
+      .van-swipe {
+        @apply h-full;
+
+        ::v-deep .van-swipe__track {
+          width: 100% !important;
+
+          .van-swipe-item {
+            width: 100% !important;
+          }
+        }
+
+        img {
+          @apply block
+          w-full
+          h-full;
+        }
+      }
+
+      .switch-btn {
+        @apply absolute
+        top-50%
+        w-0.44rem
+        h-0.44rem
+        flex
+        justify-center
+        items-center
+        font-size-0.16rem
+        rd-50%
+        overflow-y-hidden;
+
+        background-color: rgba(16, 16, 16, 0.5);
+        color: $white-color;
+
+        transform: translateY(-50%);
+
+        &.left {
+          left: 0.16rem;
+        }
+
+        &.right {
+          @apply right-0.16rem;
+        }
+      }
+    }
+
     .title {
-      @apply m-b-0.08rem;
+      @apply m-b-0.08rem
+      p-t-0.16rem
+      p-x-0.16rem;
+
       color: $text-high-color;
       @include title-font-26;
     }
 
     .details {
+      @apply p-x-0.16rem;
+
       color: $text-high-color;
       @include general-font-loose-14;
 
       @apply pb-0.16rem;
     }
-  }
 
-  .swipe-container {
-    @apply w-full
-    h-5.2rem
-    m-t--0.1rem
-    relative;
-
-    .van-swipe {
-      @apply h-full;
-
-      img {
-        @apply block
-        w-full
-        h-full;
-      }
+    .video-container {
+      @apply w-full
+      h-2.92rem;
     }
 
-    .switch-btn {
-      @apply absolute
-      top-50%
-      w-0.44rem
-      h-0.44rem
-      flex
-      justify-center
-      items-center
-      font-size-0.16rem
-      rd-50%
-      overflow-y-hidden;
+    .menu {
+      @apply p-t-0.24rem
+      p-x-0.16rem;
 
-      background-color: rgba(16, 16, 16, 0.5);
-      color: $white-color;
-
-      transform: translateY(-50%);
-
-      &.left {
-        left: 0.16rem;
-      }
-
-      &.right {
-        @apply right-0.16rem;
-      }
-    }
-  }
-
-  .menu {
-    @apply p-t-0.24rem;
-
-    ::v-deep .van-collapse {
-      .van-collapse-item {
-        border-top: 1px solid $border-color;
-        background-color: $white-color;
-      }
-
-      .van-collapse-item__title--expanded:after {
-        border: none;
-      }
-
-      .van-cell {
-        padding: 0;
-        height: 60px;
-        line-height: 60px;
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-
-        background-color: $white-color;
-
-        .van-cell__title {
-          @include primary-font-14;
-          color: $text-high-color;
+      ::v-deep .van-collapse {
+        .van-collapse-item {
+          border-top: 1px solid $border-color;
+          background-color: $white-color;
         }
 
-        .van-icon {
-          color: $text-high-color;
+        .van-collapse-item__title--expanded:after {
+          border: none;
         }
-      }
 
-      .van-collapse-item__content {
-        @include general-font-loose-14;
-        color: $text-high-color;
-        padding: 0 0 16px 0;
+        .van-cell {
+          padding: 0;
+          height: 60px;
+          line-height: 60px;
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+
+          background-color: $white-color;
+
+          .van-cell__title {
+            @include primary-font-14;
+            color: $text-high-color;
+          }
+
+          .van-icon {
+            color: $text-high-color;
+          }
+        }
+
+        .van-collapse-item__content {
+          @include general-font-loose-14;
+          color: $text-high-color;
+          padding: 0 0 16px 0;
+        }
       }
     }
   }

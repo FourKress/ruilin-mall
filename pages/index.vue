@@ -2,12 +2,28 @@
 const runtimeConfig = useRuntimeConfig()
 const baseUrl = runtimeConfig.public.baseUrl
 
+const router = useRouter()
+
 const { data: swipeData }: any = await useFetch(`${baseUrl}/banner/list`, {
   method: 'get',
   transform: (res: any) => {
     return res.data
   }
 })
+
+const { data: skuList } = await useFetch<Record<string, any>>(
+  `${baseUrl}/product-sku/online-page`,
+  {
+    method: 'post',
+    body: {
+      size: 10,
+      current: 1
+    },
+    transform: (res: any) => {
+      return res.data.records
+    }
+  }
+)
 
 const actions = [
   { name: 'New', value: 1 },
@@ -23,6 +39,10 @@ const onSelect = (item: any) => {
 const handleJump = (url: string) => {
   if (!url) return
   window.open(url, '_blank')
+}
+
+const jumpSku = (sku: any) => {
+  router.push(`/details/${sku.productId}/${sku['colorId']}/${sku.id}`)
 }
 </script>
 
@@ -56,15 +76,15 @@ const handleJump = (url: string) => {
         </div>
       </div>
       <div class="list">
-        <div class="item" v-for="(item, index) in 10" :key="index">
+        <div class="item" v-for="(item, index) in skuList" :key="index" @click="jumpSku(item)">
           <div class="image">
-            <img src="" alt="" />
+            <img :src="item.url" :alt="item['online_objectKey']" />
           </div>
           <div class="info">
-            <div class="title">Cinnamon Dolce (Clip-in)</div>
+            <div class="title">{{ item['color_name'] }}</div>
             <div class="row">
               <span class="unit">$</span>
-              <span class="price">10.00</span>
+              <span class="price">{{ item['online_price'] }}</span>
             </div>
           </div>
         </div>
@@ -240,8 +260,6 @@ const handleJump = (url: string) => {
         @apply w-1.71rem
         h-3.1rem
         m-t-0.16rem;
-
-        background-color: black;
 
         .image {
           @apply w-full

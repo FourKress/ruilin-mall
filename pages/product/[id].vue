@@ -1,17 +1,37 @@
 <script setup lang="ts">
 import Pagination from '~/components/Pagination.vue'
 
+const route = useRoute()
+const router = useRouter()
+const productId = route.params.id
+
 const runtimeConfig = useRuntimeConfig()
 const baseUrl = runtimeConfig.public.baseUrl
-
-const route = useRoute()
-const productId = ref(route.params.id as string)
 
 const { data: productList }: any = await useFetch(`${baseUrl}/product/list`, {
   method: 'get',
   transform: (res: any) => {
-    console.log(res.data)
     return res.data
+  }
+})
+
+const currentPage = ref(1)
+const skuInfo = ref({})
+
+watchEffect(async () => {
+  const { data } = await useFetch<Record<string, any>>(`${baseUrl}/product-sku/online-page`, {
+    method: 'post',
+    body: {
+      size: 10,
+      current: currentPage.value,
+      productId: productId === '0' ? undefined : productId
+    },
+    transform: (res: any) => {
+      return res.data
+    }
+  })
+  if (data.value) {
+    skuInfo.value = data.value
   }
 })
 
@@ -21,32 +41,44 @@ const actions = [
   { name: 'New', value: 1 },
   { name: 'Hot', value: 2 }
 ]
-const productActions = productList.value.map((d: any) => {
+const productActions = productList.value.map((d: Record<string, any>) => {
   return {
-    name: d.name,
-    value: d.id
+    name: d.online_name,
+    value: d.id,
+    desc: d.online_desc.replace(/\n/g, '<br/>')
   }
+})
+productActions.unshift({
+  name: 'All Product',
+  value: '0',
+  desc: ''
 })
 
 const currentAction = ref<any>(actions[0])
-const currentProductAction = ref<any>(productActions[0])
+const currentProductAction = ref<any>(productActions.find((d: any) => d.value === productId))
 const onSelect = (item: any) => {
   currentAction.value = item
 }
 const onProductSelect = (item: any) => {
   currentProductAction.value = item
+  router.push(`/product/${item.value}`)
+}
+
+const handlePageChange = (current: number) => {
+  currentPage.value = current
+}
+
+const jumpSku = (sku: any) => {
+  router.push(`/details/${sku.productId}/${sku['colorId']}/${sku.id}`)
 }
 </script>
 
 <template>
   <div class="product-page">
     <div class="top">
-      <div class="title">All Products</div>
+      <div class="title">{{ currentProductAction.name }}</div>
       <div class="details" v-if="productId !== '0'">
-        Ruilin is aiming to be one of the most reliable China luxury human cuticle hair
-        manufacturers since 2008. The philosophy of Ruilin is to create value for customers rather
-        than only buy & sell. We are trying our best to meet or even beyond the needs of the
-        customers with highly responding, quality and customer driven service.
+        <span v-html="currentProductAction.desc"></span>
       </div>
     </div>
 
@@ -79,15 +111,20 @@ const onProductSelect = (item: any) => {
       />
 
       <div class="list">
-        <div class="item" v-for="(item, index) in 10" :key="index">
+        <div
+          class="item"
+          v-for="(item, index) in skuInfo['records']"
+          :key="index"
+          @click="jumpSku(item)"
+        >
           <div class="image">
-            <img src="" alt="" />
+            <img :src="item.url" :alt="item['online_objectKey']" />
           </div>
           <div class="info">
-            <div class="title">Cinnamon Dolce (Clip-in)</div>
+            <div class="title">{{ item['color_name'] }}</div>
             <div class="row">
               <span class="unit">$</span>
-              <span class="price">10.00</span>
+              <span class="price">{{ item['online_price'] }}</span>
             </div>
           </div>
 
@@ -97,7 +134,11 @@ const onProductSelect = (item: any) => {
       </div>
 
       <div class="jump-btn">
-        <Pagination />
+        <Pagination
+          v-if="skuInfo['records'] && skuInfo['records'].length"
+          :pageTotal="skuInfo['total']"
+          @pageChange="handlePageChange"
+        />
       </div>
     </div>
   </div>
@@ -174,8 +215,6 @@ const onProductSelect = (item: any) => {
         h-3.1rem
         m-t-0.16rem
         relative;
-
-        background-color: black;
 
         .image {
           @apply w-full
