@@ -43,9 +43,9 @@ const useHttp = async (config: IConfig) => {
     body: method === 'post' ? body : undefined,
     transform,
     onRequest({ request, options }) {
-      if (token) {
+      if (token.value) {
         options.headers = (options.headers || {}) as Record<string, string>
-        options.headers['Authorization'] = `Bearer ${token}`
+        options.headers['Authorization'] = `Bearer ${token.value}`
       }
     },
     onResponse({ response }) {

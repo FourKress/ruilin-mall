@@ -48,6 +48,9 @@ const menuList = ref<any[]>([
 const showUnitDialog = ref(false)
 const showRulesDialog = ref(false)
 
+const orderAmount = ref(333)
+const { ruleList, matchedRule } = await useRule(orderAmount.value)
+
 const handleSwitchDrawerStatus = () => {
   const status = !drawerStatus.value
   emits('openModal', status)
@@ -266,7 +269,10 @@ const handleCheckOut = () => {
         </div>
         <div class="container">
           <div class="main" v-if="skuList.length">
-            <div class="product-list" :style="{ height: `calc(100% - ${0.8 + 0.4}rem)` }">
+            <div
+              class="product-list"
+              :style="{ height: `calc(100% - ${0.8 + (ruleList.length ? 0.4 : 0)}rem)` }"
+            >
               <div class="item" v-for="product in skuList" :key="product.id">
                 <div class="item-top">
                   <span class="icon" @click="handleSelect(product.id)">
@@ -301,9 +307,13 @@ const handleCheckOut = () => {
                 </div>
               </div>
             </div>
-            <div class="money-off">
-              <span class="tag">$10 off $100</span>
-              <span class="text">Already $90 off</span>
+            <div class="money-off" v-if="ruleList.length">
+              <span class="tag"
+                >${{ matchedRule['faceValue'] }} off ${{ matchedRule['thresholdValue'] }}</span
+              >
+              <span class="text"
+                >Already ${{ new Decimal(orderAmount).minus(matchedRule['faceValue']) }} off</span
+              >
               <van-icon name="arrow" @click="showRulesDialog = true" />
             </div>
             <div class="footer">
@@ -364,7 +374,11 @@ const handleCheckOut = () => {
               :lock-scroll="false"
               @click.self.stop="showRulesDialog = false"
             >
-              <Rules @close="showRulesDialog = false" />
+              <Rules
+                @close="showRulesDialog = false"
+                :ruleList="ruleList"
+                :matchedRuleId="matchedRule.id"
+              />
             </van-overlay>
           </div>
           <div class="not-data" v-else>
@@ -678,7 +692,7 @@ const handleCheckOut = () => {
           }
 
           .dialog-footer {
-            @apply w-full
+            @apply w-1.16rem
             h-0.48rem
             text-center
             rd-0.48rem;

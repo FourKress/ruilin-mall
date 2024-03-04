@@ -20,7 +20,7 @@ const router = useRouter()
 watch(
   () => router.currentRoute.value.path,
   (toPath) => {
-    isDetails.value = toPath.includes('/details/')
+    isDetails.value = ['/details/', '/payment'].includes(toPath)
     isLayout.value = !['/shopping-cart', '/payment', '/result'].includes(toPath)
   },
   { immediate: true, deep: true }

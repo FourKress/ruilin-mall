@@ -19,12 +19,15 @@ const productList = ref<any[]>([
 const showRulesDialog = ref(false)
 const showCodeDialog = ref(false)
 const promoCode = ref('')
+const promoInfo = ref<any>({})
 
 const promoCodeList = ref<any[]>([])
 
 const handleCodeClose = () => {
   showCodeDialog.value = false
 }
+const orderAmount = ref(333)
+const { ruleList, matchedRule } = await useRule(orderAmount.value)
 
 const handleCodeOpen = () => {
   promoCodeList.value = JSON.parse(localStorage.getItem('promoCodeList') || '[]')
@@ -33,22 +36,28 @@ const handleCodeOpen = () => {
 
 const handlePayment = () => {}
 
-const handleActivePromoCode = () => {
-  if (!promoCode) return
-  const historyList = promoCodeList.value
+const handleActivePromoCode = async () => {
+  if (!promoCode.value) return
+
+  const { data: promoRes } = await useHttpGet({
+    url: `/coupon/check/${promoCode.value}`,
+    isLoading: true
+  })
+  if (!promoRes.value) return
+
+  promoInfo.value = promoRes.value
+  showCodeDialog.value = false
+
+  const historyList = promoCodeList.value.filter((d) => d.code !== promoCode.value)
   historyList.unshift({
-    code: promoCode.value,
-    faceValue: '100',
-    thresholdValue: '1000'
+    code: promoInfo.value.code,
+    faceValue: promoInfo.value.faceValue,
+    thresholdValue: promoInfo.value.thresholdValue
   })
   const saveList = historyList.slice(0, 3)
   promoCode.value = ''
   promoCodeList.value = saveList
   localStorage.setItem('promoCodeList', JSON.stringify(saveList))
-  showToast({
-    message: 'Invalid promo code!',
-    duration: 3000
-  })
 }
 </script>
 
@@ -94,13 +103,15 @@ const handleActivePromoCode = () => {
         </div>
       </div>
 
-      <div class="card-row">
+      <div class="card-row" v-if="ruleList.length">
         <div class="row">
           <div class="label">Money off</div>
           <div class="promo-code" @click="showRulesDialog = true">
-            <span class="row-active" v-if="true">
-              <span class="price">Reduced $10.00</span>
-              <span class="tag">$100 off $1000</span>
+            <span class="row-active" v-if="matchedRule.id">
+              <span class="price">Reduced ${{ matchedRule['faceValue'] }}</span>
+              <span class="tag"
+                >${{ matchedRule['faceValue'] }} off ${{ matchedRule['thresholdValue'] }}</span
+              >
             </span>
             <span class="row-text" v-else>Condition not met</span>
             <van-icon name="arrow" />
@@ -111,9 +122,11 @@ const handleActivePromoCode = () => {
         <div class="row">
           <div class="label">Promo Code</div>
           <div class="promo-code" @click="handleCodeOpen">
-            <span class="row-active" v-if="true">
-              <span class="price">RRUILIN666</span>
-              <span class="tag">$100 off $1000</span>
+            <span class="row-active" v-if="promoInfo.code">
+              <span class="price">{{ promoInfo.code }}</span>
+              <span class="tag"
+                >${{ promoInfo['faceValue'] }} off ${{ promoInfo['thresholdValue'] }}</span
+              >
             </span>
             <span class="row-text" v-else>Please enter</span>
             <van-icon name="arrow" />
@@ -147,7 +160,11 @@ const handleActivePromoCode = () => {
       :lock-scroll="false"
       @click.self.stop="showRulesDialog = false"
     >
-      <Rules @close="showRulesDialog = false" />
+      <Rules
+        @close="showRulesDialog = false"
+        :ruleList="ruleList"
+        :matchedRuleId="matchedRule.id"
+      />
     </van-overlay>
 
     <van-overlay
@@ -175,7 +192,7 @@ const handleActivePromoCode = () => {
             </van-field>
           </div>
           <div class="title" v-if="promoCodeList.length">History:</div>
-          <div class="row" v-for="item in promoCodeList" :key="item">
+          <div class="row" v-for="item in promoCodeList" :key="item" @click="promoCode = item.code">
             <div class="code">{{ item.code }}</div>
             <span class="tag"> ${{ item['faceValue'] }} off ${{ item['thresholdValue'] }} </span>
           </div>

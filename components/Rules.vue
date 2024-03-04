@@ -1,4 +1,15 @@
 <script setup lang="ts">
+const props = defineProps({
+  matchedRuleId: {
+    type: String,
+    required: true
+  },
+  ruleList: {
+    type: Array,
+    required: true
+  }
+})
+
 const emits = defineEmits<{
   close: []
 }>()
@@ -15,11 +26,13 @@ const handleClose = () => {
       <van-icon name="cross" @click="handleClose" />
     </div>
     <div class="dialog-main">
-      <div class="row" v-for="item in 10" :key="item">
-        <div class="tips">Spend $100 or more, get $10 off</div>
+      <div class="row" v-for="item in ruleList" :key="item">
+        <div class="tips">
+          Spend ${{ item['thresholdValue'] }} or more, get ${{ item['faceValue'] }} off
+        </div>
         <span class="tag">
-          <span class="label">$100 off $1000</span>
-          <span class="status">matched</span>
+          <span class="label">${{ item['faceValue'] }} off ${{ item['thresholdValue'] }}</span>
+          <span class="status" v-if="matchedRuleId === item.id">matched</span>
         </span>
       </div>
     </div>
@@ -60,11 +73,11 @@ const handleClose = () => {
   }
 
   .dialog-footer {
-    @apply w-full
+    @apply w-1.16rem
     h-0.48rem
     text-center
     rd-0.48rem
-    p-x-0.16rem;
+    m-x-0.16rem;
 
     color: $white-color;
 

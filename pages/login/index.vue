@@ -50,6 +50,7 @@ const onSubmit = async (values: any) => {
           <van-field
             required="auto"
             v-model="email"
+            clearable
             type="email"
             name="email"
             label="Email address"
@@ -68,6 +69,7 @@ const onSubmit = async (values: any) => {
           <van-field
             required="auto"
             v-model="password"
+            clearable
             type="password"
             maxlength="10"
             name="password"

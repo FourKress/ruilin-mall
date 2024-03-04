@@ -62,7 +62,9 @@ const handleReset = () => {
       <van-form label-align="top" ref="formRef" @submit="onSubmit">
         <van-cell-group inset>
           <van-field
+            required="auto"
             v-model="firstName"
+            clearable
             name="firstName"
             label="First name"
             placeholder="Please enter"
@@ -70,7 +72,9 @@ const handleReset = () => {
             :rules="[{ required: true, message: 'Please enter' }]"
           />
           <van-field
+            required="auto"
             v-model="lastName"
+            clearable
             name="lastName"
             label="Last name"
             placeholder="Please enter"
@@ -80,6 +84,7 @@ const handleReset = () => {
           <van-field
             required="auto"
             v-model="email"
+            clearable
             type="email"
             name="email"
             label="Email address"
@@ -98,6 +103,7 @@ const handleReset = () => {
           <van-field
             required="auto"
             v-model="firstPassword"
+            clearable
             type="password"
             maxlength="10"
             name="firstPassword"
@@ -115,6 +121,7 @@ const handleReset = () => {
           <van-field
             required="auto"
             v-model="secondPassword"
+            clearable
             type="password"
             maxlength="10"
             name="secondPassword"
