@@ -77,13 +77,14 @@ const handleClose = () => {
     h-0.48rem
     text-center
     rd-0.48rem
-    m-x-0.16rem;
+    m-x-0.16rem
+    flex
+    justify-center
+    items-center;
 
     color: $white-color;
 
     @include title-font-18;
-
-    line-height: 48px;
 
     background-color: $primary-color;
   }

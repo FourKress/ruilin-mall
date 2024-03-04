@@ -22,7 +22,7 @@ const handleActive = (link: string, index: number) => {
 
 const menuList = ref<any[]>(
   menuConfig.map((d) => {
-    if (d.label === 'Product') {
+    if (d.label === 'Products') {
       d.children = productList.map((d) => ({ label: d.name, link: `/product/${d.id}` }))
     }
     return d

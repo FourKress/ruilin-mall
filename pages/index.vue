@@ -75,7 +75,7 @@ const jumpSku = (sku: any) => {
 
     <div class="product-container">
       <div class="top">
-        <div class="label">Products Recommended</div>
+        <div class="label">Products</div>
         <div class="picker" @click="showPicker = true">
           <span class="label">{{ currentAction.name }}</span>
           <van-icon name="arrow-down" />
@@ -416,6 +416,9 @@ const jumpSku = (sku: any) => {
             color: $text-high-color;
 
             @include general-font-loose-14;
+
+            transform: scaleY(0.9);
+            transform-origin: top;
           }
         }
       }

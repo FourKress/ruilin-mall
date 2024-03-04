@@ -4,29 +4,8 @@ export const menuConfig = [
     link: '/'
   },
   {
-    label: 'Product',
-    children: [
-      {
-        label: 'Tape-in Extension    ',
-        link: ''
-      },
-      {
-        label: 'Prebonded Tips',
-        link: ''
-      },
-      {
-        label: 'Hair Weft',
-        link: ''
-      },
-      {
-        label: 'Clip-in',
-        link: ''
-      },
-      {
-        label: 'Hair Accessories',
-        link: ''
-      }
-    ]
+    label: 'Products',
+    children: []
   },
   {
     label: 'Customer service',

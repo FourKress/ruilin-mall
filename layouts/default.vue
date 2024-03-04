@@ -59,6 +59,7 @@ watch(
 
   .main-container {
     @apply flex
+    h-full
     flex-col;
 
     &.has-padding {

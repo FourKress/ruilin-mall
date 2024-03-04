@@ -13,6 +13,8 @@ interface IResponseData {
   success: boolean
 }
 
+let dialogInstance: any = null
+
 const useHttp = async (config: IConfig) => {
   const tokenCookie = useCookie('token')
   const userCookie = useCookie<Record<string, any>>('user')
@@ -29,7 +31,7 @@ const useHttp = async (config: IConfig) => {
 
   if (isLoading) {
     showLoadingToast({
-      message: 'loading...',
+      message: 'Loading...',
       forbidClick: true
     })
   }
@@ -65,11 +67,14 @@ const useHttp = async (config: IConfig) => {
     if (error.value.message.includes('401')) {
       tokenCookie.value = undefined
       userCookie.value = {}
-      showDialog({
-        message: 'Login failed, please log in again'
-      }).then(() => {
-        router.push('/login')
-      })
+      if (!dialogInstance) {
+        showDialog({
+          message: 'Login failed, please log in again'
+        }).then(() => {
+          dialogInstance = null
+          router.push('/login')
+        })
+      }
     }
   }
 

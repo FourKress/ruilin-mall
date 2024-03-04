@@ -47,7 +47,7 @@ const menuList = ref<any[]>([
         }
   ],
   ...menuConfig.map((d) => {
-    if (d.label === 'Product') {
+    if (d.label === 'Products') {
       d.children = productList.map((d) => ({ label: d.name, link: `/product/${d.id}` }))
     }
     return d
@@ -645,7 +645,7 @@ const handleCheckOut = () => {
           @include primary-font-14;
 
           .tag {
-            @apply w-0.96rem
+            @apply min-w-1rem
             h-0.2rem
             p-x-0.08rem
             rd-0.02rem
@@ -703,13 +703,14 @@ const handleCheckOut = () => {
             @apply w-1.16rem
             h-0.48rem
             text-center
-            rd-0.48rem;
+            rd-0.48rem
+            flex
+            items-center
+            justify-center;
 
             color: $white-color;
 
             @include title-font-18;
-
-            line-height: 48px;
 
             background-color: $primary-color;
           }
@@ -751,10 +752,11 @@ const handleCheckOut = () => {
                 .item {
                   @apply w-1.55rem
                   h-0.3rem
-                  lh-0.3rem
                   rd-0.04rem
                   m-t-0.16rem
-                  p-x-0.12rem;
+                  p-x-0.12rem
+                  flex
+                  items-center;
 
                   color: $text-high-color;
                   background-color: $placeholder-color;
