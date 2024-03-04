@@ -5,6 +5,7 @@ import md5 from 'md5'
 const runtimeConfig = useRuntimeConfig()
 const baseUrl = runtimeConfig.public.baseUrl
 
+const tokenCookie = useCookie('token')
 const router = useRouter()
 
 const firstName = ref('')
@@ -13,6 +14,7 @@ const email = ref('')
 const firstPassword = ref('')
 const secondPassword = ref('')
 const formRef = ref<FormInstance>()
+const isLoading = ref(false)
 
 const checkPasswordLength = (val: string) => {
   if (val.length < 6) return false
@@ -25,21 +27,31 @@ const handleCreate = () => {
 
 const onSubmit = async (values: any) => {
   const { email, secondPassword, firstName, lastName } = values
-  const { data } = await useFetch(`${baseUrl}/customer/register`, {
-    method: 'post',
+  isLoading.value = true
+  const { data } = await useHttpPost({
+    url: '/customer/register',
     body: {
       email,
       password: md5(secondPassword).substring(8, 26),
       nickname: `${firstName} ${lastName}`
-    },
-    transform: (res: any) => {
-      return res.data
     }
   })
-  const { token, ...other } = data.value
-  localStorage.setItem('token', token)
-  localStorage.setItem('userInfo', JSON.stringify(other))
-  await router.push('/')
+  isLoading.value = false
+  if (data.value) {
+    const { token, ...other } = data.value
+    tokenCookie.value = token
+    localStorage.setItem('userInfo', JSON.stringify(other))
+    await router.push('/')
+  }
+}
+
+const handleReset = () => {
+  firstName.value = ''
+  lastName.value = ''
+  email.value = ''
+  firstPassword.value = ''
+  secondPassword.value = ''
+  formRef?.value?.resetValidation()
 }
 </script>
 
@@ -127,8 +139,15 @@ const onSubmit = async (values: any) => {
       </van-form>
 
       <div class="btn-container">
-        <div class="cancel btn">Cancel</div>
-        <div class="create btn" @click="handleCreate">Create Account</div>
+        <div class="cancel btn" @click="handleReset">Cancel</div>
+        <van-button
+          :loading="isLoading"
+          loading-text="Create Account..."
+          type="primary"
+          class="create btn"
+          @click="handleCreate"
+          >Create Account</van-button
+        >
       </div>
 
       <div class="tips">

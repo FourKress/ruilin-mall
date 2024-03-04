@@ -1,29 +1,26 @@
 <script setup lang="ts">
+import { useHttpGet, useHttpPost } from '~/utils/useHttp'
+
 const runtimeConfig = useRuntimeConfig()
 const baseUrl = runtimeConfig.public.baseUrl
 
 const router = useRouter()
 
-const { data: swipeData }: any = await useFetch(`${baseUrl}/banner/list`, {
-  method: 'get',
-  transform: (res: any) => {
-    return res.data
-  }
+const { data: swipeData } = await useHttpGet({
+  url: '/banner/list'
 })
 
-const { data: skuList } = await useFetch<Record<string, any>>(
-  `${baseUrl}/product-sku/online-page`,
-  {
-    method: 'post',
-    body: {
-      size: 10,
-      current: 1
-    },
-    transform: (res: any) => {
-      return res.data.records
-    }
-  }
-)
+const { data: skuList } = await useHttpPost({
+  url: '/product-sku/online-page',
+  body: {
+    size: 10,
+    current: 1
+  },
+  transform: (res: any) => {
+    return res.data.records
+  },
+  isLoading: true
+})
 
 const actions = [
   { name: 'New', value: 1 },
@@ -78,7 +75,7 @@ const jumpSku = (sku: any) => {
       <div class="list">
         <div class="item" v-for="(item, index) in skuList" :key="index" @click="jumpSku(item)">
           <div class="image">
-            <img :src="item.url" :alt="item['online_objectKey']" />
+            <img :src="item['url']" :alt="item['online_objectKey']" />
           </div>
           <div class="info">
             <div class="title">{{ item['color_name'] }}</div>

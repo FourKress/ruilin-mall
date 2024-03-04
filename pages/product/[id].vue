@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import Pagination from '~/components/Pagination.vue'
 import { useProductStore } from '~/stores'
+import { useHttpPost } from '~/utils/useHttp'
 
 const route = useRoute()
 const router = useRouter()
@@ -38,20 +39,18 @@ const currentAction = ref<any>(actions[0])
 const currentProductAction = ref<any>(productActions.find((d: any) => d.value === productId))
 
 watchEffect(async () => {
-  const { data } = await useFetch<Record<string, any>>(`${baseUrl}/product-sku/online-page`, {
-    method: 'post',
+  const { data: resData } = await useHttpPost({
+    url: '/product-sku/online-page',
     body: {
       size: 10,
       current: currentPage.value,
       productId: productId === '0' ? undefined : productId,
       isHot: currentAction.value.value === 2
     },
-    transform: (res: any) => {
-      return res.data
-    }
+    isLoading: true
   })
-  if (data.value) {
-    skuInfo.value = data.value
+  if (resData.value) {
+    skuInfo.value = resData.value
   }
 })
 

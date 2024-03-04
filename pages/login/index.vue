@@ -5,11 +5,13 @@ import md5 from 'md5'
 const runtimeConfig = useRuntimeConfig()
 const baseUrl = runtimeConfig.public.baseUrl
 
+const tokenCookie = useCookie('token')
 const router = useRouter()
 
 const email = ref('')
 const password = ref('')
 const formRef = ref<FormInstance>()
+const isLoading = ref(false)
 
 const checkPasswordLength = (val: string) => {
   if (val.length < 6) return false
@@ -22,20 +24,19 @@ const handleLogin = () => {
 
 const onSubmit = async (values: any) => {
   const { email, password } = values
-  const { data } = await useFetch(`${baseUrl}/auth/customer/login`, {
-    method: 'post',
+  isLoading.value = true
+  const { data } = await useHttpPost({
+    url: '/auth/customer/login',
     body: {
       username: email,
       password: md5(password).substring(8, 26)
-    },
-    transform: (res: any) => {
-      return res.data
     }
   })
-  console.log(data.value)
   const { token, ...other } = data.value
-  localStorage.setItem('token', token)
+
+  tokenCookie.value = token
   localStorage.setItem('userInfo', JSON.stringify(other))
+  isLoading.value = false
   await router.push('/')
 }
 </script>
@@ -85,7 +86,14 @@ const onSubmit = async (values: any) => {
       </van-form>
 
       <div class="btn-container">
-        <div class="btn" @click="handleLogin">Log in</div>
+        <van-button
+          :loading="isLoading"
+          loading-text="Log in..."
+          type="primary"
+          class="btn"
+          @click="handleLogin"
+          >Log in</van-button
+        >
       </div>
 
       <div class="tips">

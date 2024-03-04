@@ -20,16 +20,14 @@ const videoInfo = ref(null)
 
 watch([skuId], async (newSkuId, oldSkuId) => {
   if (newSkuId !== oldSkuId) {
-    const { data: skuRes } = await useFetch(`${baseUrl}/product-sku/online-details`, {
-      method: 'post',
+    const { data: skuRes } = await useHttpPost({
+      url: '/product-sku/online-details',
       body: {
         colorId: colorId.value,
         skuId: skuId.value === '0' ? undefined : skuId.value
-      },
-      transform: (res: any) => {
-        return res.data
       }
     })
+
     if (!skuRes.value) return
     const { info, list } = skuRes.value
     skuInfo.value = info
@@ -40,15 +38,10 @@ watch([skuId], async (newSkuId, oldSkuId) => {
 colorId.value = route.params.colorId as string
 skuId.value = route.params.skuId as string
 
-const { data: colorList }: any = await useFetch(
-  `${baseUrl}/product-color/online-list/${productId}`,
-  {
-    method: 'get',
-    transform: (res: any) => {
-      return res.data
-    }
-  }
-)
+const { data: colorList } = await useHttpGet({
+  url: `/product-color/online-list/${productId}`,
+  isLoading: true
+})
 
 if (colorList.value) {
   const targetColor = colorList.value.find((d: any) => d.id === colorId.value)
@@ -61,19 +54,15 @@ if (colorList.value) {
   currentSwipeId.value = targetColor.id
 }
 
-const { data: unitList } = await useFetch(`${baseUrl}/product-unit/online-select/${productId}`, {
-  method: 'get',
-  transform: (res: any) => {
-    return res.data
-  }
+const { data: unitList } = await useHttpGet({
+  url: `/product-unit/online-select/${productId}`
 })
 
-const { data: bannerList } = await useFetch(`${baseUrl}/product-banner/online-list/${productId}`, {
-  method: 'get',
-  transform: (res: any) => {
-    return res.data
-  }
+const { data: bannerList } = await useHttpGet({
+  url: `/product-banner/online-list/${productId}`,
+  isLoading: true
 })
+
 bannerList.value.forEach((d: any) => {
   if (d.type === 'image') {
     imageList.value.push(d)
@@ -82,20 +71,17 @@ bannerList.value.forEach((d: any) => {
   }
 })
 
-const { data: summaryList } = await useFetch(
-  `${baseUrl}/product-summary/online-list/${productId}`,
-  {
-    method: 'get',
-    transform: (res: any) => {
-      return res.data.map((d: any) => {
-        return {
-          ...d,
-          desc: d.desc.replace(/\n/g, '<br />')
-        }
-      })
-    }
+const { data: summaryList } = await useHttpGet({
+  url: `/product-summary/online-list/${productId}`,
+  transform: (res: any) => {
+    return res.data.map((d: any) => {
+      return {
+        ...d,
+        desc: d.desc.replace(/\n/g, '<br />')
+      }
+    })
   }
-)
+})
 
 // const startValue = ref(4)
 const swipe = ref<SwipeInstance>()
