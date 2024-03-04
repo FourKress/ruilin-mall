@@ -17,6 +17,13 @@ const skuInfo = ref<Record<string, any>>({})
 const skuList = ref<Record<string, any>[]>([])
 const imageList = ref<any[]>([])
 const videoInfo = ref(null)
+const goodsCount = ref(1)
+
+// const startValue = ref(4)
+const swipe = ref<SwipeInstance>()
+const topSwipe = ref<SwipeInstance>()
+const activeName = ref()
+const isSelect = ref(false)
 
 watch([skuId], async (newSkuId, oldSkuId) => {
   if (newSkuId !== oldSkuId) {
@@ -83,11 +90,14 @@ const { data: summaryList } = await useHttpGet({
   }
 })
 
-// const startValue = ref(4)
-const swipe = ref<SwipeInstance>()
-const topSwipe = ref<SwipeInstance>()
-const activeName = ref()
-const isSelect = ref(false)
+const handleAddGoodsCount = () => {
+  goodsCount.value = goodsCount.value + 1
+}
+
+const handleSubtractGoodsCount = () => {
+  if (goodsCount.value <= 1) return
+  goodsCount.value = goodsCount.value - 1
+}
 
 const handleSelect = () => {
   isSelect.value = !isSelect.value
@@ -268,9 +278,13 @@ const handleSelectTag = (unitId: string, tagId: string) => {
 
     <div class="add-cart">
       <div class="count btn">
-        <van-icon name="minus" />
-        <span class="value">1</span>
-        <van-icon name="plus" />
+        <van-icon
+          name="minus"
+          :style="{ color: goodsCount <= 1 ? '#D8D8D8' : '#1E1E1E' }"
+          @click="handleSubtractGoodsCount"
+        />
+        <span class="value">{{ goodsCount }}</span>
+        <van-icon name="plus" @click="handleAddGoodsCount" />
       </div>
       <div class="add btn">
         <van-icon name="plus" />
@@ -792,9 +806,8 @@ const handleSelectTag = (unitId: string, tagId: string) => {
 
   .add-cart {
     @apply w-full
-    h-1rem
+    h-0.8rem
     p-x-0.16rem
-    p-t-0.12rem
     flex
     justify-between
     items-center

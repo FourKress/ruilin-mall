@@ -9,6 +9,7 @@ const productList = useProductStore().getProductList()
 
 const router = useRouter()
 const route = useRoute()
+const tokenCookie = useCookie('token')
 
 const emits = defineEmits<{
   openModal: [status: boolean]
@@ -34,10 +35,17 @@ const skuList = ref<any[]>([
 ])
 const isSelectAll = ref(false)
 const menuList = ref<any[]>([
-  {
-    label: 'Log in/Sign up',
-    link: '/enter'
-  },
+  ...[
+    tokenCookie.value
+      ? {
+          label: 'Account',
+          link: '/center'
+        }
+      : {
+          label: 'Log in/Sign up',
+          link: '/enter'
+        }
+  ],
   ...menuConfig.map((d) => {
     if (d.label === 'Product') {
       d.children = productList.map((d) => ({ label: d.name, link: `/product/${d.id}` }))
@@ -259,7 +267,7 @@ const handleCheckOut = () => {
             </span>
             <span>All</span>
           </span>
-          <span class="label">购物车 </span>
+          <span class="label">Shopping Cart </span>
           <span class="count"
             >({{ skuList.reduce((pre, cur) => (pre += cur.children.length), 0) }})</span
           >

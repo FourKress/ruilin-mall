@@ -208,8 +208,6 @@ const handleActivePromoCode = async () => {
   h-full
   overflow-y-auto;
 
-  max-height: calc(100% - 0.8rem);
-
   .container {
     @apply p-x-0.16rem
     p-y-0.12rem;

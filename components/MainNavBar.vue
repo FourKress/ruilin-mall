@@ -8,8 +8,10 @@ const handleBack = () => {
 <template>
   <div class="main-nav-bar">
     <div class="container">
-      <div class="left" @click="handleBack"></div>
-      <div class="label">Order Settlement</div>
+      <div class="left" @click="handleBack">
+        <van-icon name="arrow-left" />
+      </div>
+      <div class="label">Goods Settlement</div>
       <div class="right"></div>
     </div>
   </div>
@@ -40,9 +42,8 @@ const handleBack = () => {
       h-0.24rem
       flex
       justify-center
-      items-center;
-
-      background-color: black;
+      items-center
+      font-size-0.18rem;
 
       .title {
         @include title-font-18;

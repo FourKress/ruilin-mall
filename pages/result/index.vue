@@ -86,7 +86,7 @@ const goHome = () => {
 
           @include general-font-14;
 
-          transform: translateY(-1.5px);
+          transform: translateY(-2px);
         }
 
         .price {

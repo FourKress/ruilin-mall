@@ -14,6 +14,9 @@ interface IResponseData {
 }
 
 const useHttp = async (config: IConfig) => {
+  const tokenCookie = useCookie('token')
+  const userCookie = useCookie<Record<string, any>>('user')
+
   const {
     url,
     method,
@@ -60,6 +63,8 @@ const useHttp = async (config: IConfig) => {
 
   if (error.value && error.value.message) {
     if (error.value.message.includes('401')) {
+      tokenCookie.value = undefined
+      userCookie.value = {}
       showDialog({
         message: 'Login failed, please log in again'
       }).then(() => {

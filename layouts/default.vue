@@ -20,7 +20,7 @@ const router = useRouter()
 watch(
   () => router.currentRoute.value.path,
   (toPath) => {
-    isDetails.value = ['/details/', '/payment'].includes(toPath)
+    isDetails.value = ['/details/', '/payment'].some((d) => toPath.includes(d))
     isLayout.value = !['/shopping-cart', '/payment', '/result'].includes(toPath)
   },
   { immediate: true, deep: true }
@@ -62,7 +62,7 @@ watch(
     flex-col;
 
     &.has-padding {
-      padding-bottom: 1.2rem;
+      padding-bottom: 0.8rem;
     }
 
     min-height: calc(100% - 0.64rem);

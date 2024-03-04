@@ -6,6 +6,7 @@ const runtimeConfig = useRuntimeConfig()
 const baseUrl = runtimeConfig.public.baseUrl
 
 const tokenCookie = useCookie('token')
+const userCookie = useCookie<Record<string, any>>('user')
 const router = useRouter()
 
 const email = ref('')
@@ -35,7 +36,7 @@ const onSubmit = async (values: any) => {
   const { token, ...other } = data.value
 
   tokenCookie.value = token
-  localStorage.setItem('userInfo', JSON.stringify(other))
+  userCookie.value = other
   isLoading.value = false
   await router.push('/')
 }

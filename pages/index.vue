@@ -6,21 +6,7 @@ const baseUrl = runtimeConfig.public.baseUrl
 
 const router = useRouter()
 
-const { data: swipeData } = await useHttpGet({
-  url: '/banner/list'
-})
-
-const { data: skuList } = await useHttpPost({
-  url: '/product-sku/online-page',
-  body: {
-    size: 10,
-    current: 1
-  },
-  transform: (res: any) => {
-    return res.data.records
-  },
-  isLoading: true
-})
+const skuList = ref<any[]>([])
 
 const actions = [
   { name: 'New', value: 1 },
@@ -29,6 +15,29 @@ const actions = [
 
 const showPicker = ref(false)
 const currentAction = ref<any>(actions[0])
+
+const { data: swipeData } = await useHttpGet({
+  url: '/banner/list'
+})
+
+watchEffect(async () => {
+  const { data: resData } = await useHttpPost({
+    url: '/product-sku/online-page',
+    body: {
+      size: 10,
+      current: 1,
+      isHot: currentAction.value.value === 2
+    },
+    transform: (res: any) => {
+      return res.data.records
+    },
+    isLoading: true
+  })
+  if (resData.value) {
+    skuList.value = resData.value
+  }
+})
+
 const onSelect = (item: any) => {
   currentAction.value = item
 }
