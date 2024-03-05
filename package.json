@@ -7,8 +7,7 @@
     "dev": "nuxt dev",
     "generate": "nuxt generate",
     "preview": "nuxt preview",
-    "postinstall": "nuxt prepare",
-    "pm2:prod": "pm2 start pm2.json --env production"
+    "postinstall": "nuxt prepare"
   },
   "devDependencies": {
     "@types/md5": "^2.3.5",
