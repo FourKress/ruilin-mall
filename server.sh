@@ -3,13 +3,13 @@
 app_name="ruilin-mall"
 
 echo '---开始执行git checkout main---'
-#git checkout main
+git checkout main
 echo '---开始执行git pull---'
-#git pull
+git pull
 echo '---git pull执行完毕，pnpm install---'
-#pnpm i
+pnpm i
 echo '---pnpm install执行完毕，开始执行pnpm build---'
-#pnpm build
+pnpm build
 echo '---开始执行pnpm build执行完毕 开始检查应用运行状态'
 if pm2 ls | grep -q $app_name; then
   echo "---应用已经启动，开始检查应用运行状态---"

@@ -1,6 +1,11 @@
-// https://nuxt.com/docs/api/configuration/nuxt-config
+import { config } from 'dotenv'
 
-const BASE_URL = 'http://localhost:4000/api/v1'
+config()
+
+const BASE_URL =
+  process.env.NODE_ENV === 'dev'
+    ? 'http://localhost:4000/api/v1'
+    : 'https://service.vinnhair.com/api/v1'
 
 export default defineNuxtConfig({
   devtools: { enabled: true },
