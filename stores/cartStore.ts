@@ -8,6 +8,11 @@ export const useCartStore = defineStore('cart', {
     modifyTime: ref(0)
   }),
   actions: {
+    clear() {
+      this.cart = []
+      this.totalPrice = '0.0'
+      this.modifySku()
+    },
     async getFetchCartList() {
       const { data } = await useHttpGet({
         url: `/shop-cart/list`

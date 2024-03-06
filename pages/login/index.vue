@@ -7,6 +7,7 @@ const baseUrl = runtimeConfig.public.baseUrl
 
 const tokenCookie = useCookie('token')
 const userCookie = useCookie<Record<string, any>>('user')
+const route = useRoute()
 const router = useRouter()
 
 const email = ref('')
@@ -38,7 +39,12 @@ const onSubmit = async (values: any) => {
   tokenCookie.value = token
   userCookie.value = other
   isLoading.value = false
-  router.back()
+  const redirect = route.query?.redirect as string | undefined
+  if (redirect) {
+    await router.push(redirect)
+  } else {
+    router.back()
+  }
 }
 </script>
 

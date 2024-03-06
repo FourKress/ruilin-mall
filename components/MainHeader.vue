@@ -11,10 +11,6 @@ const router = useRouter()
 const route = useRoute()
 const tokenCookie = useCookie('token')
 
-if (tokenCookie.value) {
-  await useCartStore().getFetchCartList()
-}
-
 const emits = defineEmits<{
   openModal: [status: boolean]
 }>()
@@ -22,25 +18,55 @@ const emits = defineEmits<{
 const drawerStatus = ref(false)
 const openShoppingCart = ref(false)
 
-const menuList = ref<any[]>([
-  ...[
-    tokenCookie.value
-      ? {
-          label: 'Account',
-          link: '/center'
-        }
-      : {
-          label: 'Log in/Sign up',
-          link: '/enter'
-        }
-  ],
-  ...menuConfig.map((d) => {
-    if (d.label === 'Products') {
-      d.children = productList.map((d: any) => ({ label: d.name, link: `/product/${d.id}` }))
-    }
-    return d
-  })
-])
+const menuList = ref<any[]>([])
+
+if (tokenCookie.value) {
+  await useCartStore().getFetchCartList()
+} else {
+  useCartStore().clear()
+}
+
+const handleInitData = async () => {
+  if (tokenCookie.value) {
+    await useCartStore().getFetchCartList()
+  } else {
+    useCartStore().clear()
+  }
+  menuList.value = [
+    ...[
+      tokenCookie.value
+        ? {
+            label: 'Account',
+            link: '/center'
+          }
+        : {
+            label: 'Log in/Sign up',
+            link: '/enter'
+          }
+    ],
+    ...menuConfig.map((d) => {
+      if (d.label === 'Products') {
+        d.children = productList.map((d: any) => ({ label: d.name, link: `/product/${d.id}` }))
+      }
+      return d
+    })
+  ]
+}
+
+await handleInitData()
+
+watch([tokenCookie], async (newVal) => {
+  await handleInitData()
+})
+
+watch(
+  () => router.currentRoute.value.path,
+  () => {
+    openShoppingCart.value = false
+    drawerStatus.value = false
+  },
+  { immediate: true, deep: true }
+)
 
 const handleSwitchDrawerStatus = (status = !drawerStatus.value) => {
   emits('openModal', status)
@@ -69,7 +95,7 @@ const handleSwitchShoppingCart = (status: boolean) => {
     <div class="logo" @click="handleJumpMenu('/')">
       <img src="~/assets/images/Logo.png" alt="" />
     </div>
-    <van-badge :content="cartCount" max="99" position="top-left">
+    <van-badge :content="cartCount" max="99" :show-zero="false" position="top-left">
       <div class="right" @click="handleSwitchShoppingCart(true)"></div>
     </van-badge>
 

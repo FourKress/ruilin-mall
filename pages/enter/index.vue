@@ -10,7 +10,7 @@
       </div>
       <div class="btn-container">
         <nuxt-link class="create btn" to="/sign-up">Sign up</nuxt-link>
-        <nuxt-link class="login btn" to="/login">Log in</nuxt-link>
+        <nuxt-link class="login btn" to="/login?redirect=/">Log in</nuxt-link>
       </div>
     </div>
   </div>
