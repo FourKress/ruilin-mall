@@ -2,19 +2,15 @@ import { defineStore } from 'pinia'
 
 export const useProductStore = defineStore('product', {
   state: () => ({
-    productList: []
+    productList: ref<any>([])
   }),
   actions: {
-    getProductList(): any[] {
-      return this.productList
-    },
-
-    async setProductList() {
-      const { data: productList } = await useHttpGet({
+    async getProductList() {
+      const { data: res } = await useHttpGet({
         url: '/product/list'
       })
 
-      this.productList = productList.value
+      this.productList = res.value
     }
   }
 })

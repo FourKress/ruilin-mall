@@ -18,7 +18,7 @@
 
 <style scoped lang="scss">
 .enter {
-  @apply h-full
+  @apply min-h-4.92rem
   flex-1
   flex
   flex-col;

@@ -1,16 +1,16 @@
 <script setup lang="ts">
+import { useRuleStore } from '~/stores'
+
 const tokenCookie = useCookie('token')
 const userCookie = useCookie<Record<string, any>>('user')
 const userInfo = ref<any>(userCookie.value || {})
 
+const useRule = useRuleStore()
+
 const router = useRouter()
 const isLoading = ref(false)
-const minRule = ref<any>(null)
-const { ruleList } = await useRule()
 
-if (ruleList.value.length) {
-  minRule.value = ruleList.value.sort((a: any, b: any) => a['faceValue'] - b['faceValue'])[0]
-}
+const minRule = useRule.getMinRule()
 
 const handleLogOut = async () => {
   if (!userCookie.value) return

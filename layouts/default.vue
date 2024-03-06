@@ -1,7 +1,8 @@
 <script setup lang="ts">
-import { useProductStore } from '~/stores/'
+import { useProductStore, useRuleStore } from '~/stores/'
 
-await useProductStore().setProductList()
+useProductStore().getProductList()
+useRuleStore().getRuleList()
 
 const warpRef = ref<HTMLDivElement>()
 
@@ -59,7 +60,6 @@ watch(
 
   .main-container {
     @apply flex
-    h-full
     flex-col;
 
     &.has-padding {

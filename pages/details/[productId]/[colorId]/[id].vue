@@ -1,15 +1,21 @@
 <script setup lang="ts">
 import type { SwipeInstance } from 'vant'
 
+import { useCartStore } from '~/stores'
+
+const useCart = useCartStore()
+const modifyTime = computed(() => useCart.modifyTime)
+
 const runtimeConfig = useRuntimeConfig()
 const baseUrl = runtimeConfig.public.baseUrl
 
 const route = useRoute()
 const router = useRouter()
-const productId = route.params.productId
+const productId = route.params.productId as string
 
-const skuId = ref('')
-const colorId = ref('')
+const skuId = ref(route.params.skuId)
+const colorId = ref(route.params.colorId)
+
 const swipeData = ref<any[]>([])
 const currentColor = ref<Record<string, any>>({})
 const currentSwipeId = ref<string>('')
@@ -18,6 +24,8 @@ const skuList = ref<Record<string, any>[]>([])
 const imageList = ref<any[]>([])
 const videoInfo = ref(null)
 const goodsCount = ref(1)
+const isMaxStock = ref(false)
+const isNotStock = ref(false)
 
 // const startValue = ref(4)
 const swipe = ref<SwipeInstance>()
@@ -25,25 +33,31 @@ const topSwipe = ref<SwipeInstance>()
 const activeName = ref()
 const isSelect = ref(false)
 
-watch([skuId], async (newSkuId, oldSkuId) => {
-  if (newSkuId !== oldSkuId) {
-    const { data: skuRes } = await useHttpPost({
-      url: '/product-sku/online-details',
-      body: {
-        colorId: colorId.value,
-        skuId: skuId.value === '0' ? undefined : skuId.value
-      }
-    })
+const setBtnStatus = () => {
+  const cartSku = useCart.getSku(productId, skuInfo.value.id)
+  const quantity = cartSku?.quantity || 0
+  const nextCount = goodsCount.value + 1
+  isMaxStock.value = nextCount + quantity > skuInfo.value['online_stock'] || nextCount >= 999
+  isNotStock.value = goodsCount.value + quantity > skuInfo.value['online_stock'] || quantity >= 999
+}
 
-    if (!skuRes.value) return
-    const { info, list } = skuRes.value
-    skuInfo.value = info
-    skuList.value = list
-  }
+watch([modifyTime], () => {
+  setBtnStatus()
 })
 
-colorId.value = route.params.colorId as string
-skuId.value = route.params.skuId as string
+const { data: skuRes } = await useHttpPost({
+  url: '/product-sku/online-details',
+  body: {
+    colorId: colorId.value,
+    skuId: skuId.value === '0' ? undefined : skuId.value
+  }
+})
+if (skuRes.value) {
+  const { info, list } = skuRes.value
+  skuInfo.value = info
+  skuList.value = list
+  setBtnStatus()
+}
 
 const { data: colorList } = await useHttpGet({
   url: `/product-color/online-list/${productId}`,
@@ -91,12 +105,57 @@ const { data: summaryList } = await useHttpGet({
 })
 
 const handleAddGoodsCount = () => {
+  if (skuInfo.value['online_stock'] <= 0) return
+  if (isMaxStock.value || isNotStock.value) return
+
   goodsCount.value = goodsCount.value + 1
+
+  const cartSku = useCart.getSku(productId, skuInfo.value.id)
+  const nextCount = goodsCount.value + 1
+  isMaxStock.value =
+    nextCount + (cartSku?.quantity || 0) > skuInfo.value['online_stock'] || nextCount >= 999
 }
 
 const handleSubtractGoodsCount = () => {
+  if (skuInfo.value['online_stock'] <= 0) return
   if (goodsCount.value <= 1) return
+  isMaxStock.value = false
   goodsCount.value = goodsCount.value - 1
+}
+
+const handleAddCart = () => {
+  if (skuInfo.value['online_stock'] <= 0) return
+  if (isNotStock.value) return
+
+  const tokenCookie = useCookie('token')
+  if (!tokenCookie.value) {
+    return router.push('/login')
+  }
+  const sku = skuInfo.value
+  const { unitIds, tagIds } = sku
+  const targetTagList = unitList.value
+    .filter((d: any) => unitIds.includes(d.id))
+    .reduce((pre: any, cur: any) => {
+      pre.push(...cur.tags.filter((t: any) => tagIds.includes(t.id)))
+      return pre
+    }, [])
+
+  useCart.addToCart({
+    productId: sku.productId,
+    productName: sku.product_name,
+    children: [
+      {
+        ...skuInfo.value,
+        quantity: goodsCount.value,
+        url: currentColor.value.url,
+        tagNameStr: targetTagList.map((d: any) => d.name).join(';')
+      }
+    ]
+  })
+
+  goodsCount.value = 1
+
+  setBtnStatus()
 }
 
 const handleSelect = () => {
@@ -121,6 +180,7 @@ const handleSelectTag = (unitId: string, tagId: string) => {
   )
   if (targetSku) {
     skuInfo.value = targetSku
+    setBtnStatus()
   }
 }
 </script>
@@ -128,7 +188,9 @@ const handleSelectTag = (unitId: string, tagId: string) => {
 <template>
   <div class="details-page">
     <div class="card sku">
-      <div class="page-title">{{ currentColor.name }} ({{ currentColor['productName'] }})</div>
+      <div class="page-title" v-show="skuInfo['product_name']">
+        {{ skuInfo['color_name'] }} ({{ skuInfo['product_name'] }})
+      </div>
       <div class="banner">
         <van-swipe ref="topSwipe" lazy-render @change="handleChangeSwipe">
           <van-swipe-item v-for="item in swipeData" :key="item.id">
@@ -277,16 +339,22 @@ const handleSelectTag = (unitId: string, tagId: string) => {
     </div>
 
     <div class="add-cart">
-      <div class="count btn">
+      <div class="count btn" :class="skuInfo['online_stock'] <= 0 && 'disabled'">
         <van-icon
           name="minus"
           :style="{ color: goodsCount <= 1 ? '#D8D8D8' : '#1E1E1E' }"
           @click="handleSubtractGoodsCount"
         />
-        <span class="value">{{ goodsCount }}</span>
-        <van-icon name="plus" @click="handleAddGoodsCount" />
+        <span class="value" :style="{ color: isMaxStock && isNotStock ? '#D8D8D8' : '#1E1E1E' }">{{
+          goodsCount
+        }}</span>
+        <van-icon
+          name="plus"
+          :style="{ color: isMaxStock || isNotStock ? '#D8D8D8' : '#1E1E1E' }"
+          @click="handleAddGoodsCount"
+        />
       </div>
-      <div class="add btn">
+      <div class="add btn" :class="isNotStock && 'disabled'" @click="handleAddCart">
         <van-icon name="plus" />
         <span>&nbsp;Add Cart</span>
       </div>
@@ -827,6 +895,10 @@ const handleSelectTag = (unitId: string, tagId: string) => {
 
       @include title-font-18;
       border: 2px solid $primary-color;
+
+      &.disabled {
+        color: #d8d8d8;
+      }
     }
 
     .count {

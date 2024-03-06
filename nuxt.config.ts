@@ -3,9 +3,9 @@ import { config } from 'dotenv'
 config()
 
 const BASE_URL =
-  process.env.NODE_ENV === 'dev'
-    ? 'http://localhost:4000/api/v1'
-    : 'https://service.vinnhair.com/api/v1'
+  process.env.NODE_ENV === 'prod'
+    ? 'https://service.vinnhair.com/api/v1'
+    : 'http://localhost:4000/api/v1'
 
 export default defineNuxtConfig({
   devtools: { enabled: true },

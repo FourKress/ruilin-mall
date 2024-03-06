@@ -2,7 +2,7 @@
 import { menuConfig } from '~/utils/menuConfig'
 import { useProductStore } from '~/stores'
 
-const productList = useProductStore().getProductList()
+const productList = useProductStore().productList
 
 const active = ref<number>(-1)
 
@@ -23,7 +23,7 @@ const handleActive = (link: string, index: number) => {
 const menuList = ref<any[]>(
   menuConfig.map((d) => {
     if (d.label === 'Products') {
-      d.children = productList.map((d) => ({ label: d.name, link: `/product/${d.id}` }))
+      d.children = productList.map((d: any) => ({ label: d.name, link: `/product/${d.id}` }))
     }
     return d
   })

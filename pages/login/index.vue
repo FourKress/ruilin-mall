@@ -38,7 +38,7 @@ const onSubmit = async (values: any) => {
   tokenCookie.value = token
   userCookie.value = other
   isLoading.value = false
-  await router.push('/')
+  router.back()
 }
 </script>
 

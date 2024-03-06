@@ -10,7 +10,7 @@ const productId = route.params.id
 const runtimeConfig = useRuntimeConfig()
 const baseUrl = runtimeConfig.public.baseUrl
 
-const productList = useProductStore().getProductList()
+const productList = useProductStore().productList
 
 const currentPage = ref(1)
 const skuInfo = ref({})
