@@ -64,23 +64,23 @@ const handleChangeQuantity = (targetId: string, type: string) => {
 
 const handleAddQuantity = (sku: any) => {
   if (sku['quantity'] >= sku['online_stock'] || sku['quantity'] >= 999) return
-  handleChangeQuantity(sku.id, 'ADD')
+  handleChangeQuantity(sku, 'ADD')
 }
 
 const handleReduceQuantity = (productId: string, item: any) => {
-  const { id, quantity } = item
+  const { skuId, quantity } = item
   if (quantity <= 1) {
     showConfirmDialog({
       message: 'Are you sure you want to delete this goods?',
       theme: 'round-button'
     })
       .then(() => {
-        useCart.deleteFromCart(productId, id)
+        useCart.deleteFromCart(productId, skuId)
       })
       .catch(() => {})
     return
   }
-  handleChangeQuantity(id, 'REDUCE')
+  handleChangeQuantity(item, 'REDUCE')
 }
 
 const beforeClose = (position: string, productId: string, item: any) => {
@@ -91,7 +91,7 @@ const beforeClose = (position: string, productId: string, item: any) => {
       theme: 'round-button'
     })
       .then(() => {
-        useCart.deleteFromCart(productId, item.id)
+        useCart.deleteFromCart(productId, item)
         resolve(true)
       })
       .catch(() => {
@@ -118,7 +118,7 @@ const handleSwitchShoppingCart = () => {
 }
 
 const handleOpenUnitDialog = async (productId: string, sku: Record<string, any>) => {
-  if (currentSku.value.id === sku.id) {
+  if (currentSku.value.skuId === sku.skuId) {
     showUnitDialog.value = true
     return
   }
@@ -126,7 +126,7 @@ const handleOpenUnitDialog = async (productId: string, sku: Record<string, any>)
     url: '/product-sku/online-details',
     body: {
       colorId: sku.colorId,
-      skuId: sku.id
+      skuId: sku.skuId
     },
     isLoading: true
   })
@@ -159,7 +159,7 @@ const handleSelectTag = (unitId: string, tagId: string) => {
 const handleUpdateSku = () => {
   showUnitDialog.value = false
 
-  if (currentSku.value.id === skuInfo.value.id) return
+  if (currentSku.value.skuId === skuInfo.value.id) return
 
   const { unitIds, tagIds } = skuInfo.value
   const targetTagList = unitList.value
@@ -169,7 +169,7 @@ const handleUpdateSku = () => {
       return pre
     }, [])
 
-  useCart.changeSku(currentSku.value.id, {
+  useCart.changeSku(currentSku.value.skuId, {
     ...skuInfo.value,
     tagNameStr: targetTagList.map((d: any) => d.name).join(';')
   })
@@ -209,7 +209,7 @@ const handleUpdateSku = () => {
                 :before-close="({ position }) => beforeClose(position, cart.productId, item)"
               >
                 <div class="swipe-container">
-                  <div class="select-btn" @click="handleSelect(!item.select, item.id)">
+                  <div class="select-btn" @click="handleSelect(!item.select, item.skuId)">
                     <van-icon :name="item.select ? 'checked' : 'circle'" />
                   </div>
                   <div class="panel-right">
@@ -247,13 +247,7 @@ const handleUpdateSku = () => {
                   </div>
                 </div>
                 <template #right>
-                  <van-button
-                    :style="{ height: '100%' }"
-                    square
-                    type="danger"
-                    text="Delete"
-                    @click="useCart.deleteFromCart(cart.productId, item)"
-                  />
+                  <van-button :style="{ height: '100%' }" square type="danger" text="Delete" />
                 </template>
               </van-swipe-cell>
             </div>
@@ -297,10 +291,10 @@ const handleUpdateSku = () => {
                     <img src="" alt="" />
                   </div>
                   <div class="info">
-                    <div class="info-title">lnjection Tape-in</div>
+                    <div class="info-title">{{ skuInfo['color_name'] }}</div>
                     <div class="row">
                       <span class="unit">$</span>
-                      <span class="price">{{ 12 }}</span>
+                      <span class="price">{{ skuInfo['online_price'] }}</span>
                     </div>
                   </div>
                 </div>

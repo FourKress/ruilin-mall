@@ -139,13 +139,14 @@ const handleAddCart = () => {
       pre.push(...cur.tags.filter((t: any) => tagIds.includes(t.id)))
       return pre
     }, [])
-
+  const { id, ...other } = sku
   useCart.addToCart({
     productId: sku.productId,
     productName: sku.product_name,
     children: [
       {
-        ...skuInfo.value,
+        ...other,
+        skuId: id,
         quantity: goodsCount.value,
         url: currentColor.value.url,
         tagNameStr: targetTagList.map((d: any) => d.name).join(';')

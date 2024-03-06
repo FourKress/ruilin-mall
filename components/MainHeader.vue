@@ -11,6 +11,10 @@ const router = useRouter()
 const route = useRoute()
 const tokenCookie = useCookie('token')
 
+if (tokenCookie.value) {
+  await useCartStore().getFetchCartList()
+}
+
 const emits = defineEmits<{
   openModal: [status: boolean]
 }>()
