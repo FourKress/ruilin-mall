@@ -4,8 +4,10 @@ import { Decimal } from 'decimal.js'
 export const useCartStore = defineStore('cart', {
   state: () => ({
     cart: ref<any[]>([]),
+    rawCart: [],
     totalPrice: ref('0.0'),
-    modifyTime: ref(0)
+    modifyTime: ref(0),
+    selectList: []
   }),
   actions: {
     clear() {
@@ -13,13 +15,8 @@ export const useCartStore = defineStore('cart', {
       this.totalPrice = '0.0'
       this.modifySku()
     },
-    async getFetchCartList() {
-      const { data } = await useHttpGet({
-        url: `/shop-cart/list`
-      })
-      if (!data.value) return
-
-      const grouped = data.value.reduce((result: any, item: any) => {
+    handleGrouped(cartList: any[], isPayment = false): any[] {
+      const grouped = cartList.reduce((result: any, item: any) => {
         if (!result[item.productId]) {
           result[item.productId] = {
             productId: item.productId,
@@ -28,24 +25,56 @@ export const useCartStore = defineStore('cart', {
           }
         }
 
-        result[item.productId].children.push({ ...item, select: false })
+        const selectIds = this.selectList.map((d: any) => d.id)
+
+        result[item.productId].children.push({
+          ...item,
+          select: isPayment ? true : selectIds.includes(item.id)
+        })
 
         return result
       }, {})
 
-      this.cart = Object.values(grouped)
+      return Object.values(grouped).map((d: any) => {
+        const selectCount = d.children.filter((c: any) => c.select).length
+        return {
+          ...d,
+          select: selectCount === d.children.length
+        }
+      })
+    },
+    async getFetchCartList() {
+      const { data } = await useHttpGet({
+        url: `/shop-cart/list`
+      })
+      if (!data.value) return
+
+      this.rawCart = data.value
+      this.cart = this.handleGrouped(data.value)
+    },
+    async getPaymentGoodsList(ids: string[]) {
+      if (!this.rawCart.length) await this.getFetchCartList()
+      const rawCartList = this.rawCart.filter((d: any) => ids.includes(d.id))
+      const cartList = this.handleGrouped(rawCartList, true)
+      this.computeTotalPrice(cartList)
+      return cartList
     },
     getCartCount() {
       return this.cart.reduce((pre, cur) => {
-        const count = cur.children.length
+        const count = cur.children.filter(
+          (c: any) => c['quantity'] > 0 || c['online_stock'] > 0
+        ).length
         return pre + count
       }, 0)
     },
-    getCartSelectCount() {
-      return this.cart.reduce((pre, cur) => {
-        const count = cur.children.filter((d: any) => d.select).length
-        return pre + count
-      }, 0)
+    getCartSelectList() {
+      const selectList = this.cart.reduce((pre, cur) => {
+        const selectList = cur.children.filter((d: any) => d.select)
+        pre.push(...selectList)
+        return pre
+      }, [])
+      this.selectList = selectList
+      return selectList
     },
     getSku(productId: string, skuId: string) {
       return this.cart
@@ -56,8 +85,9 @@ export const useCartStore = defineStore('cart', {
       this.modifyTime = Date.now()
     },
 
-    computeTotalPrice() {
-      this.totalPrice = this.cart.reduce((pre: any, cur: any) => {
+    computeTotalPrice(cart?: any[]) {
+      const cartList = cart || this.cart
+      this.totalPrice = cartList.reduce((pre: any, cur: any) => {
         const price = cur.children.reduce((a: any, b: any) => {
           const { quantity, select, online_price } = b
           if (select) {
@@ -75,13 +105,14 @@ export const useCartStore = defineStore('cart', {
       this.cart = this.cart.map((d) => {
         const { children, productId } = d
         if (isAll || productId === targetId) {
+          const notSelect = children.every((e: any) => e['quantity'] <= 0 || e['online_stock'] <= 0)
           return {
             ...d,
-            select: status,
+            select: notSelect ? false : status,
             children: children.map((c: any) => {
               return {
                 ...c,
-                select: status
+                select: c['quantity'] <= 0 || c['online_stock'] <= 0 ? false : status
               }
             })
           }
@@ -113,15 +144,8 @@ export const useCartStore = defineStore('cart', {
 
     async changeQuantity(target: any, type: string) {
       const realQuantity = type === 'ADD' ? target.quantity + 1 : target.quantity - 1
-      const { data } = await useHttpPost({
-        url: `/shop-cart/update`,
-        body: {
-          id: target.id,
-          quantity: realQuantity
-        },
-        isLoading: true
-      })
-      if (!data.value) return
+      const res = await this.handleUpdate(target.id, realQuantity)
+      if (!res) return
 
       this.cart = this.cart.map((d) => {
         const { children, ...other } = d
@@ -140,8 +164,9 @@ export const useCartStore = defineStore('cart', {
       this.computeTotalPrice()
       this.modifySku()
     },
-    changeSku(modifySkuId: string, newSku: any) {
-      this.cart = this.cart.map((d: any) => {
+    async changeSku(modifySkuId: string, newSku: any) {
+      let removeId = ''
+      const newCart = this.cart.map((d: any) => {
         const { children } = d
         const modifySku = children.find((c: any) => c.skuId === modifySkuId)
         const modifyIndex = children.findIndex((c: any) => c.skuId === modifySkuId)
@@ -149,18 +174,21 @@ export const useCartStore = defineStore('cart', {
 
         const newChildren = children
           .map((c: any, index: number) => {
-            const { quantity, url, select, skuId } = c
+            const { quantity, skuId, id } = c
 
-            if (hasSku && c.skuId === newSku.skuId) {
-              return { ...c, quantity: c.quantity + modifySku.quantity }
-            }
-
-            if (hasSku && index === modifyIndex) {
-              return false
+            if (hasSku) {
+              if (c.skuId === newSku.skuId) {
+                return { ...c, quantity: c.quantity + modifySku.quantity }
+              }
+              if (index === modifyIndex) {
+                removeId = id
+                return false
+              }
             }
 
             if (!hasSku && skuId === modifySkuId) {
-              return { ...newSku, quantity, url, select }
+              removeId = id
+              return { ...newSku, quantity }
             }
             return c
           })
@@ -172,6 +200,14 @@ export const useCartStore = defineStore('cart', {
         }
       })
 
+      if (removeId) {
+        const res = await this.handleDelete(removeId)
+        if (!res) return
+      }
+
+      const res = await this.handleFetchCrate(newCart)
+      if (!res) return
+
       this.computeTotalPrice()
       this.modifySku()
     },
@@ -179,11 +215,8 @@ export const useCartStore = defineStore('cart', {
     // 从购物车删除
     async deleteFromCart(productId: string, sku: any) {
       // 请求删除接口更新数据库
-      const { data } = await useHttpGet({
-        url: `/shop-cart/delete/${sku.id}`,
-        isLoading: true
-      })
-      if (!data.value) return
+      const res = await this.handleDelete(sku.id)
+      if (!res) return
 
       this.cart = this.cart
         .map((d) => {
@@ -204,80 +237,79 @@ export const useCartStore = defineStore('cart', {
       this.computeTotalPrice()
       this.modifySku()
     },
-    // 增加商品数量
-    async addQuantity(product: any) {
-      let targetProduct
-      this.cart = this.cart.map((d) => {
-        if (d.productId === product.productId) {
-          const { children } = d
-          const sku = product.children[0]
-          const targetSku = children.find((s: any) => s.skuId === sku.skuId)
-          if (targetSku) {
-            targetSku.quantity += sku.quantity
-            targetProduct = targetSku
-          } else {
-            children.push({
-              ...sku,
-              select: false
-            })
-            targetProduct = sku
-          }
-        }
-        return d
-      })
-
-      this.computeTotalPrice()
-      // 请求接口增加商品数量
-      // await $fetch('http://xxxxx' + product.id, {
-      //     method: 'put',
-      //     body: JSON.stringify(updatedProduct)
-      // })
-    },
 
     // 加入购物车
     async addToCart(product: any) {
-      const exists = this.cart.some((d) => d.productId === product.productId)
-      if (exists) {
-        await this.addQuantity(product)
+      const newSku = product.children[0]
+      const targetSku = this.getSku(product.productId, newSku.skuId)
+      if (targetSku) {
+        await this.changeQuantity(targetSku, 'ADD')
         return
       }
-      if (!exists) {
-        const sku = product.children[0]
-
+      if (!targetSku) {
         const cartList = [...this.cart]
         cartList.push({
           ...product,
           select: false,
-          children: [{ ...sku, select: false }]
+          children: [{ ...newSku, select: false }]
         })
 
-        const { data } = await useHttpPost({
-          url: '/shop-cart/create',
-          body: {
-            cartList: cartList
-              .map((d) => {
-                const { children } = d
-                return children.map((c: any) => {
-                  const { quantity, productId, colorId, skuId, id } = c
-                  return {
-                    quantity,
-                    productId,
-                    colorId,
-                    skuId,
-                    id
-                  }
-                })
-              })
-              .flat()
-          },
-          isLoading: true
-        })
-
-        if (!data.value) return
-
-        await this.getFetchCartList()
+        const res = await this.handleFetchCrate(cartList)
+        if (!res) return
       }
       this.computeTotalPrice()
+    },
+
+    async handleUpdate(id: string, quantity: number) {
+      const { data } = await useHttpPost({
+        url: `/shop-cart/update`,
+        body: {
+          id,
+          quantity
+        },
+        isLoading: true
+      })
+      return !!data.value
+    },
+
+    async handleDelete(id: string) {
+      // 请求删除接口更新数据库
+      const { data } = await useHttpGet({
+        url: `/shop-cart/delete/${id}`,
+        isLoading: true
+      })
+      return !!data.value
+    },
+
+    async handleFetchCrate(cartList: any[]): Promise<boolean> {
+      const { data } = await useHttpPost({
+        url: '/shop-cart/create',
+        body: {
+          cartList: cartList
+            .map((d) => {
+              const { children } = d
+              return children.map((c: any) => {
+                const { quantity, productId, colorId, skuId, id, tagNameStr } = c
+                return {
+                  quantity,
+                  productId,
+                  colorId,
+                  skuId,
+                  id,
+                  tagNameStr
+                }
+              })
+            })
+            .flat()
+        },
+        isLoading: true
+      })
+
+      if (!data.value) return false
+
+      await this.getFetchCartList()
+
+      return true
     }
   }
 })

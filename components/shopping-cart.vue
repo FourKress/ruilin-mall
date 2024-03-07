@@ -16,13 +16,13 @@ const useRule = useRuleStore()
 const cartList = computed(() => useCart.cart)
 const cartTotalPrice = computed(() => useCart.totalPrice)
 const cartCount = computed(() => useCart.getCartCount())
-const cartSelectCount = computed(() => useCart.getCartSelectCount())
+const cartSelectList = computed(() => useCart.getCartSelectList())
 
 const ruleList = useRule.ruleList
 const matchedRule = ref<any>({})
 
 const isSelectAll = computed(
-  () => cartSelectCount.value && cartSelectCount.value === cartCount.value
+  () => cartSelectList.value.length === cartCount.value && cartCount.value > 0
 )
 
 const showUnitDialog = ref(false)
@@ -50,11 +50,18 @@ watchEffect(() => {
 })
 
 const handleSelectAll = () => {
+  if (cartCount.value <= 0) return
   const status = !isSelectAll.value
   useCart.changeSelect(status)
 }
 
-const handleSelect = (status: boolean, targetId: string) => {
+const handleSelectSku = (status: boolean, targetId: string, sku: any) => {
+  if (checkDisabled(sku)) return
+  useCart.changeSelect(status, targetId)
+}
+
+const handleSelectProduct = (status: boolean, targetId: string, product: any) => {
+  if (checkDisabledProduct(product)) return
   useCart.changeSelect(status, targetId)
 }
 
@@ -64,11 +71,14 @@ const handleChangeQuantity = (targetId: string, type: string) => {
 
 const handleAddQuantity = (sku: any) => {
   if (sku['quantity'] >= sku['online_stock'] || sku['quantity'] >= 999) return
+  if (checkDisabled(sku)) return
   handleChangeQuantity(sku, 'ADD')
 }
 
 const handleReduceQuantity = (productId: string, item: any) => {
   const { skuId, quantity } = item
+  if (checkDisabled(item)) return
+
   if (quantity <= 1) {
     showConfirmDialog({
       message: 'Are you sure you want to delete this goods?',
@@ -101,16 +111,21 @@ const beforeClose = (position: string, productId: string, item: any) => {
 }
 
 const handleCheckOut = () => {
-  if (cartSelectCount.value <= 0) {
+  if (cartSelectList.value.length <= 0) {
     showToast({
-      message: "You haven't selected any products yet!",
+      message: "You haven't selected any goods yet!",
       duration: 3000
     })
     return
   }
-
   handleSwitchShoppingCart()
-  router.push('/payment')
+  router.push({
+    path: '/payment',
+    replace: true,
+    query: {
+      goodsIds: cartSelectList.value.map((d: any) => d.id)
+    }
+  })
 }
 
 const handleSwitchShoppingCart = () => {
@@ -169,19 +184,34 @@ const handleUpdateSku = () => {
       return pre
     }, [])
 
+  const { id, ...other } = skuInfo.value
+
   useCart.changeSku(currentSku.value.skuId, {
-    ...skuInfo.value,
+    ...other,
+    skuId: id,
     tagNameStr: targetTagList.map((d: any) => d.name).join(';')
   })
 }
+
+const checkDisabled = (sku: any) => sku['quantity'] <= 0 || sku['online_stock'] <= 0
+
+const checkDisabledProduct = (cart: any) =>
+  cart['children'].every((e: any) => e['quantity'] <= 0 || e['online_stock'] <= 0)
 </script>
 
 <template>
   <div class="shopping-cart">
     <div class="top">
-      <span class="left-btn" @click="handleSelectAll">
+      <span
+        class="left-btn"
+        @click="handleSelectAll"
+        :style="{ color: parseInt(cartCount) === 0 ? '#D8D8D8' : '#C69C6D' }"
+      >
         <span class="icon">
-          <van-icon :name="isSelectAll ? 'checked' : 'circle'" />
+          <van-icon
+            :name="isSelectAll ? 'checked' : 'circle'"
+            :style="{ color: parseInt(cartCount) === 0 ? '#D8D8D8' : '#C69C6D' }"
+          />
         </span>
         <span>All</span>
       </span>
@@ -199,7 +229,11 @@ const handleUpdateSku = () => {
         >
           <div class="item" v-for="cart in cartList" :key="cart.productId">
             <div class="item-top">
-              <span class="icon" @click="handleSelect(!cart.select, cart.productId)">
+              <span
+                class="icon"
+                :style="{ color: checkDisabledProduct(cart) ? '#D8D8D8' : '#C69C6D' }"
+                @click="handleSelectProduct(!cart.select, cart.productId, cart)"
+              >
                 <van-icon :name="cart.select ? 'checked' : 'circle'" />
               </span>
               <span>{{ cart['productName'] }}</span>
@@ -209,7 +243,11 @@ const handleUpdateSku = () => {
                 :before-close="({ position }) => beforeClose(position, cart.productId, item)"
               >
                 <div class="swipe-container">
-                  <div class="select-btn" @click="handleSelect(!item.select, item.skuId)">
+                  <div
+                    class="select-btn"
+                    :style="{ color: checkDisabled(item) ? '#D8D8D8' : '#C69C6D' }"
+                    @click="handleSelectSku(!item.select, item.skuId, item)"
+                  >
                     <van-icon :name="item.select ? 'checked' : 'circle'" />
                   </div>
                   <div class="panel-right">
@@ -225,18 +263,16 @@ const handleUpdateSku = () => {
                         <span class="unit">$</span>
                         <span class="price">{{ item['online_price'] }}</span>
                         <span class="stepper">
-                          <span class="pre" @click="handleReduceQuantity(cart.productId, item)"
+                          <span
+                            class="pre"
+                            :style="{ color: checkDisabled(item) ? '#D8D8D8' : '#1E1E1E' }"
+                            @click="handleReduceQuantity(cart.productId, item)"
                             ><van-icon name="minus"
                           /></span>
                           <span class="count">{{ item['quantity'] }}</span>
                           <span
                             class="next"
-                            :style="{
-                              color:
-                                item['quantity'] >= item['online_stock'] || item['quantity'] >= 999
-                                  ? '#D8D8D8'
-                                  : '#1E1E1E'
-                            }"
+                            :style="{ color: checkDisabled(item) ? '#D8D8D8' : '#1E1E1E' }"
                             @click="handleAddQuantity(item)"
                           >
                             <van-icon name="plus" />
@@ -263,7 +299,7 @@ const handleUpdateSku = () => {
         <div class="footer">
           <div class="info">
             <span class="row">
-              <span class="label">{{ cartSelectCount }} Items Selected, Total:</span>
+              <span class="label">{{ cartSelectList.length }} Items Selected, Total:</span>
               <span class="unit">$</span>
               <span class="price">{{ orderAmount }}</span>
             </span>

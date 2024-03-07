@@ -55,7 +55,7 @@ const handleInitData = async () => {
 
 await handleInitData()
 
-watch([tokenCookie], async (newVal) => {
+watch([tokenCookie], async () => {
   await handleInitData()
 })
 

@@ -1,20 +1,39 @@
 <script setup lang="ts">
 import Rules from '~/components/Rules.vue'
+import { useCartStore, useRuleStore } from '~/stores'
+import { Decimal } from 'decimal.js'
 
-const totalPrice = ref(11)
-const productList = ref<any[]>([
-  {
-    id: '1',
-    select: false,
-    children: [
-      { id: '111', select: false, price: 0.1, count: 1 },
-      { id: '444', select: false, price: 0.2, count: 1 }
-    ]
-  },
-  { id: '2', select: false, children: [{ id: '132', select: false, price: 0.1, count: 1 }] },
-  { id: '3', select: false, children: [{ id: '43', select: false, price: 0.7, count: 1 }] },
-  { id: '4', select: false, children: [{ id: '123', select: false, price: 0.4, count: 1 }] }
-])
+const route = useRoute()
+const router = useRouter()
+const goodsIds = route.query?.goodsIds as string[]
+
+if (!goodsIds || !goodsIds.length) {
+  router.back()
+}
+
+const useCart = useCartStore()
+const useRule = useRuleStore()
+
+const goodsList = await useCart.getPaymentGoodsList(goodsIds)
+const cartTotalPrice = computed(() => useCart.totalPrice)
+
+const ruleList = useRule.ruleList
+const matchedRule = ref<any>({})
+
+const orderAmount = ref('0.0')
+
+watchEffect(() => {
+  orderAmount.value = cartTotalPrice.value
+  if (cartTotalPrice.value) {
+    const rule = useRule.getMatched(cartTotalPrice.value)
+    if (!rule) {
+      matchedRule.value = {}
+      return
+    }
+    matchedRule.value = rule
+    orderAmount.value = new Decimal(cartTotalPrice.value).minus(rule['faceValue']).valueOf()
+  }
+})
 
 const showRulesDialog = ref(false)
 const showCodeDialog = ref(false)
@@ -26,15 +45,28 @@ const promoCodeList = ref<any[]>([])
 const handleCodeClose = () => {
   showCodeDialog.value = false
 }
-const orderAmount = ref(333)
-const { ruleList, matchedRule } = await useRule(orderAmount.value)
-
 const handleCodeOpen = () => {
   promoCodeList.value = JSON.parse(localStorage.getItem('promoCodeList') || '[]')
   showCodeDialog.value = true
 }
 
-const handlePayment = () => {}
+const handlePayment = async () => {
+  const { data } = await useHttpPost({
+    url: `/order/create`,
+    body: {
+      goodsIds: goodsList.reduce((pre, cur: any) => {
+        const ids = cur.children.map((d: any) => d.id)
+        pre.push(...ids)
+        return pre
+      }, []),
+      couponId: promoInfo.value?.id || undefined
+    },
+    isLoading: true
+  })
+  if (!data.value) return
+  console.log('订单创建成功')
+  await router.push('/')
+}
 
 const handleActivePromoCode = async () => {
   if (!promoCode.value) return
@@ -46,6 +78,8 @@ const handleActivePromoCode = async () => {
   if (!promoRes.value) return
 
   promoInfo.value = promoRes.value
+  orderAmount.value = new Decimal(orderAmount.value).minus(promoRes.value['faceValue']).valueOf()
+
   showCodeDialog.value = false
 
   const historyList = promoCodeList.value.filter((d) => d.code !== promoCode.value)
@@ -66,25 +100,25 @@ const handleActivePromoCode = async () => {
     <main-nav-bar />
     <div class="container">
       <div class="product-list">
-        <div class="item" v-for="product in productList" :key="product.id">
+        <div class="item" v-for="goods in goodsList" :key="goods.id">
           <div class="item-top">
-            <span>Tape-in Extension</span>
+            <span>{{ goods['productName'] }}</span>
           </div>
-          <div class="panel" v-for="item in product.children" :key="item.id">
+          <div class="panel" v-for="item in goods.children" :key="item.id">
             <div class="panel-right">
               <div class="pic">
-                <img src="" alt="" />
+                <img :src="item.url" alt="" />
               </div>
               <div class="info-container">
-                <div class="info-title">lnjection Tape-in</div>
+                <div class="info-title">{{ item['color_name'] }}</div>
                 <div class="tips">
-                  <span>color ; Length&nbsp;</span>
+                  <span>{{ item['tagNameStr'] }}&nbsp;</span>
                 </div>
                 <div class="row">
                   <span class="unit">$</span>
-                  <span class="price">{{ item.price }}</span>
+                  <span class="price">{{ item['online_price'] }}</span>
                   <span class="stepper">
-                    <span class="count">x{{ item.count }}</span>
+                    <span class="count">x{{ item['quantity'] }}</span>
                   </span>
                 </div>
               </div>
@@ -95,7 +129,7 @@ const handleActivePromoCode = async () => {
       <div class="card-row">
         <div class="row">
           <div class="label">Amount</div>
-          <span class="price">$ 10.00</span>
+          <span class="price">$ {{ cartTotalPrice }}</span>
         </div>
         <div class="row">
           <div class="label">Freight</div>
@@ -149,7 +183,7 @@ const handleActivePromoCode = async () => {
         <span class="row">
           <span class="label">Total Price:</span>
           <span class="unit">$</span>
-          <span class="price">{{ totalPrice }}</span>
+          <span class="price">{{ orderAmount }}</span>
         </span>
       </div>
       <div class="btn" @click="handlePayment">Payment</div>
