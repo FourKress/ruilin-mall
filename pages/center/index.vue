@@ -12,6 +12,9 @@ const isLoading = ref(false)
 
 const minRule = useRule.getMinRule()
 
+const { data: orderList } = await useHttpGet({ url: `/order/list/` })
+console.log(orderList.value)
+
 const handleLogOut = async () => {
   if (!userCookie.value) return
   isLoading.value = true
