@@ -53,8 +53,13 @@ const handleCodeClose = () => {
   showCodeDialog.value = false
 }
 const handleCodeOpen = () => {
+  if (promoInfo.value.code) return
   promoCodeList.value = JSON.parse(localStorage.getItem('promoCodeList') || '[]')
   showCodeDialog.value = true
+}
+const handleClearPromo = () => {
+  orderAmount.value = rawAmount.value
+  promoInfo.value = {}
 }
 
 const handlePayment = async () => {
@@ -173,7 +178,8 @@ const handleActivePromoCode = async () => {
               >
             </span>
             <span class="row-text" v-else>Please enter</span>
-            <van-icon name="arrow" />
+            <van-icon name="cross" v-if="promoInfo.code" @click="handleClearPromo" />
+            <van-icon name="arrow" v-else />
           </div>
         </div>
       </div>
@@ -484,6 +490,10 @@ const handleActivePromoCode = async () => {
 
           .van-field {
             @apply w-1.2rem;
+          }
+
+          .van-icon-cross {
+            @apply m-l-0.08rem;
           }
         }
 

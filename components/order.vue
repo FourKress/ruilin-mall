@@ -32,7 +32,7 @@ const handleJump = (order: any) => {
     @click="handleJump(order)"
   >
     <div class="row">
-      <div class="left">ID:{{ order.id }}</div>
+      <div class="left">ID:{{ order['orderNo'] }}</div>
       <div
         class="right"
         :class="{
@@ -115,7 +115,7 @@ const handleJump = (order: any) => {
     justify-between;
 
     .left {
-      @apply max-w-1.47rem
+      @apply max-w-1.5rem
       overflow-hidden;
 
       @include general-font-14;

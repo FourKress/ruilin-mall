@@ -37,12 +37,25 @@ if (data.value) {
 
 const handleCancelOrder = (order: any) => {
   showConfirmDialog({
-    message: 'Are you sure you want to delete this goods?',
+    message: 'Are you sure you want to cancel the order?',
     theme: 'round-button'
   })
     .then(async () => {
       const { data } = await useHttpGet({
         url: `/order/cancel/${order.id}`
+      })
+      if (data.value) router.back()
+    })
+    .catch(() => {})
+}
+const handleDeleteOrder = (order: any) => {
+  showConfirmDialog({
+    message: 'Are you sure you want to delete the order?',
+    theme: 'round-button'
+  })
+    .then(async () => {
+      const { data } = await useHttpGet({
+        url: `/order/delete/${order.id}`
       })
       if (data.value) router.back()
     })
@@ -55,36 +68,48 @@ const handleReOrder = async (order: any) => {
   })
   if (!data.value) return
   const cartList = data.value
-  console.log(order)
-  const goodsList = order.productList.map((d) => {
-    const { quantity, productId, colorId, skuId, tagNameStr } = d
-    return {
-      quantity,
-      productId,
-      colorId,
-      skuId,
-      tagNameStr
-    }
-  })
-  cartList.push(...goodsList)
-  console.log(cartList)
 
-  const { data: res } = await useHttpPost({
-    url: '/shop-cart/create',
-    body: {
-      cartList
-    },
-    isLoading: true
-  })
+  const goodsList = order.productList
+    .filter((d: any) => cartList.every((c: any) => c.skuId !== d.skuId))
+    .map((d: any) => {
+      const { quantity, productId, colorId, skuId, tagNameStr } = d
+      return {
+        quantity,
+        productId,
+        colorId,
+        skuId,
+        tagNameStr
+      }
+    })
 
-  if (!res.value) return
-  await router.push({
-    path: '/payment',
-    replace: true,
-    query: {
-      skuIds: goodsList.map((d: any) => d.skuId)
-    }
-  })
+  if (goodsList.length) {
+    cartList.push(...goodsList)
+
+    const { data: res } = await useHttpPost({
+      url: '/shop-cart/create',
+      body: {
+        cartList
+      },
+      isLoading: true
+    })
+
+    if (!res.value) return
+    await router.push({
+      path: '/payment',
+      replace: true,
+      query: {
+        skuIds: goodsList.map((d: any) => d.skuId)
+      }
+    })
+  } else {
+    await router.push({
+      path: '/payment',
+      replace: true,
+      query: {
+        skuIds: order.productList.map((d: any) => d.skuId)
+      }
+    })
+  }
 }
 </script>
 
@@ -150,7 +175,7 @@ const handleReOrder = async (order: any) => {
         </div>
       </div>
 
-      <div class="card order-info">
+      <div class="card order-info" v-if="[6, 7].includes(order.status)">
         <div class="row">
           <span class="label">Refund amount</span>
           <span class="value">{{ order['refundAmount'] }}</span>
@@ -172,7 +197,7 @@ const handleReOrder = async (order: any) => {
       <div class="card order-info">
         <div class="row">
           <span class="label">Order number</span>
-          <span class="value">{{ order['orderNo'] }}</span>
+          <span class="va lue">{{ order['orderNo'] }}</span>
         </div>
         <div class="row">
           <span class="label">Order time</span>
@@ -198,19 +223,24 @@ const handleReOrder = async (order: any) => {
         <span class="tips">Payment countdown:</span>
         <span class="time"><van-count-down :time="order['countdown']" format="mm:ss" /></span>
       </div>
+      <div class="left" v-if="[-1, 5, 7].includes(order.status)">
+        <span class="delete-btn" @click="handleDeleteOrder(order)">Delete order</span>
+      </div>
+
       <div class="btn-list" v-if="order.status === 0">
         <div class="btn" @click="handleCancelOrder(order)">Cancel order</div>
         <div class="btn">Pay Now</div>
       </div>
       <div class="btn-list" v-if="order.status === 1">
         <div class="btn">Cancel order</div>
+        <div class="btn"></div>
       </div>
       <div class="btn-list" v-if="[2, 3, 4].includes(order.status)">
         <div class="btn">Request a refund</div>
         <div class="btn" v-if="order.status === 2">Remind to ship</div>
         <div class="btn" v-if="[3, 4].includes(order.status)">Confirm receipt</div>
       </div>
-      <div class="btn-list" v-if="[-1, 5].includes(order.status)">
+      <div class="btn-list" v-if="[-1, 5, 7].includes(order.status)">
         <div class="btn" v-if="order.status === 5">Go to review</div>
         <div class="btn" @click="handleReOrder(order)">ReOrder</div>
       </div>
@@ -459,6 +489,11 @@ const handleReOrder = async (order: any) => {
         @include number-font;
         @include primary-font-16;
         color: $text-high-color;
+      }
+
+      .delete-btn {
+        @include general-font-14;
+        color: $red-color;
       }
     }
 

@@ -3,33 +3,59 @@ import orderStatusTipsMap from '~/utils/orderStatusMap'
 
 const orderList = ref<any>([])
 
-const { data } = await useHttpPost({
-  url: `/order/list/`,
-  body: { size: 10, current: 1 },
-  transform: (res) => {
-    return res.data.records
-  }
-})
-console.log(data.value)
-if (data.value && data.value.length) {
-  orderList.value = data.value
-}
+const loading = ref(false)
+const finished = ref(false)
+const refreshing = ref(false)
 
 const showAction = ref(false)
 const actions = [
-  { name: 'All', value: '' },
+  { name: 'All', value: -2 },
   { name: orderStatusTipsMap[0], value: 0 },
   { name: orderStatusTipsMap[1], value: 1 },
   { name: orderStatusTipsMap[2], value: 2 },
   { name: orderStatusTipsMap[3], value: 3 },
   { name: orderStatusTipsMap[4], value: 4 },
   { name: orderStatusTipsMap[5], value: 5 },
+  { name: orderStatusTipsMap[6], value: 6 },
+  { name: orderStatusTipsMap[7], value: 7 },
   { name: orderStatusTipsMap['-1'], value: -1 }
 ]
 const currentAction = ref<any>(actions[0])
+const pageCurrent = ref(1)
+
+const onLoad = async (clear = false) => {
+  const status = currentAction.value.value
+  const { data } = await useHttpPost({
+    url: `/order/list/`,
+    body: { size: 5, current: pageCurrent.value, status: status === -2 ? undefined : status },
+    transform: (res) => {
+      return res.data
+    }
+  })
+  pageCurrent.value = pageCurrent.value + 1
+  refreshing.value = false
+  loading.value = false
+  if (clear) orderList.value = []
+  if (data.value) {
+    const { records, total, size, current } = data.value
+    orderList.value.push(...records)
+    finished.value = size * current >= total
+  }
+}
+
+const onRefresh = () => {
+  pageCurrent.value = 1
+  finished.value = false
+  loading.value = true
+  console.log(222)
+  onLoad(true)
+}
 
 const onSelect = (item: any) => {
   currentAction.value = item
+  loading.value = true
+  pageCurrent.value = 1
+  onLoad(true)
 }
 </script>
 
@@ -42,7 +68,24 @@ const onSelect = (item: any) => {
       </div>
     </main-nav-bar>
     <div class="container">
-      <order :orderList="orderList" />
+      <van-pull-refresh
+        v-model="refreshing"
+        loading-text="Loading..."
+        pulling-text="Pull down to refresh..."
+        loosing-text="Release to refresh..."
+        @refresh="onRefresh"
+      >
+        <van-list
+          v-model:loading="loading"
+          :finished="finished"
+          finished-text="— No More —"
+          loading-text="Loading...."
+          offset="100"
+          @load="onLoad"
+        >
+          <order :orderList="orderList" />
+        </van-list>
+      </van-pull-refresh>
     </div>
 
     <van-action-sheet
@@ -58,8 +101,7 @@ const onSelect = (item: any) => {
 <style scoped lang="scss">
 .order-page {
   @apply w-screen
-  h-full
-  overflow-y-auto;
+  h-full;
 
   .select-btn {
     @apply min-w-0.6rem
