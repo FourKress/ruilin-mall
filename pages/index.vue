@@ -30,8 +30,7 @@ watchEffect(async () => {
     },
     transform: (res: any) => {
       return res.data.records
-    },
-    isLoading: true
+    }
   })
   if (resData.value) {
     skuList.value = resData.value

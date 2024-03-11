@@ -5,25 +5,30 @@ import { Decimal } from 'decimal.js'
 
 const route = useRoute()
 const router = useRouter()
-const goodsIds = route.query?.goodsIds as string[]
+const skuIds = route.query?.skuIds as string[]
 
-if (!goodsIds || !goodsIds.length) {
+if (!skuIds || !skuIds.length) {
   router.back()
 }
 
 const useCart = useCartStore()
 const useRule = useRuleStore()
 
-const goodsList = await useCart.getPaymentGoodsList(goodsIds)
+const goodsList = await useCart.getPaymentGoodsList(skuIds)
+
 const cartTotalPrice = computed(() => useCart.totalPrice)
 
 const ruleList = useRule.ruleList
 const matchedRule = ref<any>({})
 
 const orderAmount = ref('0.0')
+const rawAmount = ref('0.0')
 
 watchEffect(() => {
-  orderAmount.value = cartTotalPrice.value
+  const totalPrice = cartTotalPrice.value
+  orderAmount.value = totalPrice
+  rawAmount.value = totalPrice
+
   if (cartTotalPrice.value) {
     const rule = useRule.getMatched(cartTotalPrice.value)
     if (!rule) {
@@ -31,7 +36,9 @@ watchEffect(() => {
       return
     }
     matchedRule.value = rule
-    orderAmount.value = new Decimal(cartTotalPrice.value).minus(rule['faceValue']).valueOf()
+    const amount = new Decimal(cartTotalPrice.value).minus(rule['faceValue']).valueOf()
+    orderAmount.value = amount
+    rawAmount.value = amount
   }
 })
 
@@ -71,14 +78,17 @@ const handlePayment = async () => {
 const handleActivePromoCode = async () => {
   if (!promoCode.value) return
 
-  const { data: promoRes } = await useHttpGet({
+  const { data: promoRes } = await useHttpPost({
     url: `/coupon/check/${promoCode.value}`,
+    body: {
+      amount: new Decimal(rawAmount.value).toNumber()
+    },
     isLoading: true
   })
-  if (!promoRes.value) return
+  if (!promoRes.value.id) return
 
   promoInfo.value = promoRes.value
-  orderAmount.value = new Decimal(orderAmount.value).minus(promoRes.value['faceValue']).valueOf()
+  orderAmount.value = new Decimal(rawAmount.value).minus(promoRes.value['faceValue']).valueOf()
 
   showCodeDialog.value = false
 
@@ -97,7 +107,7 @@ const handleActivePromoCode = async () => {
 
 <template>
   <div class="payment-page">
-    <main-nav-bar />
+    <main-nav-bar title="Goods Settlement" />
     <div class="container">
       <div class="product-list">
         <div class="item" v-for="goods in goodsList" :key="goods.id">

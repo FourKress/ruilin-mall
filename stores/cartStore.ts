@@ -53,8 +53,8 @@ export const useCartStore = defineStore('cart', {
       this.cart = this.handleGrouped(data.value)
     },
     async getPaymentGoodsList(ids: string[]) {
-      if (!this.rawCart.length) await this.getFetchCartList()
-      const rawCartList = this.rawCart.filter((d: any) => ids.includes(d.id))
+      await this.getFetchCartList()
+      const rawCartList = this.rawCart.filter((d: any) => ids.includes(d.skuId))
       const cartList = this.handleGrouped(rawCartList, true)
       this.computeTotalPrice(cartList)
       return cartList

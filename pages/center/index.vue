@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { useRuleStore } from '~/stores'
+import Order from '~/components/order.vue'
 
 const tokenCookie = useCookie('token')
 const userCookie = useCookie<Record<string, any>>('user')
@@ -11,9 +12,18 @@ const router = useRouter()
 const isLoading = ref(false)
 
 const minRule = useRule.getMinRule()
+const orderList = ref<any>([])
 
-const { data: orderList } = await useHttpGet({ url: `/order/list/` })
-console.log(orderList.value)
+const { data } = await useHttpPost({
+  url: `/order/list/`,
+  body: { size: 1, current: 1 },
+  transform: (res) => {
+    return res.data.records
+  }
+})
+if (data.value && data.value.length) {
+  orderList.value = [data.value[0]]
+}
 
 const handleLogOut = async () => {
   if (!userCookie.value) return
@@ -51,41 +61,9 @@ const handleLogOut = async () => {
     <div class="order">
       <div class="top">
         <span class="name">My Orders</span>
-        <span class="btn">All Orders</span>
+        <nuxt-link class="btn" to="/order">All Orders</nuxt-link>
       </div>
-      <div class="container">
-        <div class="row">
-          <div class="left">ID:17089349730001</div>
-          <div class="right">Under Review...</div>
-        </div>
-        <div class="panel">
-          <div class="pic">
-            <img src="" alt="" />
-          </div>
-          <div class="goods-info">
-            <span class="name">lnjection Tape-in</span>
-            <span class="tips">Cookies & Cream ; 20"</span>
-          </div>
-          <div class="count">
-            <div class="price">
-              <span class="unit">$</span>
-              <span class="value">9815.50</span>
-            </div>
-            <div class="tips">Total 1 goods</div>
-          </div>
-        </div>
-
-        <div class="footer">
-          <div class="left">
-            <span class="tips">Payment countdown:</span>
-            <span class="time">59:59</span>
-          </div>
-          <div class="btn-list">
-            <!--            <div class="btn">Confirm receipt</div>-->
-            <div class="btn">Pay Now</div>
-          </div>
-        </div>
-      </div>
+      <order :orderList="orderList" bg="#f5f5f5" />
     </div>
 
     <div class="form">
@@ -261,178 +239,6 @@ const handleLogOut = async () => {
         line-height: 0.32rem;
 
         border: 2px solid $border-color;
-      }
-    }
-
-    .container {
-      @apply min-h-1.34rem
-      max-h-1.87rem
-      w-full
-      rd-0.08rem
-      p-x-0.16rem
-      p-y-0.12rem;
-
-      background-color: #f5f5f5;
-
-      .row {
-        @apply w-full
-        h-0.18rem
-        flex
-        items-center
-        justify-between;
-
-        .left {
-          @include general-font-14;
-          color: $text-low-color;
-        }
-
-        .right {
-          @include primary-font-14;
-          color: $text-high-color;
-
-          &.is-end {
-            color: $text-low-color;
-          }
-
-          &.is-pay {
-            color: $yellow-color;
-          }
-        }
-      }
-
-      .panel {
-        @apply flex
-        items-center
-        justify-between
-        w-full
-        h-0.8rem
-        m-t-0.12rem;
-
-        .pic {
-          @apply w-0.6rem
-          h-0.8rem;
-
-          img {
-            @apply block
-            w-full
-            h-full;
-          }
-        }
-
-        .goods-info {
-          @apply ml-0.08rem
-          w-1.47rem
-          h-full
-          max-w-1.47rem
-          flex
-          flex-col
-          justify-start;
-
-          .name {
-            @include title-font-18;
-            color: $text-high-color;
-          }
-
-          .tips {
-            padding-top: 0.02rem;
-            @include general-font-12;
-            color: $text-low-color;
-          }
-        }
-
-        .count {
-          @apply flex-1
-          flex
-          flex-col
-          justify-center
-          items-end;
-
-          .price {
-            @apply flex
-            items-center
-            justify-start;
-
-            color: $red-color;
-
-            .unit {
-              @include general-font-12;
-              transform: translateY(0.5px);
-            }
-
-            .value {
-              @apply p-l-0.02rem;
-
-              @include number-font;
-              @include primary-font-16;
-            }
-          }
-
-          .tips {
-            @include general-font-12;
-            color: $text-low-color;
-          }
-        }
-      }
-
-      .footer {
-        @apply w-full
-        h-0.40rem
-        flex
-        justify-between
-        items-center
-        p-t-0.08rem
-        m-t-0.12rem;
-
-        border-top: 1px solid $border-color;
-
-        .left {
-          @apply flex
-          justify-between
-          items-center;
-
-          .tips {
-            @include general-font-14;
-            color: $text-high-color;
-          }
-
-          .time {
-            @include number-font;
-            @include primary-font-16;
-            color: $text-high-color;
-            padding-left: 0.08rem;
-          }
-        }
-
-        .btn-list {
-          @apply flex-1
-          flex
-          justify-end
-          items-center;
-
-          .btn {
-            @apply min-w-0.8rem
-            h-0.32rem
-            rd-0.32rem
-            text-center
-            m-l-0.08rem
-            p-x-0.08rem;
-
-            @include primary-font-14;
-            border: 1px solid $primary-color;
-
-            line-height: 0.3rem;
-
-            &:first-child {
-              background-color: $white-color;
-              color: $primary-color;
-            }
-
-            &:last-child {
-              background-color: $primary-color;
-              color: $white-color;
-            }
-          }
-        }
       }
     }
   }

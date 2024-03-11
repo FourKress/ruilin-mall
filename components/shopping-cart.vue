@@ -123,7 +123,7 @@ const handleCheckOut = () => {
     path: '/payment',
     replace: true,
     query: {
-      goodsIds: cartSelectList.value.map((d: any) => d.id)
+      skuIds: cartSelectList.value.map((d: any) => d.skuId)
     }
   })
 }
@@ -391,7 +391,7 @@ const checkDisabledProduct = (cart: any) =>
 
   .top {
     @apply w-full
-    h-0.5rem
+    h-0.6rem
     flex
     items-center
     justify-center
@@ -403,7 +403,7 @@ const checkDisabledProduct = (cart: any) =>
     .label {
       @apply p-r-0.04rem;
 
-      @include title-font-18;
+      @include title-font-22;
 
       color: $text-high-color;
     }
@@ -422,7 +422,7 @@ const checkDisabledProduct = (cart: any) =>
       right-0.16rem
       top-50%
       absolute
-      font-size-0.18rem;
+      font-size-0.24rem;
 
       transform: translateY(-50%);
     }
@@ -461,7 +461,7 @@ const checkDisabledProduct = (cart: any) =>
     @apply w-full
     relative;
 
-    height: calc(100% - 0.5rem);
+    height: calc(100% - 0.6rem);
 
     background-color: $view-color;
 
