@@ -76,8 +76,9 @@ const handlePayment = async () => {
     isLoading: true
   })
   if (!data.value) return
-  console.log('订单创建成功')
-  await router.push('/')
+  const { links } = data.value
+  const pathConfig = links.find((d: any) => d.rel === 'payer-action')
+  window.open(pathConfig.href, '_self')
 }
 
 const handleActivePromoCode = async () => {

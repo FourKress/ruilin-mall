@@ -64,11 +64,12 @@ watch(
     @apply flex
     flex-col;
 
+    //min-height: calc(100% - 0.64rem);
+    min-height: 100%;
+
     &.has-padding {
       padding-bottom: 0.8rem;
     }
-
-    min-height: calc(100% - 0.64rem);
 
     .page-container {
       @apply flex-1

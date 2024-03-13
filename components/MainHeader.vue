@@ -73,14 +73,14 @@ const handleSwitchDrawerStatus = (status = !drawerStatus.value) => {
   drawerStatus.value = status
 }
 
-const handleJumpMenu = (link: string) => {
+const handleJumpMenu = async (link: string) => {
   if (link) {
-    handleSwitchDrawerStatus(false)
     if (route.path === link) {
       return location.reload()
     }
-    return router.push(link)
+    await router.push(link)
   }
+  handleSwitchDrawerStatus(false)
 }
 
 const handleSwitchShoppingCart = (status: boolean) => {

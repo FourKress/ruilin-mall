@@ -142,8 +142,8 @@ export const useCartStore = defineStore('cart', {
       this.computeTotalPrice()
     },
 
-    async changeQuantity(target: any, type: string) {
-      const realQuantity = type === 'ADD' ? target.quantity + 1 : target.quantity - 1
+    async changeQuantity(target: any, type: string, count = 1) {
+      const realQuantity = type === 'ADD' ? target.quantity + count : target.quantity - count
       const res = await this.handleUpdate(target.id, realQuantity)
       if (!res) return
 
@@ -243,7 +243,7 @@ export const useCartStore = defineStore('cart', {
       const newSku = product.children[0]
       const targetSku = this.getSku(product.productId, newSku.skuId)
       if (targetSku) {
-        await this.changeQuantity(targetSku, 'ADD')
+        await this.changeQuantity(targetSku, 'ADD', newSku.quantity)
         return
       }
       if (!targetSku) {

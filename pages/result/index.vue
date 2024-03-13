@@ -1,8 +1,18 @@
 <script setup lang="ts">
 const router = useRouter()
+const route = useRoute()
 
-const goHome = () => {
-  router.push('/')
+const order = ref<any>({})
+
+const paypalOrderId = route.query.token
+console.log(paypalOrderId)
+
+const { data } = await useHttpGet({
+  url: `/order/detailsByPayId/${paypalOrderId}`
+})
+if (data.value) {
+  console.log(data.value)
+  order.value = data.value
 }
 </script>
 
@@ -13,16 +23,16 @@ const goHome = () => {
       <div class="container">
         <div class="top">
           <span class="unit">$</span>
-          <span class="price">12312.00</span>
+          <span class="price">{{ order['payAmount'] }}</span>
         </div>
 
         <div class="row">
           <span class="label">Order No</span>
-          <span class="text">117062457581</span>
+          <span class="text">{{ order['orderNo'] }}</span>
         </div>
         <div class="row">
           <span class="label">Order Time</span>
-          <span class="text">2024-01-26 13:09:18</span>
+          <span class="text">{{ order['createTime'] }}</span>
         </div>
         <div class="row">
           <span class="label">Payment Method</span>
@@ -31,8 +41,8 @@ const goHome = () => {
       </div>
     </div>
     <div class="btn-list error">
-      <div class="btn" @click="goHome">Home</div>
-      <div class="btn">Order Details</div>
+      <nuxt-link class="btn" to="/">Home</nuxt-link>
+      <nuxt-link class="btn" :to="`/order/${order.id}`">Order Details</nuxt-link>
     </div>
   </div>
 </template>
@@ -40,7 +50,8 @@ const goHome = () => {
 <style scoped lang="scss">
 .result {
   @apply w-full
-  h-full;
+  h-full
+  flex-1;
 
   background-color: $view-color;
 

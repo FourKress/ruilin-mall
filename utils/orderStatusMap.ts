@@ -7,7 +7,9 @@ const orderStatusTipsMap = {
   4: 'Awaiting Receipt...', //待收货
   5: 'Transaction completed', // 订单完结
   6: 'Awaiting Refund', // 退款中
-  7: 'Refunded' // 已退款
+  7: 'Refunded', // 已退款
+  8: 'Payment Confirm...', // 支付确认中
+  9: 'Reversed' // 已撤销
 }
 
 export default orderStatusTipsMap

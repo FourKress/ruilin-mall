@@ -33,16 +33,19 @@ const topSwipe = ref<SwipeInstance>()
 const activeName = ref()
 const isSelect = ref(false)
 
-const setBtnStatus = () => {
-  const cartSku = useCart.getSku(productId, skuInfo.value.id)
+const setBtnStatus = (sku: any) => {
+  const cartSku = useCart.getSku(productId, sku.id)
   const quantity = cartSku?.quantity || 0
+  const online_stock = cartSku ? cartSku['online_stock'] : sku['online_stock']
   const nextCount = goodsCount.value + 1
-  isMaxStock.value = nextCount + quantity > skuInfo.value['online_stock'] || nextCount >= 999
-  isNotStock.value = goodsCount.value + quantity > skuInfo.value['online_stock'] || quantity >= 999
+
+  isMaxStock.value = nextCount + quantity > online_stock || nextCount >= 999
+  isNotStock.value =
+    goodsCount.value + quantity > online_stock || online_stock === 0 || quantity >= 999
 }
 
 watch([modifyTime], () => {
-  setBtnStatus()
+  setBtnStatus(skuInfo.value)
 })
 
 const { data: skuRes } = await useHttpPost({
@@ -56,7 +59,7 @@ if (skuRes.value) {
   const { info, list } = skuRes.value
   skuInfo.value = info
   skuList.value = list
-  setBtnStatus()
+  setBtnStatus(info)
 }
 
 const { data: colorList } = await useHttpGet({
@@ -108,10 +111,11 @@ const handleAddGoodsCount = () => {
   if (skuInfo.value['online_stock'] <= 0) return
   if (isMaxStock.value || isNotStock.value) return
 
-  goodsCount.value = goodsCount.value + 1
+  const count = goodsCount.value + 1
+  goodsCount.value = count
 
   const cartSku = useCart.getSku(productId, skuInfo.value.id)
-  const nextCount = goodsCount.value + 1
+  const nextCount = count + 1
   isMaxStock.value =
     nextCount + (cartSku?.quantity || 0) > skuInfo.value['online_stock'] || nextCount >= 999
 }
@@ -131,6 +135,7 @@ const handleAddCart = () => {
   if (!tokenCookie.value) {
     return router.push('/login')
   }
+  const quantity = goodsCount.value
   const sku = skuInfo.value
   const { unitIds, tagIds } = sku
   const targetTagList = unitList.value
@@ -147,7 +152,7 @@ const handleAddCart = () => {
       {
         ...other,
         skuId: id,
-        quantity: goodsCount.value,
+        quantity: quantity,
         url: currentColor.value.url,
         tagNameStr: targetTagList.map((d: any) => d.name).join(';')
       }
@@ -156,7 +161,7 @@ const handleAddCart = () => {
 
   goodsCount.value = 1
 
-  setBtnStatus()
+  setBtnStatus(skuInfo.value)
 }
 
 const handleSelect = () => {
@@ -181,7 +186,7 @@ const handleSelectTag = (unitId: string, tagId: string) => {
   )
   if (targetSku) {
     skuInfo.value = targetSku
-    setBtnStatus()
+    setBtnStatus(targetSku)
   }
 }
 </script>

@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import orderStatusTipsMap from '~/utils/orderStatusMap'
+import handlePayNow from '~/utils/payNow'
 
 const route = useRoute()
 const router = useRouter()
@@ -44,7 +45,7 @@ const handleCancelOrder = (order: any) => {
       const { data } = await useHttpGet({
         url: `/order/cancel/${order.id}`
       })
-      if (data.value) router.back()
+      if (data.value) router.push('/order')
     })
     .catch(() => {})
 }
@@ -57,14 +58,25 @@ const handleDeleteOrder = (order: any) => {
       const { data } = await useHttpGet({
         url: `/order/delete/${order.id}`
       })
-      if (data.value) router.back()
+      if (data.value) router.push('/order')
     })
     .catch(() => {})
 }
 
 const handleReOrder = async (order: any) => {
+  const { data: checkRes } = await useHttpPost({
+    url: `/product-sku/online-check`,
+    body: {
+      ids: order.productList.map((d: any) => d.skuId)
+    },
+    isLoading: true
+  })
+  console.log(checkRes.value)
+  if (!checkRes.value) return
+
   const { data } = await useHttpGet({
-    url: `/shop-cart/list`
+    url: `/shop-cart/list`,
+    isLoading: true
   })
   if (!data.value) return
   const cartList = data.value
@@ -178,7 +190,7 @@ const handleReOrder = async (order: any) => {
       <div class="card order-info" v-if="[6, 7].includes(order.status)">
         <div class="row">
           <span class="label">Refund amount</span>
-          <span class="value">{{ order['refundAmount'] }}</span>
+          <span class="value">$ {{ order['refundAmount'] }}</span>
         </div>
         <div class="row">
           <span class="label">Refund time</span>
@@ -221,7 +233,7 @@ const handleReOrder = async (order: any) => {
     <div class="footer-bar">
       <div class="left" v-if="order.status === 0">
         <span class="tips">Payment countdown:</span>
-        <span class="time"><van-count-down :time="order['countdown']" format="mm:ss" /></span>
+        <span class="time"><van-count-down :time="order['countdown']" format="HH:mm:ss" /></span>
       </div>
       <div class="left" v-if="[-1, 5, 7].includes(order.status)">
         <span class="delete-btn" @click="handleDeleteOrder(order)">Delete order</span>
@@ -229,18 +241,17 @@ const handleReOrder = async (order: any) => {
 
       <div class="btn-list" v-if="order.status === 0">
         <div class="btn" @click="handleCancelOrder(order)">Cancel order</div>
-        <div class="btn">Pay Now</div>
+        <div class="btn" @click="handlePayNow(order)">Pay Now</div>
       </div>
       <div class="btn-list" v-if="order.status === 1">
-        <div class="btn">Cancel order</div>
-        <div class="btn"></div>
+        <div class="btn cancel" @click="handleCancelOrder(order)">Cancel order</div>
       </div>
       <div class="btn-list" v-if="[2, 3, 4].includes(order.status)">
         <div class="btn">Request a refund</div>
         <div class="btn" v-if="order.status === 2">Remind to ship</div>
         <div class="btn" v-if="[3, 4].includes(order.status)">Confirm receipt</div>
       </div>
-      <div class="btn-list" v-if="[-1, 5, 7].includes(order.status)">
+      <div class="btn-list" v-if="[-1, 5, 6, 7, 8].includes(order.status)">
         <div class="btn" v-if="order.status === 5">Go to review</div>
         <div class="btn" @click="handleReOrder(order)">ReOrder</div>
       </div>
@@ -525,6 +536,12 @@ const handleReOrder = async (order: any) => {
         &:last-child {
           background-color: $primary-color;
           color: $white-color;
+        }
+
+        &.cancel {
+          background-color: $white-color;
+          border-color: $border-color;
+          color: $text-mid-color;
         }
       }
     }

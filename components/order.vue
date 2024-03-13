@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import orderStatusTipsMap from '~/utils/orderStatusMap'
+import handlePayNow from '~/utils/payNow'
 
 const router = useRouter()
 
@@ -76,10 +77,10 @@ const handleJump = (order: any) => {
     <div class="footer" v-if="[0, 3, 4].includes(order.status)">
       <div class="left" v-if="order.status === 0">
         <span class="tips">Payment countdown:</span>
-        <span class="time"><van-count-down :time="order['countdown']" format="mm:ss" /></span>
+        <span class="time"><van-count-down :time="order['countdown']" format="HH:mm:ss" /></span>
       </div>
       <div class="btn-list" v-if="order.status === 0 && order['countdown']">
-        <div class="btn">Pay Now</div>
+        <div class="btn" @click.stop.self="handlePayNow(order)">Pay Now</div>
       </div>
       <div class="btn-list" v-if="order.status === 3">
         <div class="btn">Confirm receipt</div>

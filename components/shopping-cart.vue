@@ -56,7 +56,7 @@ const handleSelectAll = () => {
 }
 
 const handleSelectSku = (status: boolean, targetId: string, sku: any) => {
-  if (checkDisabled(sku)) return
+  if (checkDisabled(sku, false)) return
   useCart.changeSelect(status, targetId)
 }
 
@@ -71,13 +71,13 @@ const handleChangeQuantity = (targetId: string, type: string) => {
 
 const handleAddQuantity = (sku: any) => {
   if (sku['quantity'] >= sku['online_stock'] || sku['quantity'] >= 999) return
-  if (checkDisabled(sku)) return
+  if (checkDisabled(sku, true)) return
   handleChangeQuantity(sku, 'ADD')
 }
 
 const handleReduceQuantity = (productId: string, item: any) => {
-  const { skuId, quantity } = item
-  if (checkDisabled(item)) return
+  const { quantity } = item
+  if (checkDisabled(item, false)) return
 
   if (quantity <= 1) {
     showConfirmDialog({
@@ -85,7 +85,7 @@ const handleReduceQuantity = (productId: string, item: any) => {
       theme: 'round-button'
     })
       .then(() => {
-        useCart.deleteFromCart(productId, skuId)
+        useCart.deleteFromCart(productId, item)
       })
       .catch(() => {})
     return
@@ -110,7 +110,7 @@ const beforeClose = (position: string, productId: string, item: any) => {
   })
 }
 
-const handleCheckOut = () => {
+const handleCheckOut = async () => {
   if (cartSelectList.value.length <= 0) {
     showToast({
       message: "You haven't selected any goods yet!",
@@ -118,14 +118,18 @@ const handleCheckOut = () => {
     })
     return
   }
-  handleSwitchShoppingCart()
-  router.push({
+  showLoadingToast({
+    message: 'Loading...',
+    forbidClick: true
+  })
+  await router.push({
     path: '/payment',
     replace: true,
     query: {
       skuIds: cartSelectList.value.map((d: any) => d.skuId)
     }
   })
+  closeToast()
 }
 
 const handleSwitchShoppingCart = () => {
@@ -193,7 +197,10 @@ const handleUpdateSku = () => {
   })
 }
 
-const checkDisabled = (sku: any) => sku['quantity'] <= 0 || sku['online_stock'] <= 0
+const checkDisabled = (sku: any, isAdd: boolean) => {
+  if (isAdd) return sku['quantity'] >= sku['online_stock']
+  return sku['quantity'] <= 0 || sku['online_stock'] <= 0
+}
 
 const checkDisabledProduct = (cart: any) =>
   cart['children'].every((e: any) => e['quantity'] <= 0 || e['online_stock'] <= 0)
@@ -245,7 +252,7 @@ const checkDisabledProduct = (cart: any) =>
                 <div class="swipe-container">
                   <div
                     class="select-btn"
-                    :style="{ color: checkDisabled(item) ? '#D8D8D8' : '#C69C6D' }"
+                    :style="{ color: checkDisabled(item, false) ? '#D8D8D8' : '#C69C6D' }"
                     @click="handleSelectSku(!item.select, item.skuId, item)"
                   >
                     <van-icon :name="item.select ? 'checked' : 'circle'" />
@@ -265,14 +272,18 @@ const checkDisabledProduct = (cart: any) =>
                         <span class="stepper">
                           <span
                             class="pre"
-                            :style="{ color: checkDisabled(item) ? '#D8D8D8' : '#1E1E1E' }"
+                            :style="{ color: checkDisabled(item, false) ? '#D8D8D8' : '#1E1E1E' }"
                             @click="handleReduceQuantity(cart.productId, item)"
                             ><van-icon name="minus"
                           /></span>
-                          <span class="count">{{ item['quantity'] }}</span>
+                          <span
+                            class="count"
+                            :style="{ color: checkDisabled(item, false) ? '#D8D8D8' : '#1E1E1E' }"
+                            >{{ item['quantity'] }}</span
+                          >
                           <span
                             class="next"
-                            :style="{ color: checkDisabled(item) ? '#D8D8D8' : '#1E1E1E' }"
+                            :style="{ color: checkDisabled(item, true) ? '#D8D8D8' : '#1E1E1E' }"
                             @click="handleAddQuantity(item)"
                           >
                             <van-icon name="plus" />
