@@ -251,7 +251,7 @@ const handleReOrder = async (order: any) => {
         <div class="btn" v-if="order.status === 2">Remind to ship</div>
         <div class="btn" v-if="[3, 4].includes(order.status)">Confirm receipt</div>
       </div>
-      <div class="btn-list" v-if="[-1, 5, 6, 7, 8].includes(order.status)">
+      <div class="btn-list" v-if="[-1, 5, 6, 7, 8, 9, 10].includes(order.status)">
         <div class="btn" v-if="order.status === 5">Go to review</div>
         <div class="btn" @click="handleReOrder(order)">ReOrder</div>
       </div>

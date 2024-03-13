@@ -5,7 +5,7 @@ config()
 const BASE_URL =
   process.env.NODE_ENV === 'prod'
     ? 'https://service.vinnhair.com/api/v1'
-    : 'http://localhost:4000/api/v1'
+    : 'http://192.168.2.36:4000/api/v1'
 
 export default defineNuxtConfig({
   devtools: { enabled: true },
