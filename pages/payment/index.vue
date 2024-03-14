@@ -203,7 +203,7 @@ const handleActivePromoCode = async () => {
           <span class="price">{{ orderAmount }}</span>
         </span>
       </div>
-      <div class="btn" @click="handlePayment">Payment</div>
+      <div class="btn">Payment</div>
     </div>
 
     <van-overlay
