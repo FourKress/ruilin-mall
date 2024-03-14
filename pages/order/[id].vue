@@ -1,18 +1,24 @@
 <script setup lang="ts">
 import orderStatusTipsMap from '~/utils/orderStatusMap'
 import handlePayNow from '~/utils/payNow'
+import { useCartStore } from '~/stores'
 
 const route = useRoute()
 const router = useRouter()
 const order = ref<any>({})
 const goodsList = ref<any[]>([])
+const useCart = useCartStore()
+
+const showCall = ref(false)
+const openShoppingCart = ref(false)
+const email = ref('service@vinnhair.com')
 
 if (!route.params?.id) {
   router.push('/')
 }
 
 const { data } = await useHttpGet({
-  url: `/order/details/${route.params?.id}`
+  url: `/order/online_details/${route.params?.id}`
 })
 
 if (data.value) {
@@ -43,9 +49,9 @@ const handleCancelOrder = (order: any) => {
   })
     .then(async () => {
       const { data } = await useHttpGet({
-        url: `/order/cancel/${order.id}`
+        url: `/order/online-cancel/${order.id}`
       })
-      if (data.value) router.push('/order')
+      if (data.value) await router.push('/order')
     })
     .catch(() => {})
 }
@@ -56,79 +62,74 @@ const handleDeleteOrder = (order: any) => {
   })
     .then(async () => {
       const { data } = await useHttpGet({
-        url: `/order/delete/${order.id}`
+        url: `/order/online-delete/${order.id}`
       })
-      if (data.value) router.push('/order')
+      if (data.value) await router.push('/order')
     })
     .catch(() => {})
 }
 
 const handleReOrder = async (order: any) => {
-  const { data: checkRes } = await useHttpPost({
-    url: `/product-sku/online-check`,
-    body: {
-      ids: order.productList.map((d: any) => d.skuId)
-    },
-    isLoading: true
-  })
-  console.log(checkRes.value)
-  if (!checkRes.value) return
-
-  const { data } = await useHttpGet({
-    url: `/shop-cart/list`,
-    isLoading: true
-  })
-  if (!data.value) return
-  const cartList = data.value
-
+  await useCart.getFetchCartList(true)
   const goodsList = order.productList
-    .filter((d: any) => cartList.every((c: any) => c.skuId !== d.skuId))
-    .map((d: any) => {
-      const { quantity, productId, colorId, skuId, tagNameStr } = d
-      return {
-        quantity,
-        productId,
-        colorId,
-        skuId,
-        tagNameStr
-      }
+  await Promise.all(
+    goodsList.map(async (d: any) => {
+      await useCart.addToCart({
+        productId: d.productId,
+        productName: order.productName,
+        children: [
+          {
+            skuId: d.skuId,
+            quantity: d.quantity,
+            url: d.url,
+            tagNameStr: d.tagNameStr,
+            productId: d.productId,
+            colorId: d.colorId
+          }
+        ]
+      })
     })
+  )
+  await useCart.getFetchCartList(true)
+  openShoppingCart.value = true
+}
 
-  if (goodsList.length) {
-    cartList.push(...goodsList)
-
-    const { data: res } = await useHttpPost({
-      url: '/shop-cart/create',
-      body: {
-        cartList
-      },
-      isLoading: true
-    })
-
-    if (!res.value) return
-    await router.push({
-      path: '/payment',
-      replace: true,
-      query: {
-        skuIds: goodsList.map((d: any) => d.skuId)
-      }
-    })
-  } else {
-    await router.push({
-      path: '/payment',
-      replace: true,
-      query: {
-        skuIds: order.productList.map((d: any) => d.skuId)
-      }
-    })
+const handleRemindOrder = async (order: any) => {
+  const { data } = await useHttpGet({
+    url: `/order/remind/${order.id}`
+  })
+  if (data.value) {
+    await showToast('Reminder successful')
   }
+}
+
+const handleReceiptOrder = async (order: any) => {
+  const { data } = await useHttpGet({
+    url: `/order/receipt/${order.id}`
+  })
+  if (data.value) await router.push('/order')
+}
+
+const handleCall = () => {
+  showCall.value = true
+}
+
+const handleCopy = async () => {
+  navigator.clipboard
+    .writeText(email.value)
+    .then(() => {
+      showToast('Copied successfully')
+    })
+    .catch(() => {
+      showToast('Copy failed')
+    })
 }
 </script>
 
 <template>
   <div class="order-page" v-if="order">
     <main-nav-bar :title="`${orderStatusTipsMap[order.status]}`">
-      <div class="call-btn"></div>
+      <div class="call-btn" @click="handleCall"></div>
     </main-nav-bar>
     <div class="container">
       <div class="card logistics-container"></div>
@@ -247,15 +248,30 @@ const handleReOrder = async (order: any) => {
         <div class="btn cancel" @click="handleCancelOrder(order)">Cancel order</div>
       </div>
       <div class="btn-list" v-if="[2, 3, 4].includes(order.status)">
-        <div class="btn">Request a refund</div>
-        <div class="btn" v-if="order.status === 2">Remind to ship</div>
-        <div class="btn" v-if="[3, 4].includes(order.status)">Confirm receipt</div>
+        <div class="btn" @click="handleCancelOrder(order)">Request a refund</div>
+        <div class="btn" v-if="order.status === 2" @click="handleRemindOrder(order)">
+          Remind to ship
+        </div>
+        <div class="btn" v-if="[3, 4].includes(order.status)" @click="handleReceiptOrder(order)">
+          Confirm receipt
+        </div>
       </div>
       <div class="btn-list" v-if="[-1, 5, 6, 7, 8, 9, 10].includes(order.status)">
-        <div class="btn" v-if="order.status === 5">Go to review</div>
+        <!--        <div class="btn" v-if="order.status === 5">Go to review</div>-->
         <div class="btn" @click="handleReOrder(order)">ReOrder</div>
       </div>
     </div>
+
+    <van-dialog v-model:show="showCall" title="Contact seller" confirmButtonText="Confirm">
+      <div class="dialog-container">
+        <span>{{ email }}</span>
+        <span class="btn" @click="handleCopy">copy</span>
+      </div>
+    </van-dialog>
+
+    <Transition name="fade" :duration="0.5">
+      <ShoppingCart v-if="openShoppingCart" @close="openShoppingCart = false" />
+    </Transition>
   </div>
 </template>
 
@@ -544,6 +560,18 @@ const handleReOrder = async (order: any) => {
           color: $text-mid-color;
         }
       }
+    }
+  }
+
+  .dialog-container {
+    @apply flex
+    justify-center
+    items-center
+    py-0.24rem;
+
+    .btn {
+      @apply m-l-0.08rem;
+      color: #1989fa;
     }
   }
 }

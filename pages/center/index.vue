@@ -67,20 +67,20 @@ const handleLogOut = async () => {
     </div>
 
     <div class="form">
-      <div class="row">
+      <nuxt-link class="row" to="/center/email">
         <span class="icon" />
         <span class="label">Email</span>
         <span class="value">{{ userInfo['email'] }}</span>
         <van-icon name="arrow" />
-      </div>
-      <div class="row">
+      </nuxt-link>
+      <nuxt-link class="row" to="/center/phone">
         <span class="icon" />
         <span class="label">Phone</span>
         <span class="value" :class="!userInfo['phone'] && 'empty'">{{
           userInfo['phone'] || 'No Phone'
         }}</span>
         <van-icon name="arrow" />
-      </div>
+      </nuxt-link>
     </div>
 
     <van-button
@@ -292,6 +292,10 @@ const handleLogOut = async () => {
         &.empty {
           color: $text-low-color;
         }
+      }
+
+      .vant-icon {
+        color: $text-high-color;
       }
     }
   }

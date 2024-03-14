@@ -880,7 +880,7 @@ const checkDisabledProduct = (cart: any) =>
               p-r-0.16rem;
             }
 
-            ::v-deep .van-swipe-cell__right {
+            :deep(.van-swipe-cell__right) {
               right: -1px !important;
             }
 

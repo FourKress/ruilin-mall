@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { menuConfig } from '~/utils/menuConfig'
 import { useProductStore } from '~/stores'
+import CopyRight from '~/components/copy-right.vue'
 
 const productList = useProductStore().productList
 
@@ -50,15 +51,14 @@ const menuList = ref<any[]>(
         </div>
       </Transition>
     </div>
-
-    <div class="copy-right">COPYRIGHT 2024 QINGDAO RUI LIN HAIR <br />ALL RIGHTS RESERVED</div>
   </div>
+  <copy-right />
 </template>
 
 <style scoped lang="scss">
 .main-footer {
   @apply w-screen
-  min-h-2.9rem
+  min-h-2.18rem
   p-0.16rem;
 
   padding-bottom: env(safe-area-inset-bottom);
@@ -100,14 +100,6 @@ const menuList = ref<any[]>(
         color: $text-high-color;
       }
     }
-  }
-
-  .copy-right {
-    @apply p-t-0.16rem;
-
-    @include general-font-loose-12;
-    @include english-font;
-    color: #a5927c;
   }
 
   .fade-enter-from,

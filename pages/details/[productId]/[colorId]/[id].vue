@@ -640,7 +640,7 @@ const handleSelectTag = (unitId: string, tagId: string) => {
       .van-swipe {
         @apply h-full;
 
-        ::v-deep .van-swipe__track {
+        :deep(.van-swipe__track) {
           width: 100% !important;
 
           .van-swipe-item {
@@ -709,7 +709,7 @@ const handleSelectTag = (unitId: string, tagId: string) => {
       @apply p-t-0.24rem
       p-x-0.16rem;
 
-      ::v-deep .van-collapse {
+      :deep(.van-collapse) {
         .van-collapse-item {
           border-top: 1px solid $border-color;
           background-color: $white-color;

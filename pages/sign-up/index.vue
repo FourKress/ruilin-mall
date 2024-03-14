@@ -178,7 +178,7 @@ const handleReset = () => {
     color: $text-high-color;
   }
 
-  ::v-deep .van-cell-group {
+  :deep(.van-cell-group) {
     margin: 0;
 
     .van-cell {

@@ -43,9 +43,10 @@ export const useCartStore = defineStore('cart', {
         }
       })
     },
-    async getFetchCartList() {
+    async getFetchCartList(isLoading = false) {
       const { data } = await useHttpGet({
-        url: `/shop-cart/list`
+        url: `/shop-cart/list`,
+        isLoading
       })
       if (!data.value) return
 

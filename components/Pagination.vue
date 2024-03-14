@@ -31,7 +31,7 @@ const emits = defineEmits<{
 </template>
 
 <style scoped lang="scss">
-::v-deep .van-pagination__items {
+:deep(.van-pagination__items) {
   @apply justify-between;
 
   .van-pagination__item {
