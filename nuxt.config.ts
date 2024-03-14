@@ -3,7 +3,7 @@ import { config } from 'dotenv'
 config()
 
 const BASE_URL =
-  process.env.NODE_ENV === 'prod'
+  process.env.NODE_ENV === 'production'
     ? 'https://service.vinnhair.com/api/v1'
     : 'http://192.168.2.36:4000/api/v1'
 

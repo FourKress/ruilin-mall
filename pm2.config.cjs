@@ -5,7 +5,7 @@ module.exports = {
         NODE_ENV: 'dev'
       },
       env_production: {
-        NODE_ENV: 'prod'
+        NODE_ENV: 'production'
       },
       name: process.env.MALL_APP_NAME,
       port: '8888',
