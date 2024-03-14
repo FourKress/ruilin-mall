@@ -46,7 +46,11 @@ const onSubmit = async () => {
         name="email"
         placeholder="Please enter"
         :border="false"
-      />
+      >
+        <template #button>
+          <van-button size="small" type="primary">Send</van-button>
+        </template>
+      </van-field>
     </div>
     <div class="tips">
       Please confirm that you have provided the correct email address, otherwise the order may not
