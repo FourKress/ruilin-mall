@@ -9,7 +9,6 @@ const userInfo = ref<any>(userCookie.value || {})
 const useRule = useRuleStore()
 
 const router = useRouter()
-const isLoading = ref(false)
 
 const minRule = useRule.getMinRule()
 const orderList = ref<any>([])
@@ -27,11 +26,9 @@ if (data.value && data.value.length) {
 
 const handleLogOut = async () => {
   if (!userCookie.value) return
-  isLoading.value = true
-  await useHttpGet({ url: `/auth/customer/logout/${userInfo.value.userId}` })
+  await useHttpGet({ url: `/auth/customer/logout/${userInfo.value.userId}`, isLoading: true })
   tokenCookie.value = undefined
   userCookie.value = {}
-  isLoading.value = false
   router.push('/login')
 }
 </script>
@@ -83,12 +80,7 @@ const handleLogOut = async () => {
       </nuxt-link>
     </div>
 
-    <van-button
-      :loading="isLoading"
-      loading-text="Log out..."
-      type="primary"
-      class="log-out"
-      @click="handleLogOut"
+    <van-button loading-text="Log out..." type="primary" class="log-out" @click="handleLogOut"
       >Log out</van-button
     >
   </div>

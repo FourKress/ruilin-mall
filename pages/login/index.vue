@@ -13,7 +13,6 @@ const router = useRouter()
 const email = ref('')
 const password = ref('')
 const formRef = ref<FormInstance>()
-const isLoading = ref(false)
 
 const checkPasswordLength = (val: string) => {
   if (val.length < 6) return false
@@ -26,19 +25,23 @@ const handleLogin = () => {
 
 const onSubmit = async (values: any) => {
   const { email, password } = values
-  isLoading.value = true
-  const { data } = await useHttpPost({
+  const { data, error } = await useHttpPost({
     url: '/auth/customer/login',
     body: {
       username: email,
       password: md5(password).substring(8, 26)
-    }
+    },
+    isLoading: true
   })
+
+  if (error.value) {
+    return
+  }
+
   const { token, ...other } = data.value
 
   tokenCookie.value = token
   userCookie.value = other
-  isLoading.value = false
   const redirect = route.query?.redirect as string | undefined
   if (redirect) {
     await router.push(redirect)
@@ -95,12 +98,7 @@ const onSubmit = async (values: any) => {
       </van-form>
 
       <div class="btn-container">
-        <van-button
-          :loading="isLoading"
-          loading-text="Log in..."
-          type="primary"
-          class="btn"
-          @click="handleLogin"
+        <van-button loading-text="Log in..." type="primary" class="btn" @click="handleLogin"
           >Log in</van-button
         >
       </div>

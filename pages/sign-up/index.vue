@@ -15,7 +15,6 @@ const email = ref('')
 const firstPassword = ref('')
 const secondPassword = ref('')
 const formRef = ref<FormInstance>()
-const isLoading = ref(false)
 
 const checkPasswordLength = (val: string) => {
   if (val.length < 6) return false
@@ -28,16 +27,20 @@ const handleCreate = () => {
 
 const onSubmit = async (values: any) => {
   const { email, secondPassword, firstName, lastName } = values
-  isLoading.value = true
-  const { data } = await useHttpPost({
+  const { data, error } = await useHttpPost({
     url: '/customer/register',
     body: {
       email,
       password: md5(secondPassword).substring(8, 26),
       nickname: `${firstName} ${lastName}`
-    }
+    },
+    isLoading: true
   })
-  isLoading.value = false
+
+  if (error.value) {
+    return
+  }
+
   if (data.value) {
     const { token, ...other } = data.value
     tokenCookie.value = token
@@ -149,7 +152,6 @@ const handleReset = () => {
       <div class="btn-container">
         <div class="cancel btn" @click="handleReset">Cancel</div>
         <van-button
-          :loading="isLoading"
           loading-text="Create Account..."
           type="primary"
           class="create btn"
