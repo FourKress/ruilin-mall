@@ -265,7 +265,7 @@ const handleCopy = async () => {
     <van-dialog v-model:show="showCall" title="Contact seller" confirmButtonText="Confirm">
       <div class="dialog-container">
         <span>{{ email }}</span>
-        <span class="btn" @click="handleCopy">copy</span>
+        <span class="btn" @click="handleCopy">Copy</span>
       </div>
     </van-dialog>
 
