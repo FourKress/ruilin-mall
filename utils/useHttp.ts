@@ -57,7 +57,7 @@ const useHttp = async (config: IConfig) => {
       if (isLoading) closeToast()
       const { code, message, data } = response._data as IResponseData
       if (code === 10100) {
-        message && showFailToast(message)
+        message && showToast(message)
       }
       return null
     }

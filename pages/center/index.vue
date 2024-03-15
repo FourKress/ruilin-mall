@@ -29,7 +29,7 @@ const handleLogOut = async () => {
   await useHttpGet({ url: `/auth/customer/logout/${userInfo.value.userId}`, isLoading: true })
   tokenCookie.value = undefined
   userCookie.value = {}
-  router.push('/login')
+  await router.push('/login?redirect=/')
 }
 </script>
 
@@ -64,7 +64,7 @@ const handleLogOut = async () => {
     </div>
 
     <div class="form">
-      <nuxt-link class="row" to="/center/email">
+      <nuxt-link class="row" to="/center/email/1">
         <span class="icon" />
         <span class="label">Email</span>
         <span class="value">{{ userInfo['email'] }}</span>
@@ -76,6 +76,11 @@ const handleLogOut = async () => {
         <span class="value" :class="!userInfo['phone'] && 'empty'">{{
           userInfo['phone'] || 'No Phone'
         }}</span>
+        <van-icon name="arrow" />
+      </nuxt-link>
+      <nuxt-link class="row" to="/center/info">
+        <span class="icon" />
+        <span class="label">Information</span>
         <van-icon name="arrow" />
       </nuxt-link>
     </div>
@@ -262,9 +267,18 @@ const handleLogOut = async () => {
         }
       }
 
-      &:last-child {
+      &:nth-child(2) {
         .icon {
           background-image: url('@/assets/images/phone.png');
+        }
+      }
+
+      &:last-child {
+        .icon {
+          background-image: url('@/assets/images/info.png');
+        }
+        .label {
+          flex: 1;
         }
       }
 
@@ -286,7 +300,7 @@ const handleLogOut = async () => {
         }
       }
 
-      .vant-icon {
+      .van-icon {
         color: $text-high-color;
       }
     }
@@ -305,6 +319,7 @@ const handleLogOut = async () => {
     line-height: 0.6rem;
 
     background: $view-color;
+    border: none;
   }
 }
 </style>

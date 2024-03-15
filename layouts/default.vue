@@ -22,9 +22,15 @@ watch(
   () => router.currentRoute.value.path,
   (toPath) => {
     isDetails.value = ['/details/', '/payment', '/order/'].some((d) => toPath.includes(d))
-    isLayout.value = !['/shopping-cart', '/payment', '/result', '/order', '/email', '/phone'].some(
-      (d) => toPath.includes(d)
-    )
+    isLayout.value = ![
+      '/shopping-cart',
+      '/payment',
+      '/result',
+      '/order',
+      '/email',
+      '/phone',
+      '/info'
+    ].some((d) => toPath.includes(d))
   },
   { immediate: true, deep: true }
 )

@@ -90,7 +90,7 @@ const onSubmit = async (values: any) => {
               { required: true, message: 'Please enter' },
               {
                 validator: checkPasswordLength,
-                message: 'Password length 6-10'
+                message: 'Password length is 6-10'
               }
             ]"
           />

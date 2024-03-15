@@ -12,19 +12,54 @@
 
     .van-cell {
       height: 0.64rem !important;
+
+      & + .van-cell {
+        border-top: 1px solid $border-color;
+      }
+
     }
     :deep(.van-field__control) {
       height: 0.44rem !important;
       @include primary-font-16;
       color: $text-high-color;
+
+      &::placeholder {
+        color: $text-low-color;
+      }
+    }
+
+    .send-btn {
+      color: $primary-color;
+
+      &.disabled {
+        color: $text-low-color;
+      }
     }
   }
 
-  .tips {
+  .container {
     @apply p-0.16rem
     flex-1;
 
-    @include general-font-loose-14;
-    color: $text-low-color
+    .tips {
+      @include general-font-loose-14;
+      color: $text-low-color
+    }
+
+    .btn {
+      @apply w-full
+      h-0.48rem
+      flex
+      justify-center
+      items-center
+      rd-0.48rem
+      m-t-0.16rem;
+
+      background-color: transparent;
+      color: $primary-color;
+
+      @include title-font-18;
+      border: 2px solid $primary-color;
+    }
   }
 }

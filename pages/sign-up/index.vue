@@ -118,7 +118,7 @@ const handleReset = () => {
               { required: true, message: 'Please enter' },
               {
                 validator: checkPasswordLength,
-                message: 'Password length 6-10'
+                message: 'Password length is 6-10'
               }
             ]"
           />
@@ -136,7 +136,7 @@ const handleReset = () => {
               { required: true, message: 'Please enter' },
               {
                 validator: checkPasswordLength,
-                message: 'Password length 6-10'
+                message: 'Password length is 6-10'
               },
               {
                 validator: (val) => {
@@ -161,7 +161,7 @@ const handleReset = () => {
       </div>
 
       <div class="tips">
-        Already have an account?<nuxt-link class="link" to="/login">Log in</nuxt-link>
+        Already have an account?<nuxt-link class="link" to="/login?redirect=/">Log in</nuxt-link>
       </div>
     </div>
   </div>

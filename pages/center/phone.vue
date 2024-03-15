@@ -1,14 +1,16 @@
 <script setup lang="ts">
 import phoneCode from '~/utils/phoneCode'
 import CopyRight from '~/components/copy-right.vue'
+const router = useRouter()
 
 const userCookie = useCookie<Record<string, any>>('user')
+if (!userCookie.value) {
+  router.push('/login?redirect=/')
+}
 const userInfo = ref<any>(userCookie.value || {})
 
 const phone = ref(userInfo.value.phone)
 const code = ref(userInfo.value.code || '1')
-
-const router = useRouter()
 
 const showPicker = ref(false)
 const currentItem = ref([code.value])
@@ -41,9 +43,7 @@ const onConfirm = ({ selectedOptions }: { selectedOptions: any[] }) => {
 
 <template>
   <div class="modify-page">
-    <main-nav-bar title="Phone">
-      <span @click="onSubmit">Save</span>
-    </main-nav-bar>
+    <main-nav-bar title="Phone" />
 
     <div class="form">
       <div class="select">
@@ -63,9 +63,13 @@ const onConfirm = ({ selectedOptions }: { selectedOptions: any[] }) => {
       />
     </div>
 
-    <div class="tips">
-      Please confirm that you have provided the correct phone number, otherwise the order may not be
-      delivered correctly.
+    <div class="container">
+      <div class="tips">
+        Please confirm that you have provided the correct phone number, otherwise the order may not
+        be delivered correctly.
+      </div>
+
+      <div class="btn" @click="onSubmit">Change Phone Number</div>
     </div>
 
     <copy-right />

@@ -27,7 +27,13 @@ const handleBack = () => {
       <div class="left" @click="handleBack">
         <van-icon name="arrow-left" />
       </div>
-      <div class="label" :style="{ justifyContent: alignCenter ? 'center' : 'flex-start' }">
+      <div
+        class="label"
+        :style="{
+          justifyContent: alignCenter ? 'center' : 'flex-start',
+          textIndent: alignCenter ? '-24px' : '0px'
+        }"
+      >
         {{ title }}
         <span class="tips" v-if="count">({{ count }})</span>
       </div>
