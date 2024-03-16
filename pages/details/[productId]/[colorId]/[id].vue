@@ -138,12 +138,16 @@ const handleAddCart = () => {
   const quantity = goodsCount.value
   const sku = skuInfo.value
   const { unitIds, tagIds } = sku
-  const targetTagList = unitList.value
+
+  const formatList = unitList.value
     .filter((d: any) => unitIds.includes(d.id))
-    .reduce((pre: any, cur: any) => {
-      pre.push(...cur.tags.filter((t: any) => tagIds.includes(t.id)))
-      return pre
-    }, [])
+    .map((d: any) => {
+      return {
+        unitName: d.name,
+        tagName: d.tags.find((t: any) => tagIds.includes(t.id)).name
+      }
+    })
+
   const { id, ...other } = sku
   useCart.addToCart({
     productId: sku.productId,
@@ -154,7 +158,8 @@ const handleAddCart = () => {
         skuId: id,
         quantity: quantity,
         url: currentColor.value.url,
-        tagNameStr: targetTagList.map((d: any) => d.name).join(';')
+        format: formatList,
+        tagNameStr: formatList.map((d: any) => d.tagName).join(';')
       }
     ]
   })

@@ -26,7 +26,7 @@ const pageCurrent = ref(1)
 const onLoad = async (clear = false) => {
   const status = currentAction.value.value
   const { data } = await useHttpPost({
-    url: `/order/list/`,
+    url: `/order/online-list/`,
     body: { size: 5, current: pageCurrent.value, status: status === -2 ? undefined : status },
     transform: (res) => {
       return res.data

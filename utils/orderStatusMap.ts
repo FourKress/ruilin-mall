@@ -10,7 +10,7 @@ const orderStatusTipsMap = {
   7: 'Refunded', // 已退款
   8: 'Payment Confirm...', // 支付确认中
   9: 'Reversed', // 已撤销
-  10: 'Refund Confirm...' // 退款审核
+  10: 'After-sales Support...' // 退款审核
 }
 
 export default orderStatusTipsMap

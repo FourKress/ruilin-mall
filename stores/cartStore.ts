@@ -290,13 +290,14 @@ export const useCartStore = defineStore('cart', {
             .map((d) => {
               const { children } = d
               return children.map((c: any) => {
-                const { quantity, productId, colorId, skuId, id, tagNameStr } = c
+                const { quantity, productId, colorId, skuId, id, tagNameStr, format } = c
                 return {
                   quantity,
                   productId,
                   colorId,
                   skuId,
                   id,
+                  format,
                   tagNameStr
                 }
               })

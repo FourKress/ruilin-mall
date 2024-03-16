@@ -82,6 +82,7 @@ const handleReOrder = async (order: any) => {
             skuId: d.skuId,
             quantity: d.quantity,
             url: d.url,
+            format: d.format,
             tagNameStr: d.tagNameStr,
             productId: d.productId,
             colorId: d.colorId
