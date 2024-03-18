@@ -16,8 +16,6 @@ const actions = [
   { name: orderStatusTipsMap[3], value: 3 },
   { name: orderStatusTipsMap[4], value: 4 },
   { name: orderStatusTipsMap[5], value: 5 },
-  { name: orderStatusTipsMap[6], value: 6 },
-  { name: orderStatusTipsMap[7], value: 7 },
   { name: orderStatusTipsMap['-1'], value: -1 }
 ]
 const currentAction = ref<any>(actions[0])
@@ -47,7 +45,6 @@ const onRefresh = () => {
   pageCurrent.value = 1
   finished.value = false
   loading.value = true
-  console.log(222)
   onLoad(true)
 }
 

@@ -14,7 +14,7 @@ const minRule = useRule.getMinRule()
 const orderList = ref<any>([])
 
 const { data } = await useHttpPost({
-  url: `/order/list/`,
+  url: `/order/online-list/`,
   body: { size: 1, current: 1 },
   transform: (res) => {
     return res.data.records

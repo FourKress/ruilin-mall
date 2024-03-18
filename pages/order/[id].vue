@@ -11,6 +11,8 @@ const useCart = useCartStore()
 
 const showCall = ref(false)
 const openShoppingCart = ref(false)
+const openLogs = ref(false)
+const statusMap = ref<any[]>([])
 const email = ref('service@vinnhair.com')
 
 if (!route.params?.id) {
@@ -38,8 +40,15 @@ if (data.value) {
 
     return result
   }, {})
-
+  const { statusMap: map, status, updateTime } = data.value
   goodsList.value = Object.values(grouped)
+  statusMap.value = [
+    ...map.filter((d: any) => ![6, 7].includes(d.status)),
+    {
+      status,
+      time: updateTime
+    }
+  ].reverse()
 }
 
 const handleCancelOrder = (order: any) => {
@@ -133,7 +142,49 @@ const handleCopy = async () => {
       <div class="call-btn" @click="handleCall"></div>
     </main-nav-bar>
     <div class="container">
-      <div class="card logistics-container"></div>
+      <div class="card logistics-container">
+        <van-steps :active="0" direction="vertical">
+          <van-step>
+            <template #active-icon>
+              <div class="active-icon"></div>
+            </template>
+            <p class="bold">
+              {{ orderStatusTipsMap[order.status] }}
+            </p>
+            <p class="tips" v-if="order.status === 1">
+              Your order is awaiting merchant review, please be patient
+            </p>
+            <p class="tips" v-if="order.status === 2">
+              Your order is being prepared and will be shipped out to you shortly upon completion
+            </p>
+            <p class="tips" v-if="order.status === 3">
+              Your order is being prepared and will be shipped out to you shortly upon completion
+            </p>
+            <p class="tips" v-if="order.status === 4">
+              The item has been delivered. Please collect it promptly. If there are any issues with
+              the item, feel free to contact us for assistance
+            </p>
+            <p class="tips" v-if="[5, -1].includes(order.status)">Welcome to continue shopping</p>
+            <p class="tips">{{ order['updateTime'] }}</p>
+          </van-step>
+          <van-step>
+            <template #inactive-icon>
+              <div class="address-icon"></div>
+            </template>
+            <p class="tips">
+              {{ order['address']['area'] }} &nbsp;{{ order['address']['postal_code'] }}
+            </p>
+            <p class="bold">
+              {{ order['address']['details'] }}
+            </p>
+            <p class="tips">{{ order['receiver'] }}&nbsp;&nbsp;{{ order['email'] }}</p>
+          </van-step>
+        </van-steps>
+        <div class="more" v-if="order['statusMap']?.length > 1" @click="openLogs = true">
+          <span>More</span>
+          <van-icon name="arrow" />
+        </div>
+      </div>
       <div class="product-list">
         <div class="item" v-for="goods in goodsList" :key="goods.id">
           <div class="item-top">
@@ -189,7 +240,7 @@ const handleCopy = async () => {
         </div>
       </div>
 
-      <div class="card order-info" v-if="[6, 7].includes(order.status)">
+      <div class="card order-info" v-if="order['refundAmount']">
         <div class="row">
           <span class="label">Refund amount</span>
           <span class="value">$ {{ order['refundAmount'] }}</span>
@@ -217,11 +268,11 @@ const handleCopy = async () => {
           <span class="label">Order time</span>
           <span class="value">{{ order['createTime'] }}</span>
         </div>
-        <div class="row" v-if="order.status != 0">
+        <div class="row" v-if="order['paymentTime']">
           <span class="label">Payment time</span>
           <span class="value">{{ order['paymentTime'] }}</span>
         </div>
-        <div class="row" v-if="order.status != 0">
+        <div class="row" v-if="order['paymentTime']">
           <span class="label">Payment method</span>
           <span class="value">PayPal</span>
         </div>
@@ -237,7 +288,7 @@ const handleCopy = async () => {
         <span class="tips">Payment countdown:</span>
         <span class="time"><van-count-down :time="order['countdown']" format="HH:mm:ss" /></span>
       </div>
-      <div class="left" v-if="[-1, 5, 7].includes(order.status)">
+      <div class="left" v-if="[-1, 5].includes(order.status)">
         <span class="delete-btn" @click="handleDeleteOrder(order)">Delete order</span>
       </div>
 
@@ -257,7 +308,7 @@ const handleCopy = async () => {
           Confirm receipt
         </div>
       </div>
-      <div class="btn-list" v-if="[-1, 5, 6, 7, 8, 9, 10].includes(order.status)">
+      <div class="btn-list" v-if="[-1, 5, 6, 7, 8].includes(order.status)">
         <!--        <div class="btn" v-if="order.status === 5">Go to review</div>-->
         <div class="btn" @click="handleReOrder(order)">ReOrder</div>
       </div>
@@ -273,6 +324,48 @@ const handleCopy = async () => {
     <Transition name="fade" :duration="0.5">
       <ShoppingCart v-if="openShoppingCart" @close="openShoppingCart = false" />
     </Transition>
+
+    <van-overlay :show="openLogs" z-index="3" :lock-scroll="false">
+      <div class="log-main" @click.self.stop="openLogs = false">
+        <div class="card logistics-container" style="padding: 0 !important" v-if="openLogs">
+          <van-steps :active="0" direction="vertical">
+            <van-step v-for="item in statusMap">
+              <template #active-icon>
+                <div class="active-icon"></div>
+              </template>
+              <p class="bold">{{ orderStatusTipsMap[item.status] }}</p>
+              <p class="tips" v-if="item.status === 1">
+                Your order is awaiting merchant review, please be patient
+              </p>
+              <p class="tips" v-if="item.status === 2">
+                Your order is being prepared and will be shipped out to you shortly upon completion
+              </p>
+              <p class="tips" v-if="item.status === 3">
+                Your order is being prepared and will be shipped out to you shortly upon completion
+              </p>
+              <p class="tips" v-if="item.status === 4">
+                The item has been delivered. Please collect it promptly. If there are any issues
+                with the item, feel free to contact us for assistance
+              </p>
+              <p class="tips" v-if="[5, -1].includes(item.status)">Welcome to continue shopping</p>
+              <p class="tips">{{ item['time'] }}</p>
+            </van-step>
+            <van-step>
+              <template #inactive-icon>
+                <div class="address-icon"></div>
+              </template>
+              <p class="tips">
+                {{ order['address']['area'] }} &nbsp;{{ order['address']['postal_code'] }}
+              </p>
+              <p class="bold">
+                {{ order['address']['details'] }}
+              </p>
+              <p class="tips">{{ order['receiver'] }}&nbsp;&nbsp;{{ order['email'] }}</p>
+            </van-step>
+          </van-steps>
+        </div>
+      </div>
+    </van-overlay>
   </div>
 </template>
 
@@ -291,6 +384,97 @@ const handleCopy = async () => {
     background-repeat: no-repeat;
   }
 
+  .log-main {
+    @apply w-full
+    h-full
+    flex
+    justify-center
+    items-center
+    p-x-0.16rem;
+  }
+
+  .logistics-container {
+    @apply w-full
+    max-h-4.22rem
+    rd-0.08rem
+    m-b-0.16rem
+    min-h-1.06rem
+    overflow-hidden;
+
+    overflow-y: auto;
+
+    padding: 0.08rem 0 0 0 !important;
+
+    :deep(.van-step__line) {
+      background-color: rgba(198, 156, 109, 0.4) !important;
+    }
+
+    p {
+      margin-bottom: 0.04rem;
+    }
+
+    .tips {
+      @include general-font-12;
+      color: $text-low-color;
+    }
+
+    .bold {
+      @include primary-font-16;
+      color: $text-high-color;
+    }
+
+    .address-icon {
+      @apply w-0.18rem
+      h-0.18rem;
+      background-image: url('@/assets/images/address.png');
+      background-size: 100% 100%;
+      background-repeat: no-repeat;
+    }
+
+    .active-icon {
+      @apply w-0.18rem
+      h-0.18rem
+      rd-50%
+      flex
+      justify-center
+      items-center
+      overflow-hidden;
+
+      background-color: rgba(198, 156, 109, 0.2);
+
+      &:before {
+        content: '';
+        display: block;
+        width: 0.08rem;
+        height: 0.08rem;
+        background-color: rgba(198, 156, 109, 1);
+        border-radius: 50%;
+      }
+    }
+
+    .more {
+      @apply w-0.8rem
+      h-0.32rem
+      rd-0.32rem
+      overflow-hidden
+      flex
+      items-center
+      justify-center;
+
+      margin: 0.12rem auto 0.24rem;
+
+      border: 1px solid $border-color;
+
+      @include general-font-14;
+      color: $text-high-color;
+
+      .van-icon {
+        padding-left: 0.02rem;
+        font-weight: bold;
+      }
+    }
+  }
+
   .container {
     @apply p-0.16rem;
 
@@ -302,11 +486,6 @@ const handleCopy = async () => {
       m-b-0.16rem;
 
       background-color: $white-color;
-    }
-
-    .logistics-container {
-      @apply w-full
-      min-h-1.06rem;
     }
 
     .product-list {
@@ -494,7 +673,7 @@ const handleCopy = async () => {
     left-0
     bottom-0
     px-0.16rem
-    z-9
+    z-2
     flex
     justify-between
     items-center;
