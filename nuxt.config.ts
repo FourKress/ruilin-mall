@@ -2,7 +2,7 @@ import { config } from 'dotenv'
 
 config()
 
-const BASE_URL = `${process.env.NUXT_APP_BASE_URL}/${process.env.NUXT_APP_BASE_PREFIX}`
+const BASE_URL = `${process.env.VUE_APP_BASE_URL}/${process.env.VUE_APP_BASE_PREFIX}`
 
 export default defineNuxtConfig({
   devtools: { enabled: true },
