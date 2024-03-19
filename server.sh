@@ -25,7 +25,7 @@ git pull
 echo '---git pull执行完毕，pnpm install---'
 pnpm i
 echo '---pnpm install执行完毕，开始执行pnpm build---'
-pnpm build
+pnpm build:$1
 echo '---开始执行pnpm build执行完毕 开始检查应用运行状态'
 if pm2 ls | grep -q $app_name; then
   echo "---应用已经启动，开始检查应用运行状态---"
