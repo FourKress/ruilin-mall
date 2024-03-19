@@ -1,14 +1,8 @@
 module.exports = {
   apps: [
     {
-      env: {
-        NODE_ENV: 'dev'
-      },
-      env_production: {
-        NODE_ENV: 'production'
-      },
       name: process.env.MALL_APP_NAME,
-      port: '8888',
+      port: process.env.MALL_APP_PORT,
       script: './.output/server/index.mjs',
       watch: false,
       merge_logs: true,
