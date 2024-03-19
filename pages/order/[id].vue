@@ -12,6 +12,8 @@ const useCart = useCartStore()
 const showCall = ref(false)
 const openShoppingCart = ref(false)
 const openLogs = ref(false)
+const openRefund = ref(false)
+const refundRemark = ref('')
 const statusMap = ref<any[]>([])
 const email = ref('service@vinnhair.com')
 
@@ -51,6 +53,16 @@ if (data.value) {
   ].reverse()
 }
 
+const handleActionCancelOrder = async (order: any) => {
+  const { data } = await useHttpPost({
+    url: `/order/online-cancel/${order.id}`,
+    body: {
+      refundRemark: order['paymentTime'] ? refundRemark.value : ''
+    },
+    isLoading: true
+  })
+  if (data.value) await router.push('/order')
+}
 const handleCancelOrder = (order: any) => {
   showConfirmDialog({
     message: 'Are you sure you want to cancel the order?',
@@ -58,11 +70,19 @@ const handleCancelOrder = (order: any) => {
   })
     .then(async () => {
       const { data } = await useHttpGet({
-        url: `/order/online-cancel/${order.id}`
+        url: `/order/online-cancel/${order.id}`,
+        body: {
+          refundRemark: ''
+        }
       })
       if (data.value) await router.push('/order')
     })
     .catch(() => {})
+}
+
+const handleOpenRefund = () => {
+  openRefund.value = true
+  refundRemark.value = ''
 }
 const handleDeleteOrder = (order: any) => {
   showConfirmDialog({
@@ -293,14 +313,14 @@ const handleCopy = async () => {
       </div>
 
       <div class="btn-list" v-if="order.status === 0">
-        <div class="btn" @click="handleCancelOrder(order)">Cancel order</div>
+        <div class="btn" @click="handleCancelOrder()">Cancel order</div>
         <div class="btn" @click="handlePayNow(order)">Pay Now</div>
       </div>
       <div class="btn-list" v-if="order.status === 1">
-        <div class="btn cancel" @click="handleCancelOrder(order)">Cancel order</div>
+        <div class="btn cancel" @click="handleOpenRefund()">Request refund</div>
       </div>
       <div class="btn-list" v-if="[2, 3, 4].includes(order.status)">
-        <div class="btn" @click="handleCancelOrder(order)">Request a refund</div>
+        <div class="btn" @click="handleOpenRefund()">Request refund</div>
         <div class="btn" v-if="order.status === 2" @click="handleRemindOrder(order)">
           Remind to ship
         </div>
@@ -363,6 +383,32 @@ const handleCopy = async () => {
               <p class="tips">{{ order['receiver'] }}&nbsp;&nbsp;{{ order['email'] }}</p>
             </van-step>
           </van-steps>
+        </div>
+      </div>
+    </van-overlay>
+
+    <van-overlay :show="openRefund" z-index="3" :lock-scroll="false">
+      <div class="refund-main" @click.self.stop="openRefund = false">
+        <div class="title">Request Refund</div>
+        <div class="tips">
+          Are you sure you want to request a refund? If you encounter any problems, please feel free
+          to contact us, we will do our best to solve the problem for you!
+        </div>
+        <div class="remark">
+          <van-field
+            v-model="refundRemark"
+            clearable
+            rows="6"
+            type="textarea"
+            name="refundRemark"
+            placeholder="Please tell us why you refunded the money in order to facilitate our efforts to improve"
+            :border="false"
+          >
+          </van-field>
+        </div>
+        <div class="btn-list">
+          <div class="btn" @click="handleActionCancelOrder(order)">Confirm</div>
+          <div class="btn" @click="openRefund = false">Cancel</div>
         </div>
       </div>
     </van-overlay>
@@ -752,6 +798,92 @@ const handleCopy = async () => {
     .btn {
       @apply m-l-0.08rem;
       color: #1989fa;
+    }
+  }
+
+  .refund-main {
+    @apply w-3.42rem
+    h-3.92rem
+    fixed
+    left-50%
+    top-50%
+    p-0.24rem
+    rd-0.08rem;
+
+    background-color: $white-color;
+    transform: translate(-50%, -50%);
+
+    .title {
+      @include title-font-22;
+      color: $text-high-color;
+
+      text-align: center;
+    }
+
+    .tips {
+      @apply pt-0.08rem
+      pb-0.28rem;
+
+      @include general-font-loose-14;
+      color: #9e9e9e;
+    }
+
+    .remark {
+      @apply m-b-0.24rem
+      h-1.2rem
+      rd-0.06rem
+      p-0.16rem
+      overflow-hidden;
+
+      background-color: #efefef;
+
+      :deep(.van-field) {
+        background-color: transparent;
+        padding: 0;
+        height: 100% !important;
+      }
+
+      :deep(.van-field__control) {
+        height: 100% !important;
+        @include general-font-loose-14;
+        color: $text-high-color;
+
+        &::placeholder {
+          color: #9e9e9e;
+        }
+      }
+    }
+
+    .btn-list {
+      @apply flex
+      w-full
+      justify-between
+      items-center;
+
+      .btn {
+        @apply w-1.38rem
+        h-0.4rem
+        rd-0.4rem
+        flex
+        justify-center
+        items-center;
+
+        border: 1px solid transparent;
+
+        &:first-child {
+          border-color: $border-color;
+          @include title-font-14;
+          color: $text-high-color;
+          background-color: $white-color;
+        }
+
+        &:last-child {
+          border-color: $primary-color;
+          @include title-font-14;
+          color: $white-color;
+          background-color: $primary-color;
+        }
+      }
     }
   }
 }
