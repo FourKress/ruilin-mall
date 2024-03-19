@@ -162,7 +162,7 @@ const handleCopy = async () => {
       <div class="call-btn" @click="handleCall"></div>
     </main-nav-bar>
     <div class="container">
-      <div class="card logistics-container">
+      <div class="card logistics-container" v-if="order['address']">
         <van-steps :active="0" direction="vertical">
           <van-step>
             <template #active-icon>
@@ -419,7 +419,10 @@ const handleCopy = async () => {
 .order-page {
   @apply w-screen
   h-full
-  overflow-y-auto;
+  overflow-y-auto
+  flex-1;
+
+  background-color: $view-color;
 
   .call-btn {
     @apply w-0.24rem
