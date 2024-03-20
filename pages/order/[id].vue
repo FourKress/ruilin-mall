@@ -158,7 +158,7 @@ const handleCopy = async () => {
 
 <template>
   <div class="order-page" v-if="order">
-    <main-nav-bar :title="`${orderStatusTipsMap[order.status]}`">
+    <main-nav-bar :title="`${orderStatusTipsMap[order.status]}`" to="/order">
       <div class="call-btn" @click="handleCall"></div>
     </main-nav-bar>
     <div class="container">

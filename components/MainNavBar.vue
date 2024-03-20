@@ -13,10 +13,17 @@ const props = defineProps({
   count: {
     type: Number,
     default: 0
+  },
+  to: {
+    type: String
   }
 })
 
 const handleBack = () => {
+  if (props.to) {
+    router.push(props.to)
+    return
+  }
   router.back()
 }
 </script>
