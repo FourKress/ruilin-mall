@@ -16,7 +16,7 @@ const formRef = ref<FormInstance>()
 
 const checkPasswordLength = (val: string) => {
   if (val.length < 6) return false
-  if (val.length > 10) return false
+  if (val.length > 20) return false
 }
 
 const handleLogin = () => {
@@ -81,7 +81,7 @@ const onSubmit = async (values: any) => {
             v-model="password"
             clearable
             type="password"
-            maxlength="10"
+            maxlength="20"
             name="password"
             label="Password"
             placeholder="Please enter"
@@ -90,7 +90,7 @@ const onSubmit = async (values: any) => {
               { required: true, message: 'Please enter' },
               {
                 validator: checkPasswordLength,
-                message: 'Password length is 6-10'
+                message: 'Password length is 6-20'
               }
             ]"
           />
@@ -130,6 +130,10 @@ const onSubmit = async (values: any) => {
       padding: 0 0 10px 0;
     }
 
+    .van-cell__value {
+      width: 100%;
+    }
+
     .van-field__body {
       height: 0.4rem;
       border: 1px solid #c5b19b;
@@ -138,6 +142,8 @@ const onSubmit = async (values: any) => {
     }
 
     .van-cell__title {
+      flex: none !important;
+
       label {
         @include general-font-14;
         color: $text-high-color;

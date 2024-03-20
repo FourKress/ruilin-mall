@@ -338,7 +338,7 @@ const checkDisabledProduct = (cart: any) =>
               <div class="card">
                 <div class="panel">
                   <div class="pic">
-                    <img src="" alt="" />
+                    <img :src="currentSku.url" alt="" />
                   </div>
                   <div class="info">
                     <div class="info-title">{{ skuInfo['color_name'] }}</div>
@@ -672,8 +672,6 @@ const checkDisabledProduct = (cart: any) =>
                 @apply block
                 w-full
                 h-full;
-
-                background-color: black;
               }
             }
 

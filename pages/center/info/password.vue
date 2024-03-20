@@ -18,18 +18,18 @@ const confirmPassword = ref('')
 
 const checkPasswordLength = (val: string) => {
   if (val.length < 6) return false
-  if (val.length > 10) return false
+  if (val.length > 20) return false
 }
 
 const onSubmit = async () => {
   if (!oldPassword.value && !checkPasswordLength(oldPassword.value)) {
-    return showToast('Password length is 6-10')
+    return showToast('Password length is 6-20')
   }
   if (!newPassword.value && !checkPasswordLength(newPassword.value)) {
-    return showToast('Password length is 6-10')
+    return showToast('Password length is 6-20')
   }
   if (!confirmPassword.value && !checkPasswordLength(confirmPassword.value)) {
-    return showToast('Password length is 6-10')
+    return showToast('Password length is 6-20')
   }
   if (newPassword.value !== confirmPassword.value) {
     return showToast('Passwords are inconsistent')
@@ -65,6 +65,8 @@ const handleLogOut = async () => {
       <van-field
         v-model="oldPassword"
         clearable
+        type="password"
+        maxlength="20"
         name="oldPassword"
         placeholder="Existing password"
         :border="false"
@@ -73,6 +75,8 @@ const handleLogOut = async () => {
       <van-field
         v-model="newPassword"
         clearable
+        type="password"
+        maxlength="20"
         :readonly="!oldPassword"
         name="newPassword"
         placeholder="New password"
@@ -83,6 +87,8 @@ const handleLogOut = async () => {
       <van-field
         v-model="confirmPassword"
         clearable
+        maxlength="20"
+        type="password"
         :readonly="!oldPassword"
         name="confirmPassword"
         placeholder="Password confirmation"

@@ -18,7 +18,7 @@ const formRef = ref<FormInstance>()
 
 const checkPasswordLength = (val: string) => {
   if (val.length < 6) return false
-  if (val.length > 10) return false
+  if (val.length > 20) return false
 }
 
 const handleCreate = () => {
@@ -109,7 +109,7 @@ const handleReset = () => {
             v-model="firstPassword"
             clearable
             type="password"
-            maxlength="10"
+            maxlength="20"
             name="firstPassword"
             label="Password"
             placeholder="Please enter"
@@ -118,7 +118,7 @@ const handleReset = () => {
               { required: true, message: 'Please enter' },
               {
                 validator: checkPasswordLength,
-                message: 'Password length is 6-10'
+                message: 'Password length is 6-20'
               }
             ]"
           />
@@ -127,7 +127,7 @@ const handleReset = () => {
             v-model="secondPassword"
             clearable
             type="password"
-            maxlength="10"
+            maxlength="20"
             name="secondPassword"
             label="Password confirmation"
             placeholder="Please enter"
@@ -136,7 +136,7 @@ const handleReset = () => {
               { required: true, message: 'Please enter' },
               {
                 validator: checkPasswordLength,
-                message: 'Password length is 6-10'
+                message: 'Password length is 6-20'
               },
               {
                 validator: (val) => {
@@ -187,6 +187,10 @@ const handleReset = () => {
       padding: 0 0 10px 0;
     }
 
+    .van-cell__value {
+      width: 100%;
+    }
+
     .van-field__body {
       height: 0.4rem;
       border: 1px solid #c5b19b;
@@ -195,6 +199,8 @@ const handleReset = () => {
     }
 
     .van-cell__title {
+      flex: none !important;
+
       label {
         @include general-font-14;
         color: $text-high-color;

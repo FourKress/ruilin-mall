@@ -84,6 +84,11 @@ const handlePayment = async () => {
 const handleActivePromoCode = async () => {
   if (!promoCode.value) return
 
+  if (promoCode.value.length < 4) {
+    showToast('Invalid promo')
+    return
+  }
+
   const { data: promoRes } = await useHttpPost({
     url: `/coupon/check/${promoCode.value}`,
     body: {
@@ -91,7 +96,7 @@ const handleActivePromoCode = async () => {
     },
     isLoading: true
   })
-  if (!promoRes.value.id) return
+  if (!promoRes.value?.id) return
 
   promoInfo.value = promoRes.value
   orderAmount.value = new Decimal(rawAmount.value).minus(promoRes.value['faceValue']).valueOf()
@@ -235,7 +240,8 @@ const handleActivePromoCode = async () => {
                 <van-button
                   size="small"
                   type="success"
-                  :disabled="!promoCode || promoCode.length < 4"
+                  class="btn"
+                  :disabled="!promoCode"
                   @click="handleActivePromoCode"
                   >Confirm</van-button
                 >
@@ -672,6 +678,11 @@ const handleActivePromoCode = async () => {
           @include general-font-14;
           color: $text-high-color;
         }
+      }
+
+      .btn {
+        background-color: $primary-color !important;
+        opacity: 1 !important;
       }
     }
   }

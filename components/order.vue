@@ -56,7 +56,7 @@ const handleJump = (order: any) => {
       </template>
       <template v-else>
         <div class="pic-list">
-          <div class="pic" v-for="item in order.productList" :key="item.id">
+          <div class="pic" v-for="item in [...order.productList].splice(0, 3)" :key="item.id">
             <img :src="item.url" alt="" />
           </div>
           <div v-if="order.productList.length > 3">
@@ -147,7 +147,8 @@ const handleJump = (order: any) => {
 
     .pic-list {
       @apply flex
-      items-center;
+      items-center
+      justify-start;
 
       .pic {
         @apply m-r-0.08rem;
