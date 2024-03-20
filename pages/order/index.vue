@@ -58,7 +58,7 @@ const onSelect = (item: any) => {
 
 <template>
   <div class="order-page">
-    <main-nav-bar :title="`Orders`" :count="orderList.length" :alignCenter="false">
+    <main-nav-bar :title="`Orders`" :count="orderList.length" :alignCenter="false" to="/center">
       <div class="select-btn" @click="showAction = true">
         <span>{{ currentAction.name }}</span>
         <van-icon name="arrow" />
