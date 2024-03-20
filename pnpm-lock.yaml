@@ -24,7 +24,7 @@ devDependencies:
     version: 0.58.3(postcss@8.4.33)(vite@5.0.11)(webpack@5.89.0)
   '@vant/nuxt':
     specifier: ^1.0.4
-    version: 1.0.4(vant@4.8.3)
+    version: 1.0.4(vant@4.8.7)
   nuxt:
     specifier: ^3.9.0
     version: 3.9.1(sass@1.69.7)(vite@5.0.11)
@@ -41,8 +41,8 @@ devDependencies:
     specifier: ^13.3.3
     version: 13.3.3(sass@1.69.7)(webpack@5.89.0)
   vant:
-    specifier: ^4.8.3
-    version: 4.8.3(vue@3.4.5)
+    specifier: ^4.8.7
+    version: 4.8.7(vue@3.4.5)
   vue:
     specifier: ^3.4.5
     version: 3.4.5
@@ -1857,7 +1857,7 @@ packages:
       - rollup
     dev: true
 
-  /@vant/nuxt@1.0.4(vant@4.8.3):
+  /@vant/nuxt@1.0.4(vant@4.8.7):
     resolution: {integrity: sha512-NvOndQyk7Y/pSCpNHtqkwv9g60YCj9IxF89aA2InFSKu+9lv2t828yO3XjNJyryabgaFsfz7z1322X4v0uPPUg==}
     peerDependencies:
       vant: '>=4'
@@ -1865,7 +1865,7 @@ packages:
       '@nuxt/kit': 3.9.1
       magic-string: 0.29.0
       unplugin: 1.6.0
-      vant: 4.8.3(vue@3.4.5)
+      vant: 4.8.7(vue@3.4.5)
     transitivePeerDependencies:
       - rollup
       - supports-color
@@ -6213,8 +6213,8 @@ packages:
       builtins: 5.0.1
     dev: true
 
-  /vant@4.8.3(vue@3.4.5):
-    resolution: {integrity: sha512-swJdNeeBKOx80O7z3NiQuVhYROnagjCT6zgOMK9Tsbki9AIf3pOZVk8605AuM7CFX4ZS/CndhKoIFlavob6c4A==}
+  /vant@4.8.7(vue@3.4.5):
+    resolution: {integrity: sha512-puBsqVzC94niN2fFLbkpZGInE8fYK+jjoOAhQ7XAreFCn8xkxnjGpcLNoLvQSP2hUYKN7+kES1bbz/h7RHF7vQ==}
     peerDependencies:
       vue: ^3.0.0
     dependencies:
