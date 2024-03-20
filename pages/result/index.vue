@@ -18,7 +18,11 @@ if (data.value) {
 
 <template>
   <div class="result">
-    <div class="bg"></div>
+    <div class="bg">
+      <img src="~/assets/images/payment-icon.png" alt="" />
+      <span class="title">Payment Successful</span>
+      <span class="tips">Thank you for your purchase</span>
+    </div>
     <div class="card">
       <div class="container">
         <div class="top">
@@ -59,9 +63,32 @@ if (data.value) {
     @apply w-full
     h-3rem
     relative
-    z-1;
+    z-1
+    flex
+    flex-col
+    justify-center
+    items-center;
 
-    background-color: #ccc;
+    background-image: url('@/assets/images/payment-bg.png');
+    background-repeat: no-repeat;
+    background-size: 100% 100%;
+
+    img {
+      @apply block
+      w-1.2rem
+      h-0.8rem;
+    }
+
+    .title {
+      margin: 0.16rem auto 0.04rem;
+      @include title-font-18;
+      color: $primary-color;
+    }
+
+    .tips {
+      @include general-font-14;
+      color: $text-low-color;
+    }
   }
 
   .card {

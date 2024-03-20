@@ -69,12 +69,19 @@ const { data: colorList } = await useHttpGet({
 
 if (colorList.value) {
   const targetColor = colorList.value.find((d: any) => d.id === colorId.value)
-  const fileUrlList = (targetColor?.fileList || []).map((d: any) => ({ url: d.url, id: d.id }))
+  const fileUrlList = (targetColor?.fileList || []).map((d: any) => ({
+    url: d.url,
+    id: d.id,
+    fileType: d.fileType
+  }))
   currentColor.value = {
     ...targetColor,
     productDesc: targetColor.productDesc.replace(/\n/g, '<br />')
   }
-  swipeData.value = [{ url: targetColor.url, id: targetColor.id }, ...fileUrlList]
+  swipeData.value = [
+    { url: targetColor.url, id: targetColor.id, fileType: targetColor.fileType },
+    ...fileUrlList
+  ]
   currentSwipeId.value = targetColor.id
 }
 
@@ -176,6 +183,14 @@ const handleSelect = () => {
 const handleChangeSwipe = (index: number) => {
   currentSwipeId.value = swipeData.value[index].id
 }
+
+const handlePreview = (data: any[], index: number) => {
+  showImagePreview({
+    images: data.filter((d: any) => d.fileType !== 'video/mp4').map((d: any) => d.url),
+    startPosition: index
+  })
+}
+
 const handleSwitchSwipe = (index: number) => {
   if (!topSwipe.value) return
   topSwipe.value.swipeTo(index)
@@ -204,8 +219,18 @@ const handleSelectTag = (unitId: string, tagId: string) => {
       </div>
       <div class="banner">
         <van-swipe ref="topSwipe" lazy-render @change="handleChangeSwipe">
-          <van-swipe-item v-for="item in swipeData" :key="item.id">
-            <img :src="item.url" :alt="item['online_objectKey']" />
+          <van-swipe-item v-for="(item, index) in swipeData" :key="item.id">
+            <video
+              v-if="item.fileType === 'video/mp4'"
+              width="100%"
+              height="100%"
+              controls
+              @click="handlePreview(swipeData, index)"
+            >
+              <source :src="item.url" type="video/mp4" />
+              Your browser does not support the Video tag
+            </video>
+            <img v-else :src="item.url" alt="" @click="handlePreview(swipeData, index)" />
           </van-swipe-item>
 
           <template #indicator="{ active, total }">
@@ -221,7 +246,11 @@ const handleSelectTag = (unitId: string, tagId: string) => {
           :key="item.id"
           @click="handleSwitchSwipe(index)"
         >
-          <img :src="item.url" :alt="item['online_objectKey']" />
+          <video v-if="item.fileType === 'video/mp4'" width="100%" height="100%" controls>
+            <source :src="item.url" type="video/mp4" />
+            Your browser does not support the Video tag
+          </video>
+          <img v-else :src="item.url" alt="" />
         </div>
       </div>
       <div class="info">

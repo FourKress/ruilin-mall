@@ -257,7 +257,10 @@ const handleActivePromoCode = async () => {
 .payment-page {
   @apply w-screen
   h-full
-  overflow-y-auto;
+  overflow-y-auto
+  flex-1;
+
+  background-color: $view-color;
 
   .container {
     @apply p-x-0.16rem
