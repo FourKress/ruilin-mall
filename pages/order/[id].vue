@@ -65,7 +65,10 @@ const handleActionCancelOrder = async (order: any) => {
 }
 const handleCancelOrder = (order: any) => {
   showConfirmDialog({
+    title: 'Confirm action',
     message: 'Are you sure you want to cancel the order?',
+    confirmButtonText: 'Confirm',
+    cancelButtonText: 'Cancel',
     theme: 'round-button'
   })
     .then(async () => {
@@ -313,7 +316,7 @@ const handleCopy = async () => {
       </div>
 
       <div class="btn-list" v-if="order.status === 0">
-        <div class="btn" @click="handleCancelOrder()">Cancel order</div>
+        <div class="btn" @click="handleCancelOrder(order)">Cancel order</div>
         <div class="btn" @click="handlePayNow(order)">Pay Now</div>
       </div>
       <div class="btn-list" v-if="order.status === 1">

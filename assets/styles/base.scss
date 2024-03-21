@@ -124,3 +124,81 @@ body {
     font-size: 202.5641px;
   }
 }
+
+
+.van-dialog--round-button {
+  width: 3.42rem !important;
+  border-radius: 0.08rem !important;
+  padding-bottom: 0.24rem !important;
+
+  .van-dialog__header {
+    font-weight: 500 !important;
+    font-size: 0.22rem !important;
+    line-height: 0.27rem !important;
+    color: $text-high-color !important;
+    padding-top: 0.24rem !important;
+    text-align: center !important;
+  }
+
+  .van-dialog__message {
+    @apply pt-0.08rem
+    pb-0.28rem;
+
+    padding-bottom: 0.24rem !important;
+
+    font-size: 14px !important;
+    line-height: 24px !important;
+    font-weight: normal !important;
+    color: #9e9e9e !important;
+  }
+
+  .van-action-bar {
+    @apply flex
+    w-full
+    justify-between
+    items-center;
+
+    box-sizing: border-box;
+
+    padding: 0 0.24rem !important;
+
+    .van-button {
+      @apply flex
+      justify-center
+      items-center;
+
+      box-sizing: border-box;
+
+      width: 1.38rem !important;
+      max-width: 1.38rem !important;
+      height: 0.4rem !important;
+      border-radius: 0.4rem !important;
+
+      border: 1px solid transparent;
+      background-image: none;
+
+      .van-button__text {
+        height: 100%;
+        line-height: 0.38rem;
+      }
+
+      &:before {
+        display: none;
+      }
+
+      &:first-child {
+        border-color: $border-color !important;
+        @include title-font-14;
+        color: $text-high-color !important;
+        background-color: $white-color !important;
+      }
+
+      &:last-child {
+        border-color: $primary-color !important;
+        @include title-font-14;
+        color: $white-color !important;
+        background-color: $primary-color !important;
+      }
+    }
+  }
+}
