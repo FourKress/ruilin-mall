@@ -69,7 +69,11 @@ const useHttp = async (config: IConfig) => {
       userCookie.value = {}
       if (!dialogInstance) {
         showDialog({
-          message: 'Login failed, please log in again'
+          title: 'Warning',
+          message: 'Login failed, please log in again',
+          confirmButtonText: 'Confirm',
+          theme: 'round-button',
+          className: 'warning-dialog'
         }).then(() => {
           dialogInstance = null
           router.push('/login')

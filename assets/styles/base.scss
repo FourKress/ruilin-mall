@@ -201,4 +201,10 @@ body {
       }
     }
   }
+
+  &.warning-dialog {
+    .van-action-bar {
+      justify-content: center !important;
+    }
+  }
 }
