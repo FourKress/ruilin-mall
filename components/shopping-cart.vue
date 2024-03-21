@@ -82,7 +82,10 @@ const handleReduceQuantity = (productId: string, item: any) => {
   if (quantity <= 1) {
     showConfirmDialog({
       title: 'Confirm action',
-      message: 'Are you sure you want to delete this goods?'
+      message: 'Are you sure you want to delete this goods?',
+      confirmButtonText: 'Confirm',
+      cancelButtonText: 'Cancel',
+      theme: 'round-button'
     })
       .then(() => {
         useCart.deleteFromCart(productId, item)
