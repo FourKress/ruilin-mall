@@ -49,69 +49,69 @@ $english-android-font: 'Roboto';
 
 // title
 @mixin title-font-26 {
-  font-size: 26px;
-  line-height: 32px;
+  font-size: 0.26rem;
+  line-height: 0.32rem;
   @include medium;
 }
 
 @mixin title-font-22 {
-  font-size: 22px;
-  line-height: 27px;
+  font-size: 0.22rem;
+  line-height: 0.27rem;
   @include medium;
 }
 
 @mixin title-font-18 {
-  font-size: 18px;
-  line-height: 22px;
+  font-size: 0.18rem;
+  line-height: 0.22rem;
   @include medium;
 }
 
 @mixin title-font-14 {
-  font-size: 14px;
-  line-height: 17px;
+  font-size: 0.14rem;
+  line-height: 0.17rem;
   @include regular;
 }
 
 // primary
 @mixin primary-font-16 {
-  font-size: 16px;
-  line-height: 22px;
+  font-size: 0.16rem;
+  line-height: 0.22rem;
   @include medium;
 }
 
 @mixin primary-font-14 {
-  font-size: 14px;
-  line-height: 18px;
+  font-size: 0.14rem;
+  line-height: 0.18rem;
   @include medium;
 }
 
 @mixin primary-font-12 {
-  font-size: 12px;
-  line-height: 16px;
+  font-size: 0.12rem;
+  line-height: 0.16rem;
   @include medium;
 }
 
 // general
 @mixin general-font-loose-14 {
-  font-size: 14px;
-  line-height: 24px;
+  font-size: 0.14rem;
+  line-height: 0.24rem;
   @include regular;
 }
 
 @mixin general-font-14 {
-  font-size: 14px;
-  line-height: 18px;
+  font-size: 0.14rem;
+  line-height: 0.18rem;
   @include regular;
 }
 
 @mixin general-font-loose-12 {
-  font-size: 12px;
-  line-height: 20px;
+  font-size: 0.12rem;
+  line-height: 0.20rem;
   @include regular;
 }
 
 @mixin general-font-12 {
-  font-size: 12px;
-  line-height: 16px;
+  font-size: 0.12rem;
+  line-height: 0.16rem;
   @include regular;
 }
