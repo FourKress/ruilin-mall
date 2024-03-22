@@ -134,7 +134,7 @@ const handleSubtractGoodsCount = () => {
   goodsCount.value = goodsCount.value - 1
 }
 
-const handleAddCart = () => {
+const handleAddCart = async () => {
   if (skuInfo.value['online_stock'] <= 0) return
   if (isNotStock.value) return
 
@@ -156,7 +156,7 @@ const handleAddCart = () => {
     })
 
   const { id, ...other } = sku
-  useCart.addToCart({
+  const isAdd = await useCart.addToCart({
     productId: sku.productId,
     productName: sku.product_name,
     children: [
@@ -170,6 +170,10 @@ const handleAddCart = () => {
       }
     ]
   })
+
+  if (isAdd) {
+    await useCart.getFetchCartList(false)
+  }
 
   goodsCount.value = 1
 

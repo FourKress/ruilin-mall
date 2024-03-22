@@ -220,9 +220,11 @@ export const useCartStore = defineStore('cart', {
         .map((d) => {
           if (d.productId === productId) {
             const children = d.children.filter((s: any) => s.skuId !== sku.skuId)
+            const selectCount = children.filter((s: any) => s.select).length
             if (children.length) {
               return {
                 ...d,
+                select: selectCount === children.length,
                 children
               }
             }
@@ -242,17 +244,16 @@ export const useCartStore = defineStore('cart', {
       const targetSku = this.getSku(product.productId, newSku.skuId)
       if (targetSku) {
         await this.changeQuantity(targetSku, 'ADD', newSku.quantity)
-        return
+        return false
       }
-      if (!targetSku) {
-        const cartList = [...this.cart]
-        cartList.push({
-          ...product,
-          children: [{ ...newSku }]
-        })
+      const cartList = [...this.cart]
+      cartList.push({
+        ...product,
+        children: [{ ...newSku }]
+      })
 
-        await this.handleFetchCrate(cartList)
-      }
+      await this.handleFetchCrate(cartList)
+      return true
     },
 
     async handleUpdate(id: string, quantity: number) {
@@ -304,7 +305,7 @@ export const useCartStore = defineStore('cart', {
                   id,
                   tagNameStr,
                   format,
-                  select = true
+                  select = 1
                 } = c
                 return {
                   quantity,
@@ -314,7 +315,7 @@ export const useCartStore = defineStore('cart', {
                   id,
                   format,
                   tagNameStr,
-                  select
+                  select: id ? select > 0 : true
                 }
               })
             })
@@ -323,11 +324,7 @@ export const useCartStore = defineStore('cart', {
         isLoading: true
       })
 
-      if (!data.value) return false
-
-      await this.getFetchCartList()
-
-      return true
+      return data.value
     }
   }
 })
