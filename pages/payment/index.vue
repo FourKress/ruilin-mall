@@ -5,16 +5,11 @@ import { Decimal } from 'decimal.js'
 
 const route = useRoute()
 const router = useRouter()
-const skuIds = route.query?.skuIds as string[]
-
-if (!skuIds || !skuIds.length) {
-  router.back()
-}
 
 const useCart = useCartStore()
 const useRule = useRuleStore()
 
-const goodsList = await useCart.getPaymentGoodsList(skuIds)
+const goodsList = await useCart.getPaymentGoodsList()
 
 const cartTotalPrice = computed(() => useCart.totalPrice)
 

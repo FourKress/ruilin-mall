@@ -62,7 +62,9 @@ const handleSelectSku = (status: boolean, targetId: string, sku: any) => {
 
 const handleSelectProduct = (status: boolean, targetId: string, product: any) => {
   if (checkDisabledProduct(product)) return
-  useCart.changeSelect(status, targetId)
+  const skuIds = product.children.map((d: any) => d.skuId)
+  console.log(product, skuIds)
+  useCart.changeSelect(status, targetId, skuIds)
 }
 
 const handleChangeQuantity = (targetId: string, type: string) => {
@@ -130,10 +132,7 @@ const handleCheckOut = async () => {
   })
   await router.push({
     path: '/payment',
-    replace: true,
-    query: {
-      skuIds: cartSelectList.value.map((d: any) => d.skuId)
-    }
+    replace: true
   })
   closeToast()
 }
