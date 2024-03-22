@@ -176,6 +176,7 @@ const jumpSku = (sku: any) => {
         @include general-font-14;
 
         @apply w-1.71rem
+        max-1.71rem
         h-0.40rem
         lh-0.38rem
         text-center
@@ -187,6 +188,13 @@ const jumpSku = (sku: any) => {
         border: 1px solid $text-mid-color;
         background-color: $white-color;
         color: $text-high-color;
+
+        .label {
+          @apply max-w-1.2rem
+          overflow-hidden
+          text-ellipsis;
+          white-space: nowrap;
+        }
 
         .van-icon {
           @apply m-l-0.02rem;
@@ -210,13 +218,15 @@ const jumpSku = (sku: any) => {
 
       .item {
         @apply w-1.71rem
-        h-3.1rem
+        h-2.53rem
         m-t-0.16rem
-        relative;
+        relative
+        rd-0.06rem
+        overflow-hidden;
 
         .image {
           @apply w-full
-          h-2.28rem;
+          h-1.71rem;
 
           img {
             @apply block

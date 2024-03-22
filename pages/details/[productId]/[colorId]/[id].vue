@@ -246,7 +246,7 @@ const handleSelectTag = (unitId: string, tagId: string) => {
           :key="item.id"
           @click="handleSwitchSwipe(index)"
         >
-          <video v-if="item.fileType === 'video/mp4'" width="100%" height="100%" controls>
+          <video v-if="item.fileType === 'video/mp4'" width="100%" height="100%">
             <source :src="item.url" type="video/mp4" />
             Your browser does not support the Video tag
           </video>
@@ -436,8 +436,12 @@ const handleSelectTag = (unitId: string, tagId: string) => {
       h-4.77rem
       relative;
 
+      height: calc(100vw - 0.32rem);
+
       .van-swipe {
-        @apply h-full;
+        @apply h-full
+        rd-0.06rem
+        overflow-hidden;
 
         img {
           @apply block
@@ -453,7 +457,10 @@ const handleSelectTag = (unitId: string, tagId: string) => {
           h-0.26rem
           flex
           items-center
-          justify-center;
+          justify-center
+          overflow-hidden;
+
+          border-radius: 0 0 0.06rem 0;
 
           background-color: rgba(16, 16, 16, 0.5);
           color: $white-color;
@@ -480,7 +487,9 @@ const handleSelectTag = (unitId: string, tagId: string) => {
         @apply w-0.6rem
         min-w-0.6rem
         h-full
-        m-l-0.14rem;
+        m-l-0.14rem
+        rd-0.04rem
+        overflow-hidden;
 
         border: 2px solid transparent;
 

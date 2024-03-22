@@ -219,7 +219,7 @@ const handleCopy = async () => {
             </div>
             <div class="info-container">
               <div class="info-title">
-                <span>{{ item['colorName'] }}</span>
+                <span class="name">{{ item['colorName'] }}</span>
                 <span
                   ><span class="unit">$</span> <span class="price">{{ item['price'] }}</span></span
                 >
@@ -254,12 +254,16 @@ const handleCopy = async () => {
           <span class="label">Price Adjustment</span>
           <span class="value">— $ {{ order['modifyAmount'] || '0.00' }}</span>
         </div>
+
         <div class="footer-row">
-          <span class="left">
-            <span>Total discounts: </span>
-            <span class="price">$ {{ order['discountAmount'] }}</span>
-          </span>
-          <span class="right">Actual payment: $ {{ order['payAmount'] }} </span>
+          <div class="row">
+            <span class="label">Total discounts</span>
+            <span class="value">$ {{ order['discountAmount'] }}</span>
+          </div>
+          <div class="row">
+            <span class="label">Actual payment</span>
+            <span class="value">$ {{ order['payAmount'] }}</span>
+          </div>
         </div>
       </div>
 
@@ -337,7 +341,13 @@ const handleCopy = async () => {
       </div>
     </div>
 
-    <van-dialog v-model:show="showCall" title="Contact seller" confirmButtonText="Confirm">
+    <van-dialog
+      v-model:show="showCall"
+      title="Contact seller"
+      theme="round-button"
+      confirmButtonText="Confirm"
+      class-name="warning-dialog"
+    >
       <div class="dialog-container">
         <span>{{ email }}</span>
         <span class="btn" @click="handleCopy">Copy</span>
@@ -567,7 +577,7 @@ const handleCopy = async () => {
 
         .panel {
           @apply w-full
-          h-1.1rem
+          h-0.9rem
           p-y-0.15rem
           flex
           justify-between
@@ -577,8 +587,10 @@ const handleCopy = async () => {
 
           .pic {
             @apply w-0.6rem
-            h-0.8rem
-            m-r-0.08rem;
+            h-0.6rem
+            m-r-0.08rem
+            rd-0.04rem
+            overflow-hidden;
 
             img {
               @apply block
@@ -604,10 +616,17 @@ const handleCopy = async () => {
               justify-between
               items-center;
 
-              white-space: nowrap;
-
               @include title-font-18;
               color: $text-high-color;
+
+              .name {
+                @apply flex-1
+                overflow-hidden
+                text-ellipsis
+                p-r-0.08rem;
+
+                white-space: nowrap;
+              }
 
               .unit {
                 @include general-font-14;
@@ -674,26 +693,14 @@ const handleCopy = async () => {
       }
 
       .footer-row {
-        @apply flex
-        justify-between
-        items-center
-        h-0.26rem
-        p-t-0.08rem
+        @apply p-t-0.08rem
         m-t-0.08rem;
 
         border-top: 1px solid $border-color;
 
-        .left {
-          @include general-font-loose-14;
+        .value {
           color: $text-high-color;
-          .price {
-            color: $red-color;
-            @include number-font;
-          }
-        }
-        .right {
-          @include primary-font-14;
-          color: $text-high-color;
+          @include number-font;
         }
       }
     }

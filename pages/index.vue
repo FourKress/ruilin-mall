@@ -263,12 +263,14 @@ const jumpSku = (sku: any) => {
 
       .item {
         @apply w-1.71rem
-        h-3.1rem
-        m-t-0.16rem;
+        h-2.53rem
+        m-t-0.16rem
+        rd-0.06rem
+        overflow-hidden;
 
         .image {
           @apply w-full
-          h-2.28rem;
+          h-1.71rem;
 
           img {
             @apply block

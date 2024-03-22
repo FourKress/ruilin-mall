@@ -321,9 +321,11 @@ const handleActivePromoCode = async () => {
             border-top: 1px solid $border-color;
 
             .pic {
-              @apply w-0.6rem
-              h-0.8rem
-              m-r-0.08rem;
+              @apply w-0.75rem
+              h-0.75rem
+              m-r-0.08rem
+              rd-0.04rem
+              overflow-hidden;
 
               img {
                 @apply block
