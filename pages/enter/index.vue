@@ -1,12 +1,15 @@
-<script setup lang="ts"></script>
+<script setup lang="ts">
+import { useInfoStore } from '~/stores'
+
+const mallInfo = computed(() => useInfoStore().details)
+</script>
 
 <template>
   <div class="enter">
     <div class="container">
-      <div class="title">RuiLin Hair</div>
+      <div class="title">{{ mallInfo.name }}</div>
       <div class="info">
-        Company introduction, brand introduction.Company introduction, brand introduction.Company
-        introduction, brand introduction.Company introduction.
+        {{ mallInfo['introduce'] }}
       </div>
       <div class="btn-container">
         <nuxt-link class="create btn" to="/sign-up">Sign up</nuxt-link>
@@ -25,7 +28,7 @@
 
   background-repeat: no-repeat;
   background-size: 100% 100%;
-  background-image: url('@/assets/images/bg.png');
+  background-image: url('https://assets.vinnhair.com/static/bg.png');
 
   .container {
     @apply w-full

@@ -1,8 +1,9 @@
 <script setup lang="ts">
-import { useProductStore, useRuleStore } from '~/stores/'
+import { useProductStore, useRuleStore, useInfoStore } from '~/stores/'
 
 useProductStore().getProductList()
 useRuleStore().getRuleList()
+useInfoStore().getInfoDetails()
 
 const warpRef = ref<HTMLDivElement>()
 

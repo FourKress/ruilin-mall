@@ -37,6 +37,10 @@ watchEffect(async () => {
   }
 })
 
+const { data: blogData } = await useHttpGet({
+  url: '/blog/list'
+})
+
 const onSelect = (item: any) => {
   currentAction.value = item
 }
@@ -106,17 +110,13 @@ const jumpSku = (sku: any) => {
         <div class="label">Blog</div>
       </div>
       <div class="list">
-        <div class="item" v-for="(item, index) in 10" :key="index">
+        <div class="item" v-for="item in blogData" :key="item.id">
           <div class="image">
-            <img src="" alt="" />
+            <img :src="item.url" alt="" />
           </div>
           <div class="info">
-            <div class="title">Customers like us</div>
-            <div class="details">
-              Malibu Dream (Hair Weft)Malibu Dream (Hair Weft)Malibu Dream (Hair Weft)Malibu Dream
-              (Hair Weft)Malibu Dream (Hair Weft)Malibu Dream (Hair Weft)Malibu Dream (Hair
-              Weft)Malibu Dream (Hair Weft)Malibu Dream (Hair Weft)Malibu Dream (Hair Weft)
-            </div>
+            <div class="title">{{ item.name }}</div>
+            <div class="details" v-html="item.content"></div>
           </div>
         </div>
       </div>
@@ -370,8 +370,6 @@ const jumpSku = (sku: any) => {
           @apply m-r-0;
         }
 
-        background-color: black;
-
         .image {
           @apply w-full
           h-1.8rem;
@@ -418,8 +416,8 @@ const jumpSku = (sku: any) => {
 
             @include general-font-loose-14;
 
-            transform: scaleY(0.9);
-            transform-origin: top;
+            //transform: scaleY(0.9);
+            //transform-origin: top;
           }
         }
       }

@@ -1,9 +1,10 @@
 <script setup lang="ts">
 import { menuConfig } from '~/utils/menuConfig'
 
-import { useProductStore, useCartStore } from '~/stores'
+import { useProductStore, useCartStore, useInfoStore } from '~/stores'
 
 const cartCount = computed(() => useCartStore().getCartCount())
+const mallInfo = computed(() => useInfoStore().details)
 
 const productList = useProductStore().productList
 
@@ -93,7 +94,7 @@ const handleSwitchShoppingCart = (status: boolean) => {
   <div class="main-header">
     <div class="left" @click="handleSwitchDrawerStatus()"></div>
     <div class="logo" @click="handleJumpMenu('/')">
-      <img src="~/assets/images/Logo.png" alt="" />
+      <img :src="mallInfo.url" alt="" />
     </div>
     <van-badge :content="cartCount" max="99" :show-zero="false" position="top-left">
       <div class="right" @click="handleSwitchShoppingCart(true)"></div>

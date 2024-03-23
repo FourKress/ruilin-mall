@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import orderStatusTipsMap from '~/utils/orderStatusMap'
 import handlePayNow from '~/utils/payNow'
-import { useCartStore } from '~/stores'
+import { useCartStore, useInfoStore } from '~/stores'
 
 const route = useRoute()
 const router = useRouter()
@@ -15,7 +15,7 @@ const openLogs = ref(false)
 const openRefund = ref(false)
 const refundRemark = ref('')
 const statusMap = ref<any[]>([])
-const email = ref('service@vinnhair.com')
+const mallInfo = computed(() => useInfoStore().details)
 
 if (!route.params?.id) {
   router.push('/')
@@ -149,7 +149,7 @@ const handleCall = () => {
 
 const handleCopy = async () => {
   navigator.clipboard
-    .writeText(email.value)
+    .writeText(mallInfo.value.email)
     .then(() => {
       showToast('Copied successfully')
     })
@@ -349,7 +349,7 @@ const handleCopy = async () => {
       class-name="warning-dialog"
     >
       <div class="dialog-container">
-        <span>{{ email }}</span>
+        <span>{{ mallInfo['email'] }}</span>
         <span class="btn" @click="handleCopy">Copy</span>
       </div>
     </van-dialog>
