@@ -15,11 +15,11 @@ const { data: aboutDetails } = await useHttpGet({
     <div class="container" v-html="aboutDetails.content"></div>
     <div class="row">
       <div class="label">Phone</div>
-      <div class="value">{{ mallInfo['phone'] }}</div>
+      <a class="value" :href="`tel:${mallInfo['phone']}`">{{ mallInfo['phone'] }}</a>
     </div>
     <div class="row">
       <div class="label">Email</div>
-      <div class="value">{{ mallInfo['email'] }}</div>
+      <a class="value" :href="`mailto:${mallInfo['email']}`">{{ mallInfo['email'] }}</a>
     </div>
     <div class="row">
       <div class="label">Address</div>
@@ -59,10 +59,16 @@ const { data: aboutDetails } = await useHttpGet({
 
     .value {
       @include general-font-14;
+      text-decoration: underline;
+      color: $text-high-color;
     }
 
     &:last-child {
       @apply m-0;
+
+      .value {
+        text-decoration: none;
+      }
     }
   }
 }

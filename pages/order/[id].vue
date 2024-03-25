@@ -349,7 +349,7 @@ const handleCopy = async () => {
       class-name="warning-dialog"
     >
       <div class="dialog-container">
-        <span>{{ mallInfo['email'] }}</span>
+        <a :href="`mailto:${mallInfo['email']}`">{{ mallInfo['email'] }}</a>
         <span class="btn" @click="handleCopy">Copy</span>
       </div>
     </van-dialog>
@@ -811,6 +811,11 @@ const handleCopy = async () => {
     .btn {
       @apply m-l-0.08rem;
       color: #1989fa;
+    }
+
+    a {
+      color: $text-high-color;
+      text-decoration: underline;
     }
   }
 

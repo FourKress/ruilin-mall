@@ -73,6 +73,9 @@ watch(
     if (toPath.includes('FAQ')) {
       pageName.value = 'FAQ'
     }
+    if (toPath.includes('about')) {
+      pageName.value = 'About Us '
+    }
   },
   { immediate: true, deep: true }
 )
@@ -182,6 +185,11 @@ const handleSwitchShoppingCart = (status: boolean) => {
       w-full
       h-full;
     }
+  }
+
+  .page-name {
+    @include title-font-22;
+    color: $text-high-color;
   }
 
   .drawer {
