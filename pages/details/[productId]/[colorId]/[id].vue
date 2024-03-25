@@ -468,8 +468,8 @@ const handleSelectTag = (unitId: string, tagId: string) => {
 
           background-color: rgba(16, 16, 16, 0.5);
           color: $white-color;
-          font-size: 14px;
-          line-height: 18px;
+          font-size: 0.14rem;
+          line-height: 0.18rem;
           @include number-font;
         }
       }
@@ -768,8 +768,8 @@ const handleSelectTag = (unitId: string, tagId: string) => {
 
         .van-cell {
           padding: 0;
-          height: 60px;
-          line-height: 60px;
+          height: 0.6rem;
+          line-height: 0.6rem;
           display: flex;
           justify-content: space-between;
           align-items: center;
@@ -779,6 +779,10 @@ const handleSelectTag = (unitId: string, tagId: string) => {
           .van-cell__title {
             @include primary-font-14;
             color: $text-high-color;
+
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
           }
 
           .van-icon {
@@ -789,7 +793,7 @@ const handleSelectTag = (unitId: string, tagId: string) => {
         .van-collapse-item__content {
           @include general-font-loose-14;
           color: $text-high-color;
-          padding: 0 0 16px 0;
+          padding: 0 0 0.16rem 0;
         }
       }
     }
@@ -836,7 +840,7 @@ const handleSelectTag = (unitId: string, tagId: string) => {
 
       .van-icon {
         @apply m-r-0.08rem;
-        font-size: 20px;
+        font-size: 0.2rem;
         color: $primary-color;
       }
 
@@ -897,7 +901,7 @@ const handleSelectTag = (unitId: string, tagId: string) => {
 
             &:before {
               content: '';
-              height: 12px;
+              height: 0.12rem;
               width: 1px;
               background-color: $border-color;
               position: absolute;

@@ -37,8 +37,12 @@ watchEffect(async () => {
   }
 })
 
-const { data: blogData } = await useHttpGet({
-  url: '/blog/list'
+const { data: blogData } = await useHttpPost({
+  url: '/blog/list',
+  body: { size: 10, current: 1 },
+  transform: (res) => {
+    return res.data.records
+  }
 })
 
 const onSelect = (item: any) => {
@@ -52,6 +56,10 @@ const handleJump = (url: string) => {
 
 const jumpSku = (sku: any) => {
   router.push(`/details/${sku.productId}/${sku['colorId']}/${sku.id}`)
+}
+
+const jumpBlogDetails = (id: string) => {
+  router.push(`/blog/${id}`)
 }
 </script>
 
@@ -110,21 +118,36 @@ const jumpSku = (sku: any) => {
         <div class="label">Blog</div>
       </div>
       <div class="list">
-        <div class="item" v-for="item in blogData" :key="item.id">
-          <div class="image">
+        <div
+          class="item"
+          v-for="item in blogData"
+          :key="item.id"
+          :to="`/blog/${item.id}`"
+          :style="{
+            width: blogData.length > 1 ? '3.2rem' : '100%'
+          }"
+          @click="jumpBlogDetails(item.id)"
+        >
+          <div
+            class="image"
+            :style="{
+              width: blogData.length > 1 ? '3.2rem' : '100%',
+              height: blogData.length > 1 ? '1.8rem' : 'calc((100vw - 0.32rem) * (9/16))'
+            }"
+          >
             <img :src="item.url" alt="" />
           </div>
           <div class="info">
             <div class="title">{{ item.name }}</div>
-            <div class="details" v-html="item.content"></div>
+            <div class="details" v-html="item.text"></div>
           </div>
         </div>
       </div>
 
-      <div class="jump-btn">
+      <nuxt-link class="jump-btn" to="/blog">
         <span>View more blogs</span>
         <van-icon name="arrow" />
-      </div>
+      </nuxt-link>
     </div>
 
     <div class="about-container">
@@ -210,7 +233,7 @@ const jumpSku = (sku: any) => {
 
     .van-icon {
       @apply m-l-0.02rem;
-      font-size: 16px;
+      font-size: 0.16rem;
     }
   }
 
@@ -363,7 +386,6 @@ const jumpSku = (sku: any) => {
       .item {
         @apply w-3.2rem
         min-w-3.2rem
-        h-3.2rem
         m-r-0.16rem;
 
         &:last-child {
@@ -371,8 +393,7 @@ const jumpSku = (sku: any) => {
         }
 
         .image {
-          @apply w-full
-          h-1.8rem;
+          @apply w-full;
 
           img {
             @apply block
@@ -383,7 +404,7 @@ const jumpSku = (sku: any) => {
 
         .info {
           @apply w-full
-          h-1.42rem
+          h-1.34rem
           p-x-0.16rem;
 
           background-color: $white-color;
@@ -408,16 +429,11 @@ const jumpSku = (sku: any) => {
             text-ellipsis;
 
             display: -webkit-box;
-            -webkit-line-clamp: 4;
+            -webkit-line-clamp: 3;
             /*! autoprefixer: off */
             -webkit-box-orient: vertical;
 
-            color: $text-high-color;
-
             @include general-font-loose-14;
-
-            //transform: scaleY(0.9);
-            //transform-origin: top;
           }
         }
       }

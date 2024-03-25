@@ -552,7 +552,7 @@ const checkDisabledProduct = (cart: any) =>
         }
 
         .van-icon {
-          font-size: 16px;
+          font-size: 0.16rem;
           color: $red-color;
         }
       }
@@ -570,7 +570,7 @@ const checkDisabledProduct = (cart: any) =>
         p-0.16rem
         overflow-hidden;
 
-        border-radius: 8px 8px 0 0;
+        border-radius: 0.08rem 0.08rem 0 0;
         background-color: $view-color;
 
         .dialog-top {

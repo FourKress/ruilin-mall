@@ -17,6 +17,7 @@ const handleOpenModal = (status: boolean) => {
 }
 
 const isLayout = ref(true)
+const hasFooter = ref(true)
 const isDetails = ref(false)
 const router = useRouter()
 watch(
@@ -32,6 +33,7 @@ watch(
       '/phone',
       '/info'
     ].some((d) => toPath.includes(d))
+    hasFooter.value = !(toPath === '/blog' || toPath === '/FAQ')
   },
   { immediate: true, deep: true }
 )
@@ -46,7 +48,7 @@ watch(
       <div class="page-container">
         <slot />
       </div>
-      <main-footer v-if="isLayout" />
+      <main-footer v-if="isLayout && hasFooter" />
     </div>
   </div>
 </template>

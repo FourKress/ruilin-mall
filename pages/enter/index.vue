@@ -27,8 +27,10 @@ const mallInfo = computed(() => useInfoStore().details)
   flex-col;
 
   background-repeat: no-repeat;
-  background-size: 100% 100%;
+  background-size: 100% 4.92rem;
   background-image: url('https://assets.vinnhair.com/static/bg.png');
+
+  background-color: #e6eaeb;
 
   .container {
     @apply w-full

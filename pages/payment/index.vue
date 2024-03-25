@@ -510,7 +510,7 @@ const handleActivePromoCode = async () => {
           justify-center;
 
           color: $primary-color;
-          font-size: 20px;
+          font-size: 0.2rem;
 
           .logo {
             @apply w-0.42rem
@@ -520,7 +520,7 @@ const handleActivePromoCode = async () => {
           .label {
             @include primary-font-14;
             color: $text-high-color;
-            margin: 0 16px 0 -4px;
+            margin: 0 0.16rem 0 -0.04rem;
           }
         }
       }
@@ -605,7 +605,7 @@ const handleActivePromoCode = async () => {
     p-0.16rem
     overflow-hidden;
 
-    border-radius: 8px 8px 0 0;
+    border-radius: 0.08rem 0.08rem 0 0;
     background-color: $view-color;
 
     .dialog-top {

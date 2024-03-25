@@ -20,6 +20,7 @@ const drawerStatus = ref(false)
 const openShoppingCart = ref(false)
 
 const menuList = ref<any[]>([])
+const pageName = ref<string>('')
 
 if (tokenCookie.value) {
   await useCartStore().getFetchCartList()
@@ -62,9 +63,16 @@ watch([tokenCookie], async () => {
 
 watch(
   () => router.currentRoute.value.path,
-  () => {
+  (toPath) => {
     openShoppingCart.value = false
     drawerStatus.value = false
+    pageName.value = ''
+    if (toPath.includes('blog')) {
+      pageName.value = 'Blog'
+    }
+    if (toPath.includes('FAQ')) {
+      pageName.value = 'FAQ'
+    }
   },
   { immediate: true, deep: true }
 )
@@ -93,9 +101,10 @@ const handleSwitchShoppingCart = (status: boolean) => {
 <template>
   <div class="main-header">
     <div class="left" @click="handleSwitchDrawerStatus()"></div>
-    <div class="logo" @click="handleJumpMenu('/')">
+    <div class="logo" @click="handleJumpMenu('/')" v-if="!pageName">
       <img :src="mallInfo.url" alt="" />
     </div>
+    <div class="page-name" v-else>{{ pageName }}</div>
     <van-badge :content="cartCount" max="99" :show-zero="false" position="top-left">
       <div class="right" @click="handleSwitchShoppingCart(true)"></div>
     </van-badge>

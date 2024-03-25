@@ -58,7 +58,7 @@ const menuList = ref<any[]>(
 <style scoped lang="scss">
 .main-footer {
   @apply w-screen
-  min-h-2.18rem
+  min-h-1.68rem
   p-0.16rem;
 
   padding-bottom: env(safe-area-inset-bottom);

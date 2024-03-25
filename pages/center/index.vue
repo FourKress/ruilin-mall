@@ -157,7 +157,7 @@ const handleLogOut = async () => {
 
     box-shadow: 0 6px 12px 0 rgba(32, 36, 47, 0.2);
     background-image: url('@/assets/images/bg-2.png');
-    background-size: 140px 80px;
+    background-size: 1.4rem 0.8rem;
     background-repeat: no-repeat;
 
     &:before {

@@ -113,7 +113,7 @@ const jumpFaceBook = () => {
 
     .van-icon {
       @apply m-l-0.02rem;
-      font-size: 16px;
+      font-size: 0.16rem;
     }
   }
 

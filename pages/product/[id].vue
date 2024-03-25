@@ -198,7 +198,7 @@ const jumpSku = (sku: any) => {
 
         .van-icon {
           @apply m-l-0.02rem;
-          font-size: 16px;
+          font-size: 0.16rem;
         }
 
         &:last-child {
@@ -325,7 +325,7 @@ const jumpSku = (sku: any) => {
 
 <style>
 :root {
-  --van-pagination-height: 24px;
-  --van-pagination-item-width: 24px;
+  --van-pagination-height: 0.24rem;
+  --van-pagination-item-width: 0.24rem;
 }
 </style>
