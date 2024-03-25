@@ -59,7 +59,7 @@ const onRefresh = () => {
                 <div class="img" v-if="item.url">
                   <img :src="item.url" alt="" />
                 </div>
-                <div v-html="item.content"></div>
+                <div v-html="item.content" class="content"></div>
               </van-collapse-item>
             </van-collapse>
           </div>
@@ -137,6 +137,10 @@ const onRefresh = () => {
 
             margin: 0 auto;
           }
+        }
+
+        .content {
+          word-break: break-all;
         }
       }
     }

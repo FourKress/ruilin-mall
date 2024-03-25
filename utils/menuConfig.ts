@@ -24,7 +24,7 @@ export const menuConfig = [
       },
       {
         label: 'About Us',
-        link: ''
+        link: '/about'
       }
       // {
       //   label: 'Contact Us',

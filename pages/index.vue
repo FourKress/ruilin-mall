@@ -58,8 +58,8 @@ const jumpSku = (sku: any) => {
   router.push(`/details/${sku.productId}/${sku['colorId']}/${sku.id}`)
 }
 
-const jumpBlogDetails = (id: string) => {
-  router.push(`/blog/${id}`)
+const jumpBlogDetails = (index: string | number) => {
+  router.push(`/blog/${Number(index) + 1}`)
 }
 </script>
 
@@ -120,13 +120,13 @@ const jumpBlogDetails = (id: string) => {
       <div class="list">
         <div
           class="item"
-          v-for="item in blogData"
+          v-for="(item, index) in blogData"
           :key="item.id"
           :to="`/blog/${item.id}`"
           :style="{
             width: blogData.length > 1 ? '3.2rem' : '100%'
           }"
-          @click="jumpBlogDetails(item.id)"
+          @click="jumpBlogDetails(index)"
         >
           <div
             class="image"

@@ -33,8 +33,8 @@ const onRefresh = () => {
   onLoad(true)
 }
 
-const jumpBlogDetails = (id: string) => {
-  router.push(`/blog/${id}`)
+const jumpBlogDetails = (index: string | number) => {
+  router.push(`/blog/${Number(index) + 1}`)
 }
 </script>
 
@@ -58,9 +58,9 @@ const jumpBlogDetails = (id: string) => {
         >
           <div
             class="item"
-            v-for="item in blogList"
+            v-for="(item, index) in blogList"
             :key="item.id"
-            @click="jumpBlogDetails(item.id)"
+            @click="jumpBlogDetails(index)"
           >
             <div
               class="image"
