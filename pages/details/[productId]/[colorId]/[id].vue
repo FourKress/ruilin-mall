@@ -2,6 +2,8 @@
 import type { SwipeInstance } from 'vant'
 
 import { useCartStore } from '~/stores'
+import Pagination from '~/components/Pagination.vue'
+import { useHttpPost } from '~/utils/useHttp'
 
 const useCart = useCartStore()
 const modifyTime = computed(() => useCart.modifyTime)
@@ -27,7 +29,6 @@ const goodsCount = ref(1)
 const isMaxStock = ref(false)
 const isNotStock = ref(false)
 
-// const startValue = ref(4)
 const swipe = ref<SwipeInstance>()
 const topSwipe = ref<SwipeInstance>()
 const activeName = ref()
@@ -113,6 +114,28 @@ const { data: summaryList } = await useHttpGet({
     })
   }
 })
+
+const currentPage = ref(1)
+const reviewData = ref({})
+watchEffect(async () => {
+  const { data: reviewRes } = await useHttpPost({
+    url: `/review/list`,
+    body: {
+      size: 10,
+      current: currentPage.value,
+      productId: productId,
+      skuId: isSelect.value ? skuInfo.value.id : undefined
+    }
+  })
+
+  if (reviewRes.value) {
+    reviewData.value = reviewRes.value
+  }
+})
+
+const handlePageChange = (current: number) => {
+  currentPage.value = current
+}
 
 const handleAddGoodsCount = () => {
   if (skuInfo.value['online_stock'] <= 0) return
@@ -260,11 +283,11 @@ const handleSelectTag = (unitId: string, tagId: string) => {
       <div class="info">
         <span class="unit">$</span>
         <span class="price">{{ skuInfo['online_price'] }}</span>
-        <!--        <span class="start">-->
-        <!--          <van-rate v-model="startValue" readonly />-->
-        <!--        </span>-->
-        <!--        <span class="count">100+ </span>-->
-        <!--        <span class="tips">Reviews</span>-->
+        <span class="start">
+          <van-rate v-model="reviewData['totalScore']" readonly />
+        </span>
+        <span class="count">{{ reviewData['reviewCount'] }}+ </span>
+        <span class="tips">Reviews</span>
       </div>
 
       <div class="split-line"></div>
@@ -345,38 +368,41 @@ const handleSelectTag = (unitId: string, tagId: string) => {
       </div>
     </div>
 
-    <!--    <div class="card reviews">-->
-    <!--      <div class="top">-->
-    <!--        <span class="title">Customer Reviews</span>-->
-    <!--        <span class="count">100+ </span>-->
-    <!--        <span class="tips">Reviews</span>-->
-    <!--      </div>-->
-    <!--      <div class="select" @click="handleSelect">-->
-    <!--        <van-icon :name="isSelect ? 'checked' : 'circle'" />-->
-    <!--        <span class="label">Just look at the current item</span>-->
-    <!--      </div>-->
-    <!--      <div class="list">-->
-    <!--        <div class="item" v-for="item in 5" :key="item">-->
-    <!--          <div class="top">-->
-    <!--            <div class="info">-->
-    <!--              <span class="name">Nickname</span>-->
-    <!--              <span class="tips">City/Country</span>-->
-    <!--            </div>-->
-    <!--            <span class="tips">02/12/2024</span>-->
-    <!--          </div>-->
-    <!--          <div class="start">-->
-    <!--            <van-rate v-model="startValue" readonly />-->
-    <!--            <span class="unit">Color ; Length</span>-->
-    <!--          </div>-->
-    <!--          <div class="content">-->
-    <!--            The content display area of customer reviews.The length limit is 500 characters-->
-    <!--          </div>-->
-    <!--        </div>-->
-    <!--      </div>-->
-    <!--      <div class="jump-btn">-->
-    <!--        <Pagination />-->
-    <!--      </div>-->
-    <!--    </div>-->
+    <div class="card reviews">
+      <div class="top">
+        <span class="title">Customer Reviews</span>
+        <span class="count">{{ reviewData.total }}+ </span>
+        <span class="tips">Reviews</span>
+      </div>
+      <div class="select" @click="handleSelect">
+        <van-icon :name="isSelect ? 'checked' : 'circle'" />
+        <span class="label">Just look at the current item</span>
+      </div>
+      <div class="list">
+        <div class="item" v-for="item in reviewData.records" :key="item">
+          <div class="top">
+            <div class="info">
+              <span class="name">{{ item['nickname'] }}</span>
+            </div>
+            <span class="tips">{{ item['createTime'].substring(0, 10) }}</span>
+          </div>
+          <div class="start">
+            <van-rate v-model="item['score']" readonly />
+            <span class="unit">{{ item['tagNameStr'] }}</span>
+          </div>
+          <div class="content">
+            {{ item['content'] }}
+          </div>
+        </div>
+      </div>
+      <div class="jump-btn">
+        <Pagination
+          v-if="reviewData['records'] && reviewData['records'].length"
+          :pageTotal="reviewData['total']"
+          @pageChange="handlePageChange"
+        />
+      </div>
+    </div>
 
     <div class="card follow-container">
       <FollowUs />
@@ -875,9 +901,6 @@ const handleSelectTag = (unitId: string, tagId: string) => {
             .name {
               @include primary-font-16;
               color: $text-high-color;
-            }
-            .tips {
-              @include english-font;
             }
           }
         }

@@ -157,6 +157,16 @@ const handleCopy = async () => {
       showToast('Copy failed')
     })
 }
+
+const handleJumpView = (order: any) => {
+  const reviewId = order['reviewId']
+  if (reviewId) {
+    router.push(`/details/${order.productId}/${order.colorId}/${order.skuId}`)
+  } else {
+    console.log(order)
+    router.push(`/review/${order.id}`)
+  }
+}
 </script>
 
 <template>
@@ -227,6 +237,11 @@ const handleCopy = async () => {
               <div class="tips">
                 <span>{{ item['tagNameStr'] }}&nbsp;</span>
                 <span class="count">x{{ item['quantity'] }}</span>
+              </div>
+              <div class="row" v-if="order.status === 5 || item['reviewId']">
+                <div class="btn" @click="handleJumpView(item)">
+                  {{ item['reviewId'] ? 'View reviews' : 'Go to review' }}
+                </div>
               </div>
             </div>
           </div>
@@ -336,7 +351,6 @@ const handleCopy = async () => {
         </div>
       </div>
       <div class="btn-list" v-if="[-1, 5, 6, 7, 8].includes(order.status)">
-        <!--        <div class="btn" v-if="order.status === 5">Go to review</div>-->
         <div class="btn" @click="handleReOrder(order)">ReOrder</div>
       </div>
     </div>
@@ -558,7 +572,7 @@ const handleCopy = async () => {
 
       .item {
         @apply w-full
-        min-h-1.5rem
+        min-h-1.3rem
         p-x-0.16rem;
 
         background-color: $white-color;
@@ -577,11 +591,11 @@ const handleCopy = async () => {
 
         .panel {
           @apply w-full
-          h-0.9rem
+          min-h-0.9rem
           p-y-0.15rem
           flex
           justify-between
-          items-center;
+          items-start;
 
           border-top: 1px solid $border-color;
 
@@ -659,6 +673,24 @@ const handleCopy = async () => {
               @include general-font-14;
 
               color: $text-low-color;
+            }
+
+            .row {
+              @apply flex
+              justify-end;
+
+              .btn {
+                @apply w-1.07rem
+                h-0.32rem
+                rd-0.32rem
+                flex
+                justify-center
+                items-center;
+
+                border: 1px solid $border-color;
+                @include general-font-14;
+                color: $text-mid-color;
+              }
             }
           }
         }

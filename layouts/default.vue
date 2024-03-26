@@ -31,7 +31,8 @@ watch(
       '/order',
       '/email',
       '/phone',
-      '/info'
+      '/info',
+      '/review'
     ].some((d) => toPath.includes(d))
     hasFooter.value = !(toPath === '/blog' || toPath === '/FAQ')
   },

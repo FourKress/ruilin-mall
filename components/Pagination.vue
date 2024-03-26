@@ -18,6 +18,7 @@ const emits = defineEmits<{
     v-model="currentPage"
     force-ellipses
     :total-items="pageTotal"
+    :items-per-page="10"
     :show-page-size="5"
     @change="handlePageChange"
   >
