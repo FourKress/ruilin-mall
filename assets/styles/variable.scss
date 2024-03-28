@@ -18,6 +18,11 @@ $red-color: #D84639;
 $green-color: #5BB318;
 $yellow-color: #FFAA00;
 
+@font-face {
+  font-family: 'Sinerva';
+  src: url('./Sinerva.ttf') format('truetype');
+}
+
 // font
 $chinese-ios-font: 'PingFang SC';
 $chinese-android-font: 'Noto Sans';

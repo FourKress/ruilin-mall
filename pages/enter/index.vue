@@ -28,7 +28,7 @@ const mallInfo = computed(() => useInfoStore().details)
 
   background-repeat: no-repeat;
   background-size: 100% 4.92rem;
-  background-image: url('https://assets.vinnhair.com/static/bg.png');
+  background-image: url('@/assets/images/bg.png');
 
   background-color: #e6eaeb;
 

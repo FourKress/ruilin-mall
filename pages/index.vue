@@ -15,10 +15,22 @@ const actions = [
 
 const showPicker = ref(false)
 const currentAction = ref<any>(actions[0])
+const swipeData = ref([])
 
-const { data: swipeData } = await useHttpGet({
+const { data: bannerRes } = await useHttpGet({
   url: '/banner/list'
 })
+if (bannerRes.value) {
+  swipeData.value = bannerRes.value
+    .filter((d: any) => d['objectKeyMobile'])
+    .map((d: any) => {
+      return {
+        ...d,
+        name: d?.name ? d?.name.replace(/\n/g, '<br/>') : '',
+        subtitle: d?.subtitle ? d?.subtitle.replace(/\n/g, '<br/>') : ''
+      }
+    })
+}
 
 watchEffect(async () => {
   const { data: resData } = await useHttpPost({
@@ -66,9 +78,23 @@ const jumpBlogDetails = (index: string | number) => {
 <template>
   <div class="home">
     <div class="swipe-container">
-      <van-swipe :autoplay="3000" lazy-render>
+      <!--      :autoplay="3000"-->
+      <van-swipe lazy-render>
         <van-swipe-item v-for="item in swipeData" :key="item.id">
-          <img :src="item.url" :alt="item['objectKey']" @click="handleJump(item.url)" />
+          <div class="warp">
+            <div class="mask">
+              <div class="name" v-html="item['name']"></div>
+              <div class="subtitle" v-html="item['subtitle']"></div>
+              <div class="btn-list" v-if="item['btnList']">
+                <template v-for="btn in item['btnList']">
+                  <span class="btn" @click="handleJump(btn.link)" v-if="btn.name">{{
+                    btn.name
+                  }}</span>
+                </template>
+              </div>
+            </div>
+            <img :src="item['mobile_url']" :alt="item['objectKey']" />
+          </div>
         </van-swipe-item>
 
         <template #indicator="{ active, total }">
@@ -177,6 +203,62 @@ const jumpBlogDetails = (index: string | number) => {
 
     .van-swipe {
       @apply h-full;
+
+      .warp {
+        @apply h-full
+        relative;
+
+        .mask {
+          @apply absolute
+          left-0.24rem
+          bottom-0.8rem
+          flex
+          flex-col
+          items-start;
+
+          .name {
+            font-size: 0.56rem;
+            color: $white-color;
+
+            font-family: 'Sinerva', Arial, sans-serif;
+          }
+
+          .subtitle {
+            @apply m-b-0.2rem;
+            @include primary-font-16;
+            color: $white-color;
+          }
+
+          .btn-list {
+            @apply flex
+            w-full
+            justify-start
+            items-center;
+
+            .btn {
+              @apply min-w-1.2rem
+              h-0.4rem
+              rd-0.4rem
+              flex
+              justify-center
+              items-center;
+
+              border: 2px solid $primary-color;
+              @include title-font-18;
+              color: $white-color;
+
+              &:last-child {
+                background-color: transparent;
+              }
+
+              &:first-child {
+                background-color: $primary-color;
+                margin-right: 0.2rem;
+              }
+            }
+          }
+        }
+      }
 
       img {
         @apply block

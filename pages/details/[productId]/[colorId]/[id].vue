@@ -393,6 +393,25 @@ const handleSelectTag = (unitId: string, tagId: string) => {
           <div class="content">
             {{ item['content'] }}
           </div>
+          <div class="img-list">
+            <div
+              class="img"
+              :class="item['imageList'].length === 1 && 'big-img'"
+              v-for="(url, index) in item['imageList']"
+              :key="url"
+            >
+              <img
+                :src="url"
+                alt=""
+                @click="
+                  showImagePreview({
+                    images: item['imageList'],
+                    startPosition: index
+                  })
+                "
+              />
+            </div>
+          </div>
         </div>
       </div>
       <div class="jump-btn">
@@ -938,6 +957,35 @@ const handleSelectTag = (unitId: string, tagId: string) => {
         .content {
           @include general-font-loose-14;
           color: $text-high-color;
+        }
+
+        .img-list {
+          @apply w-full
+          grid
+          justify-between
+          items-start
+          flex-wrap
+          m-t-0.08rem;
+
+          grid-template-columns: repeat(3, 1.06rem);
+          row-gap: 0.04rem;
+          column-gap: 0.04rem;
+
+          .img {
+            @apply w-1.06rem
+            h-1.06rem;
+
+            img {
+              @apply block
+              w-full
+              h-full;
+            }
+
+            &.big-img {
+              @apply w-1.6rem
+              h-1.6rem;
+            }
+          }
         }
       }
     }
