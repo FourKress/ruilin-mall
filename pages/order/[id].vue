@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import orderStatusTipsMap from '~/utils/orderStatusMap'
 import handlePayNow from '~/utils/payNow'
-import { useCartStore } from '~/stores'
+import { useCartStore, useInfoStore } from '~/stores'
 
 const route = useRoute()
 const router = useRouter()
@@ -15,7 +15,8 @@ const openLogs = ref(false)
 const openRefund = ref(false)
 const refundRemark = ref('')
 const statusMap = ref<any[]>([])
-const email = ref('service@vinnhair.com')
+const mallInfo = computed(() => useInfoStore().details)
+const scanEvents = ref(null)
 
 if (!route.params?.id) {
   router.push('/')
@@ -51,6 +52,10 @@ if (data.value) {
       time: updateTime
     }
   ].reverse()
+  if (order.value['fexExDetails']) {
+    scanEvents.value = order.value['fexExDetails']['trackResults'][0]['scanEvents']
+    console.log(order.value['fexExDetails']['trackResults'][0]['scanEvents'])
+  }
 }
 
 const handleActionCancelOrder = async (order: any) => {
@@ -149,13 +154,22 @@ const handleCall = () => {
 
 const handleCopy = async () => {
   navigator.clipboard
-    .writeText(email.value)
+    .writeText(mallInfo.value.email)
     .then(() => {
       showToast('Copied successfully')
     })
     .catch(() => {
       showToast('Copy failed')
     })
+}
+
+const handleJumpView = (order: any) => {
+  const reviewId = order['reviewId']
+  if (reviewId) {
+    router.push(`/details/${order.productId}/${order.colorId}/${order.skuId}`)
+  } else {
+    router.push(`/review/${order.id}`)
+  }
 }
 </script>
 
@@ -171,9 +185,13 @@ const handleCopy = async () => {
             <template #active-icon>
               <div class="active-icon"></div>
             </template>
-            <p class="bold">
+            <p class="bold" v-if="order.status !== 3">
               {{ orderStatusTipsMap[order.status] }}
             </p>
+            <p class="bold" v-else>
+              {{ scanEvents[0]['eventDescription'] }}
+            </p>
+
             <p class="tips" v-if="order.status === 1">
               Your order is awaiting merchant review, please be patient
             </p>
@@ -181,14 +199,23 @@ const handleCopy = async () => {
               Your order is being prepared and will be shipped out to you shortly upon completion
             </p>
             <p class="tips" v-if="order.status === 3">
-              Your order is being prepared and will be shipped out to you shortly upon completion
+              <p v-if="scanEvents[0]['exceptionDescription']">
+                {{ scanEvents[0]['exceptionDescription'] }}
+              </p>
+              {{ scanEvents[0]['scanLocation']['city'] }}
+              {{ scanEvents[0]['scanLocation']['countryCode'] }}
             </p>
             <p class="tips" v-if="order.status === 4">
               The item has been delivered. Please collect it promptly. If there are any issues with
               the item, feel free to contact us for assistance
             </p>
             <p class="tips" v-if="[5, -1].includes(order.status)">Welcome to continue shopping</p>
-            <p class="tips">{{ order['updateTime'] }}</p>
+            <p class="tips" v-if="order.status !== 3">
+              {{ order['updateTime'] }}
+            </p>
+            <p class="tips" v-else>
+              {{ scanEvents[0]['date'].substring(0, 16).replace('T', ' ') }}
+            </p>
           </van-step>
           <van-step>
             <template #inactive-icon>
@@ -219,7 +246,7 @@ const handleCopy = async () => {
             </div>
             <div class="info-container">
               <div class="info-title">
-                <span>{{ item['colorName'] }}</span>
+                <span class="name">{{ item['colorName'] }}</span>
                 <span
                   ><span class="unit">$</span> <span class="price">{{ item['price'] }}</span></span
                 >
@@ -227,6 +254,11 @@ const handleCopy = async () => {
               <div class="tips">
                 <span>{{ item['tagNameStr'] }}&nbsp;</span>
                 <span class="count">x{{ item['quantity'] }}</span>
+              </div>
+              <div class="row" v-if="order.status === 5 || item['reviewId']">
+                <div class="btn" @click="handleJumpView(item)">
+                  {{ item['reviewId'] ? 'View reviews' : 'Go to review' }}
+                </div>
               </div>
             </div>
           </div>
@@ -254,12 +286,16 @@ const handleCopy = async () => {
           <span class="label">Price Adjustment</span>
           <span class="value">— $ {{ order['modifyAmount'] || '0.00' }}</span>
         </div>
+
         <div class="footer-row">
-          <span class="left">
-            <span>Total discounts: </span>
-            <span class="price">$ {{ order['discountAmount'] }}</span>
-          </span>
-          <span class="right">Actual payment: $ {{ order['payAmount'] }} </span>
+          <div class="row">
+            <span class="label">Total discounts</span>
+            <span class="value">$ {{ order['discountAmount'] }}</span>
+          </div>
+          <div class="row">
+            <span class="label">Actual payment</span>
+            <span class="value">$ {{ order['payAmount'] }}</span>
+          </div>
         </div>
       </div>
 
@@ -332,14 +368,19 @@ const handleCopy = async () => {
         </div>
       </div>
       <div class="btn-list" v-if="[-1, 5, 6, 7, 8].includes(order.status)">
-        <!--        <div class="btn" v-if="order.status === 5">Go to review</div>-->
         <div class="btn" @click="handleReOrder(order)">ReOrder</div>
       </div>
     </div>
 
-    <van-dialog v-model:show="showCall" title="Contact seller" confirmButtonText="Confirm">
+    <van-dialog
+      v-model:show="showCall"
+      title="Contact seller"
+      theme="round-button"
+      confirmButtonText="Confirm"
+      class-name="warning-dialog"
+    >
       <div class="dialog-container">
-        <span>{{ email }}</span>
+        <a :href="`mailto:${mallInfo['email']}`">{{ mallInfo['email'] }}</a>
         <span class="btn" @click="handleCopy">Copy</span>
       </div>
     </van-dialog>
@@ -352,6 +393,21 @@ const handleCopy = async () => {
       <div class="log-main" @click.self.stop="openLogs = false">
         <div class="card logistics-container" style="padding: 0 !important" v-if="openLogs">
           <van-steps :active="0" direction="vertical">
+            <van-step v-for="item in scanEvents">
+              <template #active-icon>
+                <div class="active-icon"></div>
+              </template>
+              <p class="bold">  {{ item['eventDescription'] }}</p>
+
+              <p class="tips">
+                <p v-if="item['exceptionDescription']">
+                  {{ item['exceptionDescription'] }}
+                </p>
+                {{ item['scanLocation']['city'] }}
+                {{ item['scanLocation']['countryCode'] }}
+              </p>
+              <p class="tips"> {{ item['date'].substring(0, 16).replace('T', ' ') }}</p>
+            </van-step>
             <van-step v-for="item in statusMap">
               <template #active-icon>
                 <div class="active-icon"></div>
@@ -364,7 +420,7 @@ const handleCopy = async () => {
                 Your order is being prepared and will be shipped out to you shortly upon completion
               </p>
               <p class="tips" v-if="item.status === 3">
-                Your order is being prepared and will be shipped out to you shortly upon completion
+                Shipment information sent to FedEx
               </p>
               <p class="tips" v-if="item.status === 4">
                 The item has been delivered. Please collect it promptly. If there are any issues
@@ -548,7 +604,7 @@ const handleCopy = async () => {
 
       .item {
         @apply w-full
-        min-h-1.5rem
+        min-h-1.3rem
         p-x-0.16rem;
 
         background-color: $white-color;
@@ -567,18 +623,20 @@ const handleCopy = async () => {
 
         .panel {
           @apply w-full
-          h-1.1rem
+          min-h-0.9rem
           p-y-0.15rem
           flex
           justify-between
-          items-center;
+          items-start;
 
           border-top: 1px solid $border-color;
 
           .pic {
             @apply w-0.6rem
-            h-0.8rem
-            m-r-0.08rem;
+            h-0.6rem
+            m-r-0.08rem
+            rd-0.04rem
+            overflow-hidden;
 
             img {
               @apply block
@@ -604,10 +662,17 @@ const handleCopy = async () => {
               justify-between
               items-center;
 
-              white-space: nowrap;
-
               @include title-font-18;
               color: $text-high-color;
+
+              .name {
+                @apply flex-1
+                overflow-hidden
+                text-ellipsis
+                p-r-0.08rem;
+
+                white-space: nowrap;
+              }
 
               .unit {
                 @include general-font-14;
@@ -640,6 +705,24 @@ const handleCopy = async () => {
               @include general-font-14;
 
               color: $text-low-color;
+            }
+
+            .row {
+              @apply flex
+              justify-end;
+
+              .btn {
+                @apply w-1.07rem
+                h-0.32rem
+                rd-0.32rem
+                flex
+                justify-center
+                items-center;
+
+                border: 1px solid $border-color;
+                @include general-font-14;
+                color: $text-mid-color;
+              }
             }
           }
         }
@@ -674,26 +757,14 @@ const handleCopy = async () => {
       }
 
       .footer-row {
-        @apply flex
-        justify-between
-        items-center
-        h-0.26rem
-        p-t-0.08rem
+        @apply p-t-0.08rem
         m-t-0.08rem;
 
         border-top: 1px solid $border-color;
 
-        .left {
-          @include general-font-loose-14;
+        .value {
           color: $text-high-color;
-          .price {
-            color: $red-color;
-            @include number-font;
-          }
-        }
-        .right {
-          @include primary-font-14;
-          color: $text-high-color;
+          @include number-font;
         }
       }
     }
@@ -804,6 +875,11 @@ const handleCopy = async () => {
     .btn {
       @apply m-l-0.08rem;
       color: #1989fa;
+    }
+
+    a {
+      color: $text-high-color;
+      text-decoration: underline;
     }
   }
 

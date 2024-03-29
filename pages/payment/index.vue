@@ -5,16 +5,11 @@ import { Decimal } from 'decimal.js'
 
 const route = useRoute()
 const router = useRouter()
-const skuIds = route.query?.skuIds as string[]
-
-if (!skuIds || !skuIds.length) {
-  router.back()
-}
 
 const useCart = useCartStore()
 const useRule = useRuleStore()
 
-const goodsList = await useCart.getPaymentGoodsList(skuIds)
+const goodsList = await useCart.getPaymentGoodsList()
 
 const cartTotalPrice = computed(() => useCart.totalPrice)
 
@@ -321,9 +316,11 @@ const handleActivePromoCode = async () => {
             border-top: 1px solid $border-color;
 
             .pic {
-              @apply w-0.6rem
-              h-0.8rem
-              m-r-0.08rem;
+              @apply w-0.75rem
+              h-0.75rem
+              m-r-0.08rem
+              rd-0.04rem
+              overflow-hidden;
 
               img {
                 @apply block
@@ -513,7 +510,7 @@ const handleActivePromoCode = async () => {
           justify-center;
 
           color: $primary-color;
-          font-size: 20px;
+          font-size: 0.2rem;
 
           .logo {
             @apply w-0.42rem
@@ -523,7 +520,7 @@ const handleActivePromoCode = async () => {
           .label {
             @include primary-font-14;
             color: $text-high-color;
-            margin: 0 16px 0 -4px;
+            margin: 0 0.16rem 0 -0.04rem;
           }
         }
       }
@@ -608,7 +605,7 @@ const handleActivePromoCode = async () => {
     p-0.16rem
     overflow-hidden;
 
-    border-radius: 8px 8px 0 0;
+    border-radius: 0.08rem 0.08rem 0 0;
     background-color: $view-color;
 
     .dialog-top {

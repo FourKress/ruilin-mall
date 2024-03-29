@@ -7,29 +7,29 @@ export const menuConfig = [
     label: 'Products',
     children: []
   },
-  {
-    label: 'Customer service',
-    link: ''
-  },
+  // {
+  //   label: 'Customer service',
+  //   link: ''
+  // },
   {
     label: 'Customer Support',
     children: [
       {
         label: 'FAQ',
-        link: ''
+        link: '/FAQ'
       },
       {
         label: 'Blog',
-        link: ''
+        link: '/blog'
       },
       {
         label: 'About Us',
-        link: ''
-      },
-      {
-        label: 'Contact Us',
-        link: ''
+        link: '/about'
       }
+      // {
+      //   label: 'Contact Us',
+      //   link: ''
+      // }
     ]
   }
 ]

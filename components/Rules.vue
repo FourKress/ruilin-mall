@@ -54,7 +54,7 @@ const handleClose = () => {
   p-y-0.16rem
   overflow-hidden;
 
-  border-radius: 8px 8px 0 0;
+  border-radius: 0.08rem 0.08rem 0 0;
   background-color: $view-color;
 
   .dialog-top {

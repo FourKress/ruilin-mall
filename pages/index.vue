@@ -15,10 +15,22 @@ const actions = [
 
 const showPicker = ref(false)
 const currentAction = ref<any>(actions[0])
+const swipeData = ref([])
 
-const { data: swipeData } = await useHttpGet({
+const { data: bannerRes } = await useHttpGet({
   url: '/banner/list'
 })
+if (bannerRes.value) {
+  swipeData.value = bannerRes.value
+    .filter((d: any) => d['objectKeyMobile'])
+    .map((d: any) => {
+      return {
+        ...d,
+        name: d?.name ? d?.name.replace(/\n/g, '<br/>') : '',
+        subtitle: d?.subtitle ? d?.subtitle.replace(/\n/g, '<br/>') : ''
+      }
+    })
+}
 
 watchEffect(async () => {
   const { data: resData } = await useHttpPost({
@@ -37,6 +49,14 @@ watchEffect(async () => {
   }
 })
 
+const { data: blogData } = await useHttpPost({
+  url: '/blog/list',
+  body: { size: 10, current: 1 },
+  transform: (res) => {
+    return res.data.records
+  }
+})
+
 const onSelect = (item: any) => {
   currentAction.value = item
 }
@@ -49,14 +69,32 @@ const handleJump = (url: string) => {
 const jumpSku = (sku: any) => {
   router.push(`/details/${sku.productId}/${sku['colorId']}/${sku.id}`)
 }
+
+const jumpBlogDetails = (index: string | number) => {
+  router.push(`/blog/${Number(index) + 1}`)
+}
 </script>
 
 <template>
   <div class="home">
     <div class="swipe-container">
-      <van-swipe :autoplay="3000" lazy-render>
+      <!--      :autoplay="3000"-->
+      <van-swipe lazy-render>
         <van-swipe-item v-for="item in swipeData" :key="item.id">
-          <img :src="item.url" :alt="item['objectKey']" @click="handleJump(item.url)" />
+          <div class="warp">
+            <div class="mask">
+              <div class="name" v-html="item['name']"></div>
+              <div class="subtitle" v-html="item['subtitle']"></div>
+              <div class="btn-list" v-if="item['btnList']">
+                <template v-for="btn in item['btnList']">
+                  <span class="btn" @click="handleJump(btn.link)" v-if="btn.name">{{
+                    btn.name
+                  }}</span>
+                </template>
+              </div>
+            </div>
+            <img :src="item['mobile_url']" :alt="item['objectKey']" />
+          </div>
         </van-swipe-item>
 
         <template #indicator="{ active, total }">
@@ -106,25 +144,36 @@ const jumpSku = (sku: any) => {
         <div class="label">Blog</div>
       </div>
       <div class="list">
-        <div class="item" v-for="(item, index) in 10" :key="index">
-          <div class="image">
-            <img src="" alt="" />
+        <div
+          class="item"
+          v-for="(item, index) in blogData"
+          :key="item.id"
+          :to="`/blog/${item.id}`"
+          :style="{
+            width: blogData.length > 1 ? '3.2rem' : '100%'
+          }"
+          @click="jumpBlogDetails(index)"
+        >
+          <div
+            class="image"
+            :style="{
+              width: blogData.length > 1 ? '3.2rem' : '100%',
+              height: blogData.length > 1 ? '1.8rem' : 'calc((100vw - 0.32rem) * (9/16))'
+            }"
+          >
+            <img :src="item.url" alt="" />
           </div>
           <div class="info">
-            <div class="title">Customers like us</div>
-            <div class="details">
-              Malibu Dream (Hair Weft)Malibu Dream (Hair Weft)Malibu Dream (Hair Weft)Malibu Dream
-              (Hair Weft)Malibu Dream (Hair Weft)Malibu Dream (Hair Weft)Malibu Dream (Hair
-              Weft)Malibu Dream (Hair Weft)Malibu Dream (Hair Weft)Malibu Dream (Hair Weft)
-            </div>
+            <div class="title">{{ item.name }}</div>
+            <div class="details" v-html="item.text"></div>
           </div>
         </div>
       </div>
 
-      <div class="jump-btn">
+      <nuxt-link class="jump-btn" to="/blog">
         <span>View more blogs</span>
         <van-icon name="arrow" />
-      </div>
+      </nuxt-link>
     </div>
 
     <div class="about-container">
@@ -154,6 +203,62 @@ const jumpSku = (sku: any) => {
 
     .van-swipe {
       @apply h-full;
+
+      .warp {
+        @apply h-full
+        relative;
+
+        .mask {
+          @apply absolute
+          left-0.24rem
+          bottom-0.8rem
+          flex
+          flex-col
+          items-start;
+
+          .name {
+            font-size: 0.56rem;
+            color: $white-color;
+
+            font-family: 'Sinerva', Arial, sans-serif;
+          }
+
+          .subtitle {
+            @apply m-b-0.2rem;
+            @include primary-font-16;
+            color: $white-color;
+          }
+
+          .btn-list {
+            @apply flex
+            w-full
+            justify-start
+            items-center;
+
+            .btn {
+              @apply min-w-1.2rem
+              h-0.4rem
+              rd-0.4rem
+              flex
+              justify-center
+              items-center;
+
+              border: 2px solid $primary-color;
+              @include title-font-18;
+              color: $white-color;
+
+              &:last-child {
+                background-color: transparent;
+              }
+
+              &:first-child {
+                background-color: $primary-color;
+                margin-right: 0.2rem;
+              }
+            }
+          }
+        }
+      }
 
       img {
         @apply block
@@ -210,7 +315,7 @@ const jumpSku = (sku: any) => {
 
     .van-icon {
       @apply m-l-0.02rem;
-      font-size: 16px;
+      font-size: 0.16rem;
     }
   }
 
@@ -263,12 +368,14 @@ const jumpSku = (sku: any) => {
 
       .item {
         @apply w-1.71rem
-        h-3.1rem
-        m-t-0.16rem;
+        h-2.53rem
+        m-t-0.16rem
+        rd-0.06rem
+        overflow-hidden;
 
         .image {
           @apply w-full
-          h-2.28rem;
+          h-1.71rem;
 
           img {
             @apply block
@@ -361,18 +468,14 @@ const jumpSku = (sku: any) => {
       .item {
         @apply w-3.2rem
         min-w-3.2rem
-        h-3.2rem
         m-r-0.16rem;
 
         &:last-child {
           @apply m-r-0;
         }
 
-        background-color: black;
-
         .image {
-          @apply w-full
-          h-1.8rem;
+          @apply w-full;
 
           img {
             @apply block
@@ -383,7 +486,7 @@ const jumpSku = (sku: any) => {
 
         .info {
           @apply w-full
-          h-1.42rem
+          h-1.34rem
           p-x-0.16rem;
 
           background-color: $white-color;
@@ -408,16 +511,11 @@ const jumpSku = (sku: any) => {
             text-ellipsis;
 
             display: -webkit-box;
-            -webkit-line-clamp: 4;
+            -webkit-line-clamp: 3;
             /*! autoprefixer: off */
             -webkit-box-orient: vertical;
 
-            color: $text-high-color;
-
             @include general-font-loose-14;
-
-            transform: scaleY(0.9);
-            transform-origin: top;
           }
         }
       }

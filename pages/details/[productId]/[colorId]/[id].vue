@@ -2,6 +2,8 @@
 import type { SwipeInstance } from 'vant'
 
 import { useCartStore } from '~/stores'
+import Pagination from '~/components/Pagination.vue'
+import { useHttpPost } from '~/utils/useHttp'
 
 const useCart = useCartStore()
 const modifyTime = computed(() => useCart.modifyTime)
@@ -27,7 +29,6 @@ const goodsCount = ref(1)
 const isMaxStock = ref(false)
 const isNotStock = ref(false)
 
-// const startValue = ref(4)
 const swipe = ref<SwipeInstance>()
 const topSwipe = ref<SwipeInstance>()
 const activeName = ref()
@@ -114,6 +115,28 @@ const { data: summaryList } = await useHttpGet({
   }
 })
 
+const currentPage = ref(1)
+const reviewData = ref({})
+watchEffect(async () => {
+  const { data: reviewRes } = await useHttpPost({
+    url: `/review/list`,
+    body: {
+      size: 10,
+      current: currentPage.value,
+      productId: productId,
+      skuId: isSelect.value ? skuInfo.value.id : undefined
+    }
+  })
+
+  if (reviewRes.value) {
+    reviewData.value = reviewRes.value
+  }
+})
+
+const handlePageChange = (current: number) => {
+  currentPage.value = current
+}
+
 const handleAddGoodsCount = () => {
   if (skuInfo.value['online_stock'] <= 0) return
   if (isMaxStock.value || isNotStock.value) return
@@ -134,7 +157,7 @@ const handleSubtractGoodsCount = () => {
   goodsCount.value = goodsCount.value - 1
 }
 
-const handleAddCart = () => {
+const handleAddCart = async () => {
   if (skuInfo.value['online_stock'] <= 0) return
   if (isNotStock.value) return
 
@@ -156,7 +179,7 @@ const handleAddCart = () => {
     })
 
   const { id, ...other } = sku
-  useCart.addToCart({
+  const isAdd = await useCart.addToCart({
     productId: sku.productId,
     productName: sku.product_name,
     children: [
@@ -170,6 +193,10 @@ const handleAddCart = () => {
       }
     ]
   })
+
+  if (isAdd) {
+    await useCart.getFetchCartList(false)
+  }
 
   goodsCount.value = 1
 
@@ -246,7 +273,7 @@ const handleSelectTag = (unitId: string, tagId: string) => {
           :key="item.id"
           @click="handleSwitchSwipe(index)"
         >
-          <video v-if="item.fileType === 'video/mp4'" width="100%" height="100%" controls>
+          <video v-if="item.fileType === 'video/mp4'" width="100%" height="100%">
             <source :src="item.url" type="video/mp4" />
             Your browser does not support the Video tag
           </video>
@@ -256,11 +283,11 @@ const handleSelectTag = (unitId: string, tagId: string) => {
       <div class="info">
         <span class="unit">$</span>
         <span class="price">{{ skuInfo['online_price'] }}</span>
-        <!--        <span class="start">-->
-        <!--          <van-rate v-model="startValue" readonly />-->
-        <!--        </span>-->
-        <!--        <span class="count">100+ </span>-->
-        <!--        <span class="tips">Reviews</span>-->
+        <span class="start">
+          <van-rate v-model="reviewData['totalScore']" readonly />
+        </span>
+        <span class="count">{{ reviewData['reviewCount'] }}+ </span>
+        <span class="tips">Reviews</span>
       </div>
 
       <div class="split-line"></div>
@@ -341,38 +368,60 @@ const handleSelectTag = (unitId: string, tagId: string) => {
       </div>
     </div>
 
-    <!--    <div class="card reviews">-->
-    <!--      <div class="top">-->
-    <!--        <span class="title">Customer Reviews</span>-->
-    <!--        <span class="count">100+ </span>-->
-    <!--        <span class="tips">Reviews</span>-->
-    <!--      </div>-->
-    <!--      <div class="select" @click="handleSelect">-->
-    <!--        <van-icon :name="isSelect ? 'checked' : 'circle'" />-->
-    <!--        <span class="label">Just look at the current item</span>-->
-    <!--      </div>-->
-    <!--      <div class="list">-->
-    <!--        <div class="item" v-for="item in 5" :key="item">-->
-    <!--          <div class="top">-->
-    <!--            <div class="info">-->
-    <!--              <span class="name">Nickname</span>-->
-    <!--              <span class="tips">City/Country</span>-->
-    <!--            </div>-->
-    <!--            <span class="tips">02/12/2024</span>-->
-    <!--          </div>-->
-    <!--          <div class="start">-->
-    <!--            <van-rate v-model="startValue" readonly />-->
-    <!--            <span class="unit">Color ; Length</span>-->
-    <!--          </div>-->
-    <!--          <div class="content">-->
-    <!--            The content display area of customer reviews.The length limit is 500 characters-->
-    <!--          </div>-->
-    <!--        </div>-->
-    <!--      </div>-->
-    <!--      <div class="jump-btn">-->
-    <!--        <Pagination />-->
-    <!--      </div>-->
-    <!--    </div>-->
+    <div class="card reviews">
+      <div class="top">
+        <span class="title">Customer Reviews</span>
+        <span class="count">{{ reviewData.total }}+ </span>
+        <span class="tips">Reviews</span>
+      </div>
+      <div class="select" @click="handleSelect">
+        <van-icon :name="isSelect ? 'checked' : 'circle'" />
+        <span class="label">Just look at the current item</span>
+      </div>
+      <div class="list">
+        <div class="item" v-for="item in reviewData.records" :key="item">
+          <div class="top">
+            <div class="info">
+              <span class="name">{{ item['nickname'] }}</span>
+            </div>
+            <span class="tips">{{ item['createTime'].substring(0, 10) }}</span>
+          </div>
+          <div class="start">
+            <van-rate v-model="item['score']" readonly />
+            <span class="unit">{{ item['tagNameStr'] }}</span>
+          </div>
+          <div class="content">
+            {{ item['content'] }}
+          </div>
+          <div class="img-list">
+            <div
+              class="img"
+              :class="item['imageList'].length === 1 && 'big-img'"
+              v-for="(url, index) in item['imageList']"
+              :key="url"
+            >
+              <img
+                :src="url"
+                alt=""
+                @click="
+                  showImagePreview({
+                    images: item['imageList'],
+                    startPosition: index
+                  })
+                "
+              />
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="jump-btn">
+        <Pagination
+          v-if="reviewData['records'] && reviewData['records'].length"
+          :pageTotal="reviewData['total']"
+          @pageChange="handlePageChange"
+        />
+      </div>
+    </div>
 
     <div class="card follow-container">
       <FollowUs />
@@ -436,8 +485,12 @@ const handleSelectTag = (unitId: string, tagId: string) => {
       h-4.77rem
       relative;
 
+      height: calc(100vw - 0.32rem);
+
       .van-swipe {
-        @apply h-full;
+        @apply h-full
+        rd-0.06rem
+        overflow-hidden;
 
         img {
           @apply block
@@ -453,12 +506,15 @@ const handleSelectTag = (unitId: string, tagId: string) => {
           h-0.26rem
           flex
           items-center
-          justify-center;
+          justify-center
+          overflow-hidden;
+
+          border-radius: 0 0 0.06rem 0;
 
           background-color: rgba(16, 16, 16, 0.5);
           color: $white-color;
-          font-size: 14px;
-          line-height: 18px;
+          font-size: 0.14rem;
+          line-height: 0.18rem;
           @include number-font;
         }
       }
@@ -480,7 +536,9 @@ const handleSelectTag = (unitId: string, tagId: string) => {
         @apply w-0.6rem
         min-w-0.6rem
         h-full
-        m-l-0.14rem;
+        m-l-0.14rem
+        rd-0.04rem
+        overflow-hidden;
 
         border: 2px solid transparent;
 
@@ -755,8 +813,8 @@ const handleSelectTag = (unitId: string, tagId: string) => {
 
         .van-cell {
           padding: 0;
-          height: 60px;
-          line-height: 60px;
+          height: 0.6rem;
+          line-height: 0.6rem;
           display: flex;
           justify-content: space-between;
           align-items: center;
@@ -766,6 +824,10 @@ const handleSelectTag = (unitId: string, tagId: string) => {
           .van-cell__title {
             @include primary-font-14;
             color: $text-high-color;
+
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
           }
 
           .van-icon {
@@ -776,7 +838,7 @@ const handleSelectTag = (unitId: string, tagId: string) => {
         .van-collapse-item__content {
           @include general-font-loose-14;
           color: $text-high-color;
-          padding: 0 0 16px 0;
+          padding: 0 0 0.16rem 0;
         }
       }
     }
@@ -823,7 +885,7 @@ const handleSelectTag = (unitId: string, tagId: string) => {
 
       .van-icon {
         @apply m-r-0.08rem;
-        font-size: 20px;
+        font-size: 0.2rem;
         color: $primary-color;
       }
 
@@ -859,9 +921,6 @@ const handleSelectTag = (unitId: string, tagId: string) => {
               @include primary-font-16;
               color: $text-high-color;
             }
-            .tips {
-              @include english-font;
-            }
           }
         }
 
@@ -884,7 +943,7 @@ const handleSelectTag = (unitId: string, tagId: string) => {
 
             &:before {
               content: '';
-              height: 12px;
+              height: 0.12rem;
               width: 1px;
               background-color: $border-color;
               position: absolute;
@@ -898,6 +957,35 @@ const handleSelectTag = (unitId: string, tagId: string) => {
         .content {
           @include general-font-loose-14;
           color: $text-high-color;
+        }
+
+        .img-list {
+          @apply w-full
+          grid
+          justify-between
+          items-start
+          flex-wrap
+          m-t-0.08rem;
+
+          grid-template-columns: repeat(3, 1.06rem);
+          row-gap: 0.04rem;
+          column-gap: 0.04rem;
+
+          .img {
+            @apply w-1.06rem
+            h-1.06rem;
+
+            img {
+              @apply block
+              w-full
+              h-full;
+            }
+
+            &.big-img {
+              @apply w-1.6rem
+              h-1.6rem;
+            }
+          }
         }
       }
     }

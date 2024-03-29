@@ -15,7 +15,7 @@ export const useCartStore = defineStore('cart', {
       this.totalPrice = '0.0'
       this.modifySku()
     },
-    handleGrouped(cartList: any[], isPayment = false): any[] {
+    handleGrouped(cartList: any[]): any[] {
       const grouped = cartList.reduce((result: any, item: any) => {
         if (!result[item.productId]) {
           result[item.productId] = {
@@ -25,12 +25,7 @@ export const useCartStore = defineStore('cart', {
           }
         }
 
-        const selectIds = this.selectList.map((d: any) => d.id)
-
-        result[item.productId].children.push({
-          ...item,
-          select: isPayment ? true : selectIds.includes(item.id)
-        })
+        result[item.productId].children.push(item)
 
         return result
       }, {})
@@ -52,11 +47,13 @@ export const useCartStore = defineStore('cart', {
 
       this.rawCart = data.value
       this.cart = this.handleGrouped(data.value)
+
+      this.computeTotalPrice(this.cart)
     },
-    async getPaymentGoodsList(ids: string[]) {
+    async getPaymentGoodsList() {
       await this.getFetchCartList()
-      const rawCartList = this.rawCart.filter((d: any) => ids.includes(d.skuId))
-      const cartList = this.handleGrouped(rawCartList, true)
+      const rawCartList = this.rawCart.filter((d: any) => d.select)
+      const cartList = this.handleGrouped(rawCartList)
       this.computeTotalPrice(cartList)
       return cartList
     },
@@ -101,8 +98,9 @@ export const useCartStore = defineStore('cart', {
       }, '0.0')
     },
 
-    changeSelect(status: boolean, targetId?: string) {
+    async changeSelect(status: boolean, targetId?: string, skuIds?: string[]) {
       const isAll = !targetId
+      await this.handleSelect(skuIds ? skuIds : targetId ? [targetId] : [], status)
       this.cart = this.cart.map((d) => {
         const { children, productId } = d
         if (isAll || productId === targetId) {
@@ -209,7 +207,6 @@ export const useCartStore = defineStore('cart', {
       const res = await this.handleFetchCrate(newCart)
       if (!res) return
 
-      this.computeTotalPrice()
       this.modifySku()
     },
 
@@ -223,9 +220,11 @@ export const useCartStore = defineStore('cart', {
         .map((d) => {
           if (d.productId === productId) {
             const children = d.children.filter((s: any) => s.skuId !== sku.skuId)
+            const selectCount = children.filter((s: any) => s.select).length
             if (children.length) {
               return {
                 ...d,
+                select: selectCount === children.length,
                 children
               }
             }
@@ -245,20 +244,16 @@ export const useCartStore = defineStore('cart', {
       const targetSku = this.getSku(product.productId, newSku.skuId)
       if (targetSku) {
         await this.changeQuantity(targetSku, 'ADD', newSku.quantity)
-        return
+        return false
       }
-      if (!targetSku) {
-        const cartList = [...this.cart]
-        cartList.push({
-          ...product,
-          select: false,
-          children: [{ ...newSku, select: false }]
-        })
+      const cartList = [...this.cart]
+      cartList.push({
+        ...product,
+        children: [{ ...newSku }]
+      })
 
-        const res = await this.handleFetchCrate(cartList)
-        if (!res) return
-      }
-      this.computeTotalPrice()
+      await this.handleFetchCrate(cartList)
+      return true
     },
 
     async handleUpdate(id: string, quantity: number) {
@@ -267,6 +262,18 @@ export const useCartStore = defineStore('cart', {
         body: {
           id,
           quantity
+        },
+        isLoading: true
+      })
+      return !!data.value
+    },
+
+    async handleSelect(ids: string[], select: boolean) {
+      const { data } = await useHttpPost({
+        url: `/shop-cart/select`,
+        body: {
+          ids,
+          select
         },
         isLoading: true
       })
@@ -290,7 +297,16 @@ export const useCartStore = defineStore('cart', {
             .map((d) => {
               const { children } = d
               return children.map((c: any) => {
-                const { quantity, productId, colorId, skuId, id, tagNameStr, format } = c
+                const {
+                  quantity,
+                  productId,
+                  colorId,
+                  skuId,
+                  id,
+                  tagNameStr,
+                  format,
+                  select = 1
+                } = c
                 return {
                   quantity,
                   productId,
@@ -298,7 +314,8 @@ export const useCartStore = defineStore('cart', {
                   skuId,
                   id,
                   format,
-                  tagNameStr
+                  tagNameStr,
+                  select: id ? select > 0 : true
                 }
               })
             })
@@ -307,11 +324,7 @@ export const useCartStore = defineStore('cart', {
         isLoading: true
       })
 
-      if (!data.value) return false
-
-      await this.getFetchCartList()
-
-      return true
+      return data.value
     }
   }
 })

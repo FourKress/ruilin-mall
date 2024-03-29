@@ -38,7 +38,7 @@ const handleBack = () => {
         class="label"
         :style="{
           justifyContent: alignCenter ? 'center' : 'flex-start',
-          textIndent: alignCenter ? '-24px' : '0px'
+          textIndent: alignCenter ? '-0.24rem' : '0px'
         }"
       >
         {{ title }}

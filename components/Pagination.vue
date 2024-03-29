@@ -18,6 +18,7 @@ const emits = defineEmits<{
     v-model="currentPage"
     force-ellipses
     :total-items="pageTotal"
+    :items-per-page="10"
     :show-page-size="5"
     @change="handlePageChange"
   >
@@ -35,10 +36,10 @@ const emits = defineEmits<{
   @apply justify-between;
 
   .van-pagination__item {
-    height: 24px !important;
-    max-width: 24px !important;
-    min-width: 24px !important;
-    width: 24px !important;
+    height: 0.24rem !important;
+    max-width: 0.24rem !important;
+    min-width: 0.24rem !important;
+    width: 0.24rem !important;
     flex: unset !important;
     padding: 0 !important;
     opacity: 1;

@@ -96,8 +96,8 @@ const handleJump = (order: any) => {
 
 <style scoped lang="scss">
 .order-container {
-  @apply min-h-1.34rem
-  max-h-1.87rem
+  @apply min-h-1.14rem
+  max-h-1.67rem
   w-full
   rd-0.08rem
   p-x-0.16rem
@@ -142,7 +142,7 @@ const handleJump = (order: any) => {
     items-center
     justify-between
     w-full
-    h-0.8rem
+    h-0.6rem
     m-t-0.12rem;
 
     .pic-list {
@@ -157,7 +157,9 @@ const handleJump = (order: any) => {
 
     .pic {
       @apply w-0.6rem
-      h-0.8rem;
+      h-0.6rem
+      rd-0.04rem
+      overflow-hidden;
 
       img {
         @apply block

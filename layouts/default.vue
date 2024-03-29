@@ -1,8 +1,9 @@
 <script setup lang="ts">
-import { useProductStore, useRuleStore } from '~/stores/'
+import { useProductStore, useRuleStore, useInfoStore } from '~/stores/'
 
 useProductStore().getProductList()
 useRuleStore().getRuleList()
+useInfoStore().getInfoDetails()
 
 const warpRef = ref<HTMLDivElement>()
 
@@ -16,6 +17,7 @@ const handleOpenModal = (status: boolean) => {
 }
 
 const isLayout = ref(true)
+const hasFooter = ref(true)
 const isDetails = ref(false)
 const router = useRouter()
 watch(
@@ -29,8 +31,10 @@ watch(
       '/order',
       '/email',
       '/phone',
-      '/info'
+      '/info',
+      '/review'
     ].some((d) => toPath.includes(d))
+    hasFooter.value = !(toPath === '/blog' || toPath === '/FAQ')
   },
   { immediate: true, deep: true }
 )
@@ -45,7 +49,7 @@ watch(
       <div class="page-container">
         <slot />
       </div>
-      <main-footer v-if="isLayout" />
+      <main-footer v-if="isLayout && hasFooter" />
     </div>
   </div>
 </template>

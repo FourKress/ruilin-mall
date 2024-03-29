@@ -98,7 +98,10 @@ const onSelect = (item: any) => {
 <style scoped lang="scss">
 .order-page {
   @apply w-screen
-  h-full;
+  h-full
+  flex-1;
+
+  background-color: $view-color;
 
   .select-btn {
     @apply min-w-0.6rem
@@ -121,7 +124,7 @@ const onSelect = (item: any) => {
   .container {
     @apply p-0.16rem;
 
-    background-color: #f5f5f5;
+    background-color: $view-color;
   }
 }
 </style>

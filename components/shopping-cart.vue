@@ -62,7 +62,9 @@ const handleSelectSku = (status: boolean, targetId: string, sku: any) => {
 
 const handleSelectProduct = (status: boolean, targetId: string, product: any) => {
   if (checkDisabledProduct(product)) return
-  useCart.changeSelect(status, targetId)
+  const skuIds = product.children.map((d: any) => d.skuId)
+  console.log(product, skuIds)
+  useCart.changeSelect(status, targetId, skuIds)
 }
 
 const handleChangeQuantity = (targetId: string, type: string) => {
@@ -130,10 +132,7 @@ const handleCheckOut = async () => {
   })
   await router.push({
     path: '/payment',
-    replace: true,
-    query: {
-      skuIds: cartSelectList.value.map((d: any) => d.skuId)
-    }
+    replace: true
   })
   closeToast()
 }
@@ -553,7 +552,7 @@ const checkDisabledProduct = (cart: any) =>
         }
 
         .van-icon {
-          font-size: 16px;
+          font-size: 0.16rem;
           color: $red-color;
         }
       }
@@ -571,7 +570,7 @@ const checkDisabledProduct = (cart: any) =>
         p-0.16rem
         overflow-hidden;
 
-        border-radius: 8px 8px 0 0;
+        border-radius: 0.08rem 0.08rem 0 0;
         background-color: $view-color;
 
         .dialog-top {
@@ -671,8 +670,10 @@ const checkDisabledProduct = (cart: any) =>
             p-t-0.02rem;
 
             .pic {
-              @apply w-0.6rem
-              h-0.80rem;
+              @apply w-0.75rem
+              h-0.75rem
+              rd-0.04rem
+              overflow-hidden;
 
               img {
                 @apply block
@@ -915,9 +916,11 @@ const checkDisabledProduct = (cart: any) =>
               overflow-hidden;
 
               .pic {
-                @apply w-0.6rem
-                h-0.8rem
-                m-r-0.08rem;
+                @apply w-0.75rem
+                h-0.75rem
+                m-r-0.08rem
+                rd-0.04rem
+                overflow-hidden;
 
                 img {
                   @apply block
