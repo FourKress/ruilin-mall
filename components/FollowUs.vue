@@ -41,11 +41,11 @@ const jumpFaceBook = () => {
     </div>
 
     <div class="tabs">
-      <div class="btn active" @click="jumpIns">
-        <img src="" alt="" />
+      <div class="btn" @click="jumpIns">
+        <img src="https://assets.vinnhair.com/static/instagram-fill.png" alt="" />
       </div>
       <div class="btn" @click="jumpFaceBook">
-        <img src="" alt="" />
+        <img src="https://assets.vinnhair.com/static/facebook-fill.png" alt="" />
       </div>
       <div class="btn">
         <img src="" alt="" />
@@ -142,8 +142,6 @@ const jumpFaceBook = () => {
         @apply block
         w-0.24rem
         h-0.24rem;
-
-        background-color: black;
       }
 
       border: 1px solid $view-color;

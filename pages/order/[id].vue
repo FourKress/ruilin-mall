@@ -16,6 +16,7 @@ const openRefund = ref(false)
 const refundRemark = ref('')
 const statusMap = ref<any[]>([])
 const mallInfo = computed(() => useInfoStore().details)
+const scanEvents = ref(null)
 
 if (!route.params?.id) {
   router.push('/')
@@ -51,6 +52,10 @@ if (data.value) {
       time: updateTime
     }
   ].reverse()
+  if (order.value['fexExDetails']) {
+    scanEvents.value = order.value['fexExDetails']['trackResults'][0]['scanEvents']
+    console.log(order.value['fexExDetails']['trackResults'][0]['scanEvents'])
+  }
 }
 
 const handleActionCancelOrder = async (order: any) => {
@@ -163,7 +168,6 @@ const handleJumpView = (order: any) => {
   if (reviewId) {
     router.push(`/details/${order.productId}/${order.colorId}/${order.skuId}`)
   } else {
-    console.log(order)
     router.push(`/review/${order.id}`)
   }
 }
@@ -181,9 +185,13 @@ const handleJumpView = (order: any) => {
             <template #active-icon>
               <div class="active-icon"></div>
             </template>
-            <p class="bold">
+            <p class="bold" v-if="order.status !== 3">
               {{ orderStatusTipsMap[order.status] }}
             </p>
+            <p class="bold" v-else>
+              {{ scanEvents[0]['eventDescription'] }}
+            </p>
+
             <p class="tips" v-if="order.status === 1">
               Your order is awaiting merchant review, please be patient
             </p>
@@ -191,14 +199,23 @@ const handleJumpView = (order: any) => {
               Your order is being prepared and will be shipped out to you shortly upon completion
             </p>
             <p class="tips" v-if="order.status === 3">
-              Your order is being prepared and will be shipped out to you shortly upon completion
+              <p v-if="scanEvents[0]['exceptionDescription']">
+                {{ scanEvents[0]['exceptionDescription'] }}
+              </p>
+              {{ scanEvents[0]['scanLocation']['city'] }}
+              {{ scanEvents[0]['scanLocation']['countryCode'] }}
             </p>
             <p class="tips" v-if="order.status === 4">
               The item has been delivered. Please collect it promptly. If there are any issues with
               the item, feel free to contact us for assistance
             </p>
             <p class="tips" v-if="[5, -1].includes(order.status)">Welcome to continue shopping</p>
-            <p class="tips">{{ order['updateTime'] }}</p>
+            <p class="tips" v-if="order.status !== 3">
+              {{ order['updateTime'] }}
+            </p>
+            <p class="tips" v-else>
+              {{ scanEvents[0]['date'].substring(0, 16).replace('T', ' ') }}
+            </p>
           </van-step>
           <van-step>
             <template #inactive-icon>
@@ -376,6 +393,21 @@ const handleJumpView = (order: any) => {
       <div class="log-main" @click.self.stop="openLogs = false">
         <div class="card logistics-container" style="padding: 0 !important" v-if="openLogs">
           <van-steps :active="0" direction="vertical">
+            <van-step v-for="item in scanEvents">
+              <template #active-icon>
+                <div class="active-icon"></div>
+              </template>
+              <p class="bold">  {{ item['eventDescription'] }}</p>
+
+              <p class="tips">
+                <p v-if="item['exceptionDescription']">
+                  {{ item['exceptionDescription'] }}
+                </p>
+                {{ item['scanLocation']['city'] }}
+                {{ item['scanLocation']['countryCode'] }}
+              </p>
+              <p class="tips"> {{ item['date'].substring(0, 16).replace('T', ' ') }}</p>
+            </van-step>
             <van-step v-for="item in statusMap">
               <template #active-icon>
                 <div class="active-icon"></div>
@@ -388,7 +420,7 @@ const handleJumpView = (order: any) => {
                 Your order is being prepared and will be shipped out to you shortly upon completion
               </p>
               <p class="tips" v-if="item.status === 3">
-                Your order is being prepared and will be shipped out to you shortly upon completion
+                Shipment information sent to FedEx
               </p>
               <p class="tips" v-if="item.status === 4">
                 The item has been delivered. Please collect it promptly. If there are any issues
