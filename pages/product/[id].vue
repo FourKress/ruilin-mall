@@ -154,6 +154,8 @@ const jumpSku = (sku: any) => {
       @apply m-b-0.08rem;
       color: $text-high-color;
       @include title-font-26;
+      font-family: 'Sinerva', Arial, sans-serif;
+      transform: translateY(0.04rem);
     }
 
     .details {

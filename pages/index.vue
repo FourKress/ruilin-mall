@@ -218,8 +218,9 @@ const jumpBlogDetails = (index: string | number) => {
           .name {
             font-size: 0.56rem;
             color: $white-color;
-
+            line-height: 0.56rem;
             font-family: 'Sinerva', Arial, sans-serif;
+            transform: translateY(0.04rem);
           }
 
           .subtitle {
@@ -336,6 +337,8 @@ const jumpBlogDetails = (index: string | number) => {
         @include english-font;
         @include title-font-22;
         color: $text-high-color;
+        font-family: 'Sinerva', Arial, sans-serif;
+        transform: translateY(0.04rem);
       }
 
       .picker {
@@ -451,6 +454,8 @@ const jumpBlogDetails = (index: string | number) => {
         @include english-font;
         @include title-font-22;
         color: $text-high-color;
+        font-family: 'Sinerva', Arial, sans-serif;
+        transform: translateY(0.04rem);
       }
     }
 

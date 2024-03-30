@@ -134,6 +134,9 @@ const handleLogOut = async () => {
         @apply p-b-0.08rem;
         @include title-font-26;
         color: $text-high-color;
+
+        font-family: 'Sinerva', Arial, sans-serif;
+        transform: translateY(0.05rem);
       }
 
       .email {
@@ -222,6 +225,8 @@ const handleLogOut = async () => {
       .name {
         @include title-font-18;
         color: $text-high-color;
+        font-family: 'Sinerva', Arial, sans-serif;
+        transform: translateY(0.04rem);
       }
 
       .btn {

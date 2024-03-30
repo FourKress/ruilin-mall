@@ -46,6 +46,8 @@ const mallInfo = computed(() => useInfoStore().details)
 
       @include title-font-26;
       color: $white-color;
+      font-family: 'Sinerva', Arial, sans-serif;
+      transform: translateY(0.05rem);
     }
 
     .info {

@@ -478,6 +478,9 @@ const handleSelectTag = (unitId: string, tagId: string) => {
       m-b-0.24rem;
       @include title-font-26;
       color: $text-high-color;
+
+      font-family: 'Sinerva', Arial, sans-serif;
+      transform: translateY(0.04rem);
     }
 
     .banner {
@@ -722,6 +725,8 @@ const handleSelectTag = (unitId: string, tagId: string) => {
 
       @include title-font-22;
       color: $text-high-color;
+      font-family: 'Sinerva', Arial, sans-serif;
+      transform: translateY(0.04rem);
     }
 
     .swipe-container {
@@ -781,6 +786,9 @@ const handleSelectTag = (unitId: string, tagId: string) => {
 
       color: $text-high-color;
       @include title-font-26;
+
+      font-family: 'Sinerva', Arial, sans-serif;
+      transform: translateY(0.05rem);
     }
 
     .details {
@@ -858,6 +866,8 @@ const handleSelectTag = (unitId: string, tagId: string) => {
         flex: 1;
         @include title-font-22;
         color: $text-high-color;
+        font-family: 'Sinerva', Arial, sans-serif;
+        transform: translateY(0.04rem);
       }
 
       .count {

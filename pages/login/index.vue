@@ -121,6 +121,8 @@ const onSubmit = async (values: any) => {
 
     @include title-font-26;
     color: $text-high-color;
+    font-family: 'Sinerva', Arial, sans-serif;
+    transform: translateY(0.05rem);
   }
 
   :deep(.van-cell-group) {

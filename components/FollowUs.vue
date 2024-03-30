@@ -68,6 +68,7 @@ const jumpFaceBook = () => {
       @include english-font;
       @include title-font-22;
       color: $text-high-color;
+      font-family: 'Sinerva', Arial, sans-serif;
     }
   }
 
