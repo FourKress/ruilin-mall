@@ -78,8 +78,7 @@ const jumpBlogDetails = (index: string | number) => {
 <template>
   <div class="home">
     <div class="swipe-container">
-      <!--      :autoplay="3000"-->
-      <van-swipe lazy-render>
+      <van-swipe :autoplay="3000" lazy-render>
         <van-swipe-item v-for="item in swipeData" :key="item.id">
           <div class="warp">
             <div class="mask">
