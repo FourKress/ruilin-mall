@@ -147,7 +147,6 @@ const jumpBlogDetails = (index: string | number) => {
           class="item"
           v-for="(item, index) in blogData"
           :key="item.id"
-          :to="`/blog/${item.id}`"
           :style="{
             width: blogData.length > 1 ? '3.2rem' : '100%'
           }"

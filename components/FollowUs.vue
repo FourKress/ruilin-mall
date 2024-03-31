@@ -141,8 +141,8 @@ const jumpFaceBook = () => {
 
       img {
         @apply block
-        w-0.24rem
-        h-0.24rem;
+        w-full
+        h-full;
       }
 
       border: 1px solid $view-color;

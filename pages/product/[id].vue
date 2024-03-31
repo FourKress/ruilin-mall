@@ -178,7 +178,7 @@ const jumpSku = (sku: any) => {
         @include general-font-14;
 
         @apply w-1.71rem
-        max-1.71rem
+        max-w-1.71rem
         h-0.40rem
         lh-0.38rem
         text-center
