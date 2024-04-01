@@ -1,16 +1,16 @@
 <script setup lang="ts">
-// const runtimeConfig = useRuntimeConfig()
-// const baseUrl = runtimeConfig.public.baseUrl
+const insMediaList = ref([])
 
-const { data: insMediaList } = await useFetch(
-  `https://service.vinnhair.com/api/v1/media/ins/list`,
-  {
-    method: 'get',
-    transform: (res: any) => {
-      return res.data
-    }
+useFetch(`https://service.vinnhair.com/api/v1/media/ins/list`, {
+  method: 'get',
+  transform: (res: any) => {
+    return res.data
   }
-)
+}).then(({ data }) => {
+  if (data.value) {
+    insMediaList.value = data.value
+  }
+})
 
 const jumpIns = () => {
   window.open('https://www.instagram.com/vinnhairextensions/', '_blank')

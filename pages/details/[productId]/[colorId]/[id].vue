@@ -63,47 +63,61 @@ if (skuRes.value) {
   setBtnStatus(info)
 }
 
-const { data: colorList } = await useHttpGet({
+const colorList = ref([])
+useHttpGet({
   url: `/product-color/online-list/${productId}`,
   isLoading: true
-})
-
-if (colorList.value) {
-  const targetColor = colorList.value.find((d: any) => d.id === colorId.value)
-  const fileUrlList = (targetColor?.fileList || []).map((d: any) => ({
-    url: d.url,
-    id: d.id,
-    fileType: d.fileType
-  }))
-  currentColor.value = {
-    ...targetColor,
-    productDesc: targetColor.productDesc.replace(/\n/g, '<br />')
+}).then(({ data }) => {
+  if (data.value) {
+    colorList.value = data.value
+    const targetColor = data.value.find((d: any) => d.id === colorId.value)
+    const fileUrlList = (targetColor?.fileList || []).map((d: any) => ({
+      url: d.url,
+      id: d.id,
+      fileType: d.fileType
+    }))
+    currentColor.value = {
+      ...targetColor,
+      productDesc: targetColor.productDesc.replace(/\n/g, '<br />')
+    }
+    swipeData.value = [
+      { url: targetColor.url, id: targetColor.id, fileType: targetColor.fileType },
+      ...fileUrlList
+    ]
+    currentSwipeId.value = targetColor.id
   }
-  swipeData.value = [
-    { url: targetColor.url, id: targetColor.id, fileType: targetColor.fileType },
-    ...fileUrlList
-  ]
-  currentSwipeId.value = targetColor.id
-}
-
-const { data: unitList } = await useHttpGet({
-  url: `/product-unit/online-select/${productId}`
 })
 
-const { data: bannerList } = await useHttpGet({
+const unitList = ref([])
+const bannerList = ref([])
+const summaryList = ref([])
+
+useHttpGet({
+  url: `/product-unit/online-select/${productId}`
+}).then(({ data }) => {
+  if (data.value) {
+    unitList.value = data.value
+  }
+})
+
+useHttpGet({
   url: `/product-banner/online-list/${productId}`,
   isLoading: true
-})
+}).then(({ data }) => {
+  if (data.value) {
+    bannerList.value = data.value
 
-bannerList.value.forEach((d: any) => {
-  if (d.type === 'image') {
-    imageList.value.push(d)
-  } else {
-    videoInfo.value = d
+    bannerList.value.forEach((d: any) => {
+      if (d.type === 'image') {
+        imageList.value.push(d)
+      } else {
+        videoInfo.value = d
+      }
+    })
   }
 })
 
-const { data: summaryList } = await useHttpGet({
+useHttpGet({
   url: `/product-summary/online-list/${productId}`,
   transform: (res: any) => {
     return res.data.map((d: any) => {
@@ -113,12 +127,16 @@ const { data: summaryList } = await useHttpGet({
       }
     })
   }
+}).then(({ data }) => {
+  if (data.value) {
+    summaryList.value = data.value
+  }
 })
 
 const currentPage = ref(1)
 const reviewData = ref({})
 watchEffect(async () => {
-  const { data: reviewRes } = await useHttpPost({
+  useHttpPost({
     url: `/review/list`,
     body: {
       size: 10,
@@ -126,11 +144,11 @@ watchEffect(async () => {
       productId: productId,
       skuId: isSelect.value ? skuInfo.value.id : undefined
     }
+  }).then(({ data }) => {
+    if (data.value) {
+      reviewData.value = data.value
+    }
   })
-
-  if (reviewRes.value) {
-    reviewData.value = reviewRes.value
-  }
 })
 
 const handlePageChange = (current: number) => {
@@ -245,7 +263,7 @@ const handleSelectTag = (unitId: string, tagId: string) => {
         {{ skuInfo['color_name'] }} ({{ skuInfo['product_name'] }})
       </div>
       <div class="banner">
-        <van-swipe ref="topSwipe" lazy-render @change="handleChangeSwipe">
+        <van-swipe :autoplay="3000" ref="topSwipe" lazy-render @change="handleChangeSwipe">
           <van-swipe-item v-for="(item, index) in swipeData" :key="item.id">
             <video
               v-if="item.fileType === 'video/mp4'"
@@ -353,7 +371,7 @@ const handleSelectTag = (unitId: string, tagId: string) => {
     <div class="product-details">
       <div class="top">Product Introduction</div>
       <div class="swipe-container">
-        <van-swipe ref="swipe" lazy-render :show-indicators="false">
+        <van-swipe :autoplay="3000" ref="swipe" lazy-render :show-indicators="false">
           <van-swipe-item v-for="(item, index) in imageList" :key="item.url">
             <van-image
               class="img"

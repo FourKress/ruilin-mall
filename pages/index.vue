@@ -17,20 +17,21 @@ const showPicker = ref(false)
 const currentAction = ref<any>(actions[0])
 const swipeData = ref([])
 
-const { data: bannerRes } = await useHttpGet({
+useHttpGet({
   url: '/banner/list'
+}).then(({ data }) => {
+  if (data.value) {
+    swipeData.value = data.value
+      .filter((d: any) => d['objectKeyMobile'])
+      .map((d: any) => {
+        return {
+          ...d,
+          name: d?.name ? d?.name.replace(/\n/g, '<br/>') : '',
+          subtitle: d?.subtitle ? d?.subtitle.replace(/\n/g, '<br/>') : ''
+        }
+      })
+  }
 })
-if (bannerRes.value) {
-  swipeData.value = bannerRes.value
-    .filter((d: any) => d['objectKeyMobile'])
-    .map((d: any) => {
-      return {
-        ...d,
-        name: d?.name ? d?.name.replace(/\n/g, '<br/>') : '',
-        subtitle: d?.subtitle ? d?.subtitle.replace(/\n/g, '<br/>') : ''
-      }
-    })
-}
 
 watchEffect(async () => {
   const { data: resData } = await useHttpPost({
@@ -49,11 +50,16 @@ watchEffect(async () => {
   }
 })
 
-const { data: blogData } = await useHttpPost({
+const blogData = ref([])
+useHttpPost({
   url: '/blog/list',
   body: { size: 10, current: 1 },
   transform: (res) => {
     return res.data.records
+  }
+}).then(({ data }) => {
+  if (data.value) {
+    blogData.value = data.value
   }
 })
 
@@ -78,8 +84,7 @@ const jumpBlogDetails = (index: string | number) => {
 <template>
   <div class="home">
     <div class="swipe-container">
-      <!--      :autoplay="3000"-->
-      <van-swipe lazy-render>
+      <van-swipe :autoplay="3000" lazy-render>
         <van-swipe-item v-for="item in swipeData" :key="item.id">
           <div class="warp">
             <div class="mask">
