@@ -116,7 +116,11 @@ const jumpSku = (sku: any) => {
           @click="jumpSku(item)"
         >
           <div class="image">
-            <img :src="item.url" :alt="item['online_objectKey']" />
+            <van-image class="img" lazy-load :src="item['url']" :alt="item['online_objectKey']">
+              <template v-slot:loading>
+                <van-loading type="spinner" size="20" />
+              </template>
+            </van-image>
           </div>
           <div class="info">
             <div class="title">{{ item['color_name'] }}</div>
@@ -230,7 +234,7 @@ const jumpSku = (sku: any) => {
           @apply w-full
           h-1.71rem;
 
-          img {
+          .img {
             @apply block
             w-full
             h-full;

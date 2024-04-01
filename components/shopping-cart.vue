@@ -267,7 +267,11 @@ const checkDisabledProduct = (cart: any) =>
                   </div>
                   <div class="panel-right">
                     <div class="pic">
-                      <img :src="item.url" alt="" />
+                      <van-image class="img" lazy-load :src="item.url" alt="">
+                        <template v-slot:loading>
+                          <van-loading type="spinner" size="20" />
+                        </template>
+                      </van-image>
                     </div>
                     <div class="info-container">
                       <div class="info-title">{{ item['color_name'] }}</div>
@@ -343,7 +347,11 @@ const checkDisabledProduct = (cart: any) =>
               <div class="card">
                 <div class="panel">
                   <div class="pic">
-                    <img :src="currentSku.url" alt="" />
+                    <van-image class="img" lazy-load :src="currentSku.url" alt="">
+                      <template v-slot:loading>
+                        <van-loading type="spinner" size="20" />
+                      </template>
+                    </van-image>
                   </div>
                   <div class="info">
                     <div class="info-title">{{ skuInfo['color_name'] }}</div>
@@ -675,7 +683,7 @@ const checkDisabledProduct = (cart: any) =>
               rd-0.04rem
               overflow-hidden;
 
-              img {
+              .img {
                 @apply block
                 w-full
                 h-full;
@@ -922,7 +930,7 @@ const checkDisabledProduct = (cart: any) =>
                 rd-0.04rem
                 overflow-hidden;
 
-                img {
+                .img {
                   @apply block
                   w-full
                   h-full;

@@ -56,8 +56,12 @@ const onRefresh = () => {
           <div class="menu">
             <van-collapse v-model="activeName" accordion :border="false">
               <van-collapse-item :title="item.name" :name="item.id" v-for="item in list">
-                <div class="img" v-if="item.url">
-                  <img :src="item.url" alt="" />
+                <div class="img-wrap" v-if="item.url">
+                  <van-image class="img" lazy-load :src="item.url" alt="">
+                    <template v-slot:loading>
+                      <van-loading type="spinner" size="20" />
+                    </template>
+                  </van-image>
                 </div>
                 <div v-html="item.content" class="content"></div>
               </van-collapse-item>
@@ -127,11 +131,11 @@ const onRefresh = () => {
 
         color: $text-high-color;
 
-        .img {
+        .img-wrap {
           @apply max-w-full
           m-b-0.14rem;
 
-          img {
+          .img {
             @apply block
             max-w-full;
 

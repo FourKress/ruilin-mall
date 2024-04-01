@@ -257,7 +257,19 @@ const handleSelectTag = (unitId: string, tagId: string) => {
               <source :src="item.url" type="video/mp4" />
               Your browser does not support the Video tag
             </video>
-            <img v-else :src="item.url" alt="" @click="handlePreview(swipeData, index)" />
+
+            <van-image
+              class="img"
+              lazy-load
+              v-else
+              :src="item.url"
+              alt=""
+              @click="handlePreview(swipeData, index)"
+            >
+              <template v-slot:loading>
+                <van-loading type="spinner" size="20" />
+              </template>
+            </van-image>
           </van-swipe-item>
 
           <template #indicator="{ active, total }">
@@ -277,7 +289,12 @@ const handleSelectTag = (unitId: string, tagId: string) => {
             <source :src="item.url" type="video/mp4" />
             Your browser does not support the Video tag
           </video>
-          <img v-else :src="item.url" alt="" />
+
+          <van-image class="img" lazy-load v-else :src="item.url" alt="">
+            <template v-slot:loading>
+              <van-loading type="spinner" size="20" />
+            </template>
+          </van-image>
         </div>
       </div>
       <div class="info">
@@ -337,8 +354,23 @@ const handleSelectTag = (unitId: string, tagId: string) => {
       <div class="top">Product Introduction</div>
       <div class="swipe-container">
         <van-swipe ref="swipe" lazy-render :show-indicators="false">
-          <van-swipe-item v-for="item in imageList" :key="item.url">
-            <img :src="item.url" :alt="item['online_objectKey']" />
+          <van-swipe-item v-for="(item, index) in imageList" :key="item.url">
+            <van-image
+              class="img"
+              lazy-load
+              :src="item.url"
+              :alt="item['online_objectKey']"
+              @click="
+                showImagePreview({
+                  images: imageList.map((d) => d['url']),
+                  startPosition: index
+                })
+              "
+            >
+              <template v-slot:loading>
+                <van-loading type="spinner" size="20" />
+              </template>
+            </van-image>
           </van-swipe-item>
         </van-swipe>
         <div class="switch-btn left" @click="swipe['prev']">
@@ -400,7 +432,9 @@ const handleSelectTag = (unitId: string, tagId: string) => {
               v-for="(url, index) in item['imageList']"
               :key="url"
             >
-              <img
+              <van-image
+                class="img"
+                lazy-load:src="url"
                 :src="url"
                 alt=""
                 @click="
@@ -409,7 +443,11 @@ const handleSelectTag = (unitId: string, tagId: string) => {
                     startPosition: index
                   })
                 "
-              />
+              >
+                <template v-slot:loading>
+                  <van-loading type="spinner" size="20" />
+                </template>
+              </van-image>
             </div>
           </div>
         </div>
@@ -495,7 +533,7 @@ const handleSelectTag = (unitId: string, tagId: string) => {
         rd-0.06rem
         overflow-hidden;
 
-        img {
+        .img {
           @apply block
           w-full
           h-full;
@@ -545,7 +583,7 @@ const handleSelectTag = (unitId: string, tagId: string) => {
 
         border: 2px solid transparent;
 
-        img {
+        .img {
           @apply block
           w-full
           h-full;
@@ -731,7 +769,7 @@ const handleSelectTag = (unitId: string, tagId: string) => {
 
     .swipe-container {
       @apply w-full
-      h-5.2rem
+      h-2.92rem
       relative;
 
       .van-swipe {
@@ -745,7 +783,7 @@ const handleSelectTag = (unitId: string, tagId: string) => {
           }
         }
 
-        img {
+        .img {
           @apply block
           w-full
           h-full;

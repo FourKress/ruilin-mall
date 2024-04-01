@@ -26,8 +26,25 @@ const jumpFaceBook = () => {
       <div class="label">Follow Us</div>
     </div>
     <div class="list">
-      <div class="item" v-for="item in insMediaList" :key="item.id">
-        <img v-if="item['media_type'] === 'IMAGE'" :src="item['media_url']" alt="" />
+      <div class="item" v-for="(item, index) in insMediaList" :key="item.id">
+        <van-image
+          class="img"
+          lazy-load
+          v-if="['CAROUSEL_ALBUM', 'IMAGE'].includes(item['media_type'])"
+          :src="item['media_url']"
+          @click="
+            showImagePreview({
+              images: insMediaList
+                .filter((d: any) => d['media_type'] !== 'VIDEO')
+                .map((d: any) => d['media_url'])
+            })
+          "
+        >
+          <template v-slot:loading>
+            <van-loading type="spinner" size="20" />
+          </template>
+        </van-image>
+
         <video v-if="item['media_type'] === 'VIDEO'" width="100%" height="100%" controls>
           <source :src="item['media_url']" type="video/mp4" />
           Your browser does not support the Video tag
@@ -86,7 +103,7 @@ const jumpFaceBook = () => {
       @apply w-1.18rem
       h-1.18rem;
 
-      img,
+      .img,
       video {
         @apply block
         w-full

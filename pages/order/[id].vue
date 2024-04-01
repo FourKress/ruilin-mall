@@ -242,7 +242,11 @@ const handleJumpView = (order: any) => {
           </div>
           <div class="panel" v-for="item in goods.children" :key="item.id">
             <div class="pic">
-              <img :src="item.url" alt="" />
+              <van-image class="img" lazy-load :src="item.url" alt="">
+                <template v-slot:loading>
+                  <van-loading type="spinner" size="20" />
+                </template>
+              </van-image>
             </div>
             <div class="info-container">
               <div class="info-title">
@@ -638,7 +642,7 @@ const handleJumpView = (order: any) => {
             rd-0.04rem
             overflow-hidden;
 
-            img {
+            .img {
               @apply block
               w-full
               h-full;
