@@ -319,7 +319,7 @@ const handleSelectTag = (unitId: string, tagId: string) => {
         <span class="unit">$</span>
         <span class="price">{{ skuInfo['online_price'] }}</span>
         <span class="start">
-          <van-rate v-model="reviewData['totalScore']" readonly />
+          <van-rate v-model="reviewData['totalScore']" allow-half readonly />
         </span>
         <span class="count">{{ reviewData['reviewCount'] }}+ </span>
         <span class="tips">Reviews</span>
