@@ -13,16 +13,17 @@ const router = useRouter()
 const minRule = useRule.getMinRule()
 const orderList = ref<any>([])
 
-const { data } = await useHttpPost({
+useHttpPost({
   url: `/order/online-list/`,
   body: { size: 1, current: 1 },
   transform: (res) => {
     return res.data.records
   }
+}).then(({ data }) => {
+  if (data.value && data.value.length) {
+    orderList.value = [data.value[0]]
+  }
 })
-if (data.value && data.value.length) {
-  orderList.value = [data.value[0]]
-}
 
 const handleLogOut = async () => {
   if (!userCookie.value) return
