@@ -89,7 +89,6 @@ useHttpGet({
 })
 
 const unitList = ref([])
-const bannerList = ref([])
 const summaryList = ref([])
 
 useHttpGet({
@@ -105,9 +104,7 @@ useHttpGet({
   isLoading: true
 }).then(({ data }) => {
   if (data.value) {
-    bannerList.value = data.value
-
-    bannerList.value.forEach((d: any) => {
+    data.value.forEach((d: any) => {
       if (d.type === 'image') {
         imageList.value.push(d)
       } else {
@@ -265,13 +262,7 @@ const handleSelectTag = (unitId: string, tagId: string) => {
       <div class="banner">
         <van-swipe :autoplay="3000" ref="topSwipe" lazy-render @change="handleChangeSwipe">
           <van-swipe-item v-for="(item, index) in swipeData" :key="item.id">
-            <video
-              v-if="item.fileType === 'video/mp4'"
-              width="100%"
-              height="100%"
-              controls
-              @click="handlePreview(swipeData, index)"
-            >
+            <video v-if="item.fileType === 'video/mp4'" width="100%" height="100%" controls>
               <source :src="item.url" type="video/mp4" />
               Your browser does not support the Video tag
             </video>
@@ -342,7 +333,11 @@ const handleSelectTag = (unitId: string, tagId: string) => {
             :key="item"
             @click="jumpSku(item)"
           >
-            <img :src="item.url" :alt="item['online_objectKey']" />
+            <van-image class="img" lazy-load :src="item.url" :alt="item['online_objectKey']">
+              <template v-slot:loading>
+                <van-loading type="spinner" size="20" />
+              </template>
+            </van-image>
           </div>
         </div>
       </div>
@@ -702,7 +697,7 @@ const handleSelectTag = (unitId: string, tagId: string) => {
             @apply m-r-0;
           }
 
-          img {
+          .img {
             @apply block
             w-full
             h-full
