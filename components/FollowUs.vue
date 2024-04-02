@@ -52,7 +52,7 @@ const jumpFaceBook = () => {
       </div>
     </div>
 
-    <div class="jump-btn">
+    <div class="jump-btn" @click="jumpIns">
       <span>@RuiLinHair</span>
       <van-icon name="arrow" />
     </div>
