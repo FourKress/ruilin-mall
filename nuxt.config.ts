@@ -7,6 +7,9 @@ const BASE_URL = `${process.env.VUE_APP_BASE_URL}/${process.env.VUE_APP_BASE_PRE
 export default defineNuxtConfig({
   devtools: { enabled: true },
   modules: ['@vant/nuxt', '@unocss/nuxt', '@pinia/nuxt'],
+  vant: {
+    lazyload: true
+  },
   runtimeConfig: {
     baseUrl: BASE_URL,
     public: {

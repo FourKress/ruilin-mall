@@ -17,20 +17,21 @@ const showPicker = ref(false)
 const currentAction = ref<any>(actions[0])
 const swipeData = ref([])
 
-const { data: bannerRes } = await useHttpGet({
+useHttpGet({
   url: '/banner/list'
+}).then(({ data }) => {
+  if (data.value) {
+    swipeData.value = data.value
+      .filter((d: any) => d['objectKeyMobile'])
+      .map((d: any) => {
+        return {
+          ...d,
+          name: d?.name ? d?.name.replace(/\n/g, '<br/>') : '',
+          subtitle: d?.subtitle ? d?.subtitle.replace(/\n/g, '<br/>') : ''
+        }
+      })
+  }
 })
-if (bannerRes.value) {
-  swipeData.value = bannerRes.value
-    .filter((d: any) => d['objectKeyMobile'])
-    .map((d: any) => {
-      return {
-        ...d,
-        name: d?.name ? d?.name.replace(/\n/g, '<br/>') : '',
-        subtitle: d?.subtitle ? d?.subtitle.replace(/\n/g, '<br/>') : ''
-      }
-    })
-}
 
 watchEffect(async () => {
   const { data: resData } = await useHttpPost({
@@ -49,11 +50,16 @@ watchEffect(async () => {
   }
 })
 
-const { data: blogData } = await useHttpPost({
+const blogData = ref([])
+useHttpPost({
   url: '/blog/list',
   body: { size: 10, current: 1 },
   transform: (res) => {
     return res.data.records
+  }
+}).then(({ data }) => {
+  if (data.value) {
+    blogData.value = data.value
   }
 })
 
@@ -78,8 +84,7 @@ const jumpBlogDetails = (index: string | number) => {
 <template>
   <div class="home">
     <div class="swipe-container">
-      <!--      :autoplay="3000"-->
-      <van-swipe lazy-render>
+      <van-swipe :autoplay="3000" lazy-render>
         <van-swipe-item v-for="item in swipeData" :key="item.id">
           <div class="warp">
             <div class="mask">
@@ -93,7 +98,14 @@ const jumpBlogDetails = (index: string | number) => {
                 </template>
               </div>
             </div>
-            <img :src="item['mobile_url']" :alt="item['objectKey']" />
+
+            <van-image class="img" lazy-load :src="item['mobile_url']" :alt="item['objectKey']">
+              <template v-slot:loading>
+                <van-loading type="spinner" size="20" />
+              </template>
+            </van-image>
+
+            <!--            <img :src="item['mobile_url']" :alt="item['objectKey']" />-->
           </div>
         </van-swipe-item>
 
@@ -121,7 +133,11 @@ const jumpBlogDetails = (index: string | number) => {
       <div class="list">
         <div class="item" v-for="(item, index) in skuList" :key="index" @click="jumpSku(item)">
           <div class="image">
-            <img :src="item['url']" :alt="item['online_objectKey']" />
+            <van-image class="img" lazy-load :src="item['url']" :alt="item['online_objectKey']">
+              <template v-slot:loading>
+                <van-loading type="spinner" size="20" />
+              </template>
+            </van-image>
           </div>
           <div class="info">
             <div class="title">{{ item['color_name'] }}</div>
@@ -130,6 +146,9 @@ const jumpBlogDetails = (index: string | number) => {
               <span class="price">{{ item['online_price'] }}</span>
             </div>
           </div>
+
+          <div class="tag grey" v-if="item['online_stock'] <= 0">Out of Stock</div>
+          <div class="tag yellow" v-else-if="item['online_stock'] <= 100">Low Stock</div>
         </div>
       </div>
 
@@ -148,7 +167,6 @@ const jumpBlogDetails = (index: string | number) => {
           class="item"
           v-for="(item, index) in blogData"
           :key="item.id"
-          :to="`/blog/${item.id}`"
           :style="{
             width: blogData.length > 1 ? '3.2rem' : '100%'
           }"
@@ -161,7 +179,11 @@ const jumpBlogDetails = (index: string | number) => {
               height: blogData.length > 1 ? '1.8rem' : 'calc((100vw - 0.32rem) * (9/16))'
             }"
           >
-            <img :src="item.url" alt="" />
+            <van-image class="img" lazy-load :src="item['url']">
+              <template v-slot:loading>
+                <van-loading type="spinner" size="20" />
+              </template>
+            </van-image>
           </div>
           <div class="info">
             <div class="title">{{ item.name }}</div>
@@ -219,8 +241,9 @@ const jumpBlogDetails = (index: string | number) => {
           .name {
             font-size: 0.56rem;
             color: $white-color;
-
+            line-height: 0.56rem;
             font-family: 'Sinerva', Arial, sans-serif;
+            transform: translateY(0.04rem);
           }
 
           .subtitle {
@@ -260,7 +283,7 @@ const jumpBlogDetails = (index: string | number) => {
         }
       }
 
-      img {
+      .img {
         @apply block
         w-full
         h-full;
@@ -337,6 +360,8 @@ const jumpBlogDetails = (index: string | number) => {
         @include english-font;
         @include title-font-22;
         color: $text-high-color;
+        font-family: 'Sinerva', Arial, sans-serif;
+        transform: translateY(0.04rem);
       }
 
       .picker {
@@ -353,6 +378,7 @@ const jumpBlogDetails = (index: string | number) => {
         border: 1px solid $text-mid-color;
 
         .label {
+          height: 100%;
           @include english-font;
           @include general-font-14;
         }
@@ -371,13 +397,14 @@ const jumpBlogDetails = (index: string | number) => {
         h-2.53rem
         m-t-0.16rem
         rd-0.06rem
-        overflow-hidden;
+        overflow-hidden
+        relative;
 
         .image {
           @apply w-full
           h-1.71rem;
 
-          img {
+          .img {
             @apply block
             w-full
             h-full;
@@ -432,6 +459,32 @@ const jumpBlogDetails = (index: string | number) => {
             }
           }
         }
+
+        .tag {
+          @apply absolute
+          left-0
+          top-0.16rem
+          h-0.2rem
+          flex
+          justify-center
+          items-center
+          p-l-0.04rem
+          p-r-0.16rem;
+
+          @include general-font-12;
+          color: $white-color;
+
+          background-size: 100% 100%;
+          background-repeat: no-repeat;
+
+          &.yellow {
+            background-image: url('@/assets/images/tag-1.png');
+          }
+
+          &.grey {
+            background-image: url('@/assets/images/tag-2.png');
+          }
+        }
       }
     }
   }
@@ -452,6 +505,8 @@ const jumpBlogDetails = (index: string | number) => {
         @include english-font;
         @include title-font-22;
         color: $text-high-color;
+        font-family: 'Sinerva', Arial, sans-serif;
+        transform: translateY(0.04rem);
       }
     }
 
@@ -477,7 +532,7 @@ const jumpBlogDetails = (index: string | number) => {
         .image {
           @apply w-full;
 
-          img {
+          .img {
             @apply block
             w-full
             h-full;

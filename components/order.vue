@@ -47,7 +47,11 @@ const handleJump = (order: any) => {
     <div class="panel">
       <template v-if="order.productList.length === 1">
         <div class="pic">
-          <img :src="order.productList[0].url" alt="" />
+          <van-image class="img" lazy-load :src="order.productList[0].url">
+            <template v-slot:loading>
+              <van-loading type="spinner" size="20" />
+            </template>
+          </van-image>
         </div>
         <div class="goods-info">
           <span class="name">{{ order['productList'][0]['colorName'] }}</span>
@@ -57,7 +61,11 @@ const handleJump = (order: any) => {
       <template v-else>
         <div class="pic-list">
           <div class="pic" v-for="item in [...order.productList].splice(0, 3)" :key="item.id">
-            <img :src="item.url" alt="" />
+            <van-image class="img" lazy-load :src="item.url" alt="">
+              <template v-slot:loading>
+                <van-loading type="spinner" size="20" />
+              </template>
+            </van-image>
           </div>
           <div v-if="order.productList.length > 3">
             <van-icon name="weapp-nav" />
@@ -161,7 +169,7 @@ const handleJump = (order: any) => {
       rd-0.04rem
       overflow-hidden;
 
-      img {
+      .img {
         @apply block
         w-full
         h-full;

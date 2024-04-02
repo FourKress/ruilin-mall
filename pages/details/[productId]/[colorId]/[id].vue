@@ -63,47 +63,58 @@ if (skuRes.value) {
   setBtnStatus(info)
 }
 
-const { data: colorList } = await useHttpGet({
+const colorList = ref([])
+useHttpGet({
   url: `/product-color/online-list/${productId}`,
   isLoading: true
-})
-
-if (colorList.value) {
-  const targetColor = colorList.value.find((d: any) => d.id === colorId.value)
-  const fileUrlList = (targetColor?.fileList || []).map((d: any) => ({
-    url: d.url,
-    id: d.id,
-    fileType: d.fileType
-  }))
-  currentColor.value = {
-    ...targetColor,
-    productDesc: targetColor.productDesc.replace(/\n/g, '<br />')
+}).then(({ data }) => {
+  if (data.value) {
+    colorList.value = data.value
+    const targetColor = data.value.find((d: any) => d.id === colorId.value)
+    const fileUrlList = (targetColor?.fileList || []).map((d: any) => ({
+      url: d.url,
+      id: d.id,
+      fileType: d.fileType
+    }))
+    currentColor.value = {
+      ...targetColor,
+      productDesc: targetColor.productDesc.replace(/\n/g, '<br />')
+    }
+    swipeData.value = [
+      { url: targetColor.url, id: targetColor.id, fileType: targetColor.fileType },
+      ...fileUrlList
+    ]
+    currentSwipeId.value = targetColor.id
   }
-  swipeData.value = [
-    { url: targetColor.url, id: targetColor.id, fileType: targetColor.fileType },
-    ...fileUrlList
-  ]
-  currentSwipeId.value = targetColor.id
-}
-
-const { data: unitList } = await useHttpGet({
-  url: `/product-unit/online-select/${productId}`
 })
 
-const { data: bannerList } = await useHttpGet({
+const unitList = ref([])
+const summaryList = ref([])
+
+useHttpGet({
+  url: `/product-unit/online-select/${productId}`
+}).then(({ data }) => {
+  if (data.value) {
+    unitList.value = data.value
+  }
+})
+
+useHttpGet({
   url: `/product-banner/online-list/${productId}`,
   isLoading: true
-})
-
-bannerList.value.forEach((d: any) => {
-  if (d.type === 'image') {
-    imageList.value.push(d)
-  } else {
-    videoInfo.value = d
+}).then(({ data }) => {
+  if (data.value) {
+    data.value.forEach((d: any) => {
+      if (d.type === 'image') {
+        imageList.value.push(d)
+      } else {
+        videoInfo.value = d
+      }
+    })
   }
 })
 
-const { data: summaryList } = await useHttpGet({
+useHttpGet({
   url: `/product-summary/online-list/${productId}`,
   transform: (res: any) => {
     return res.data.map((d: any) => {
@@ -113,12 +124,16 @@ const { data: summaryList } = await useHttpGet({
       }
     })
   }
+}).then(({ data }) => {
+  if (data.value) {
+    summaryList.value = data.value
+  }
 })
 
 const currentPage = ref(1)
 const reviewData = ref({})
 watchEffect(async () => {
-  const { data: reviewRes } = await useHttpPost({
+  useHttpPost({
     url: `/review/list`,
     body: {
       size: 10,
@@ -126,11 +141,11 @@ watchEffect(async () => {
       productId: productId,
       skuId: isSelect.value ? skuInfo.value.id : undefined
     }
+  }).then(({ data }) => {
+    if (data.value) {
+      reviewData.value = data.value
+    }
   })
-
-  if (reviewRes.value) {
-    reviewData.value = reviewRes.value
-  }
 })
 
 const handlePageChange = (current: number) => {
@@ -245,19 +260,25 @@ const handleSelectTag = (unitId: string, tagId: string) => {
         {{ skuInfo['color_name'] }} ({{ skuInfo['product_name'] }})
       </div>
       <div class="banner">
-        <van-swipe ref="topSwipe" lazy-render @change="handleChangeSwipe">
+        <van-swipe :autoplay="3000" ref="topSwipe" lazy-render @change="handleChangeSwipe">
           <van-swipe-item v-for="(item, index) in swipeData" :key="item.id">
-            <video
-              v-if="item.fileType === 'video/mp4'"
-              width="100%"
-              height="100%"
-              controls
-              @click="handlePreview(swipeData, index)"
-            >
+            <video v-if="item.fileType === 'video/mp4'" width="100%" height="100%" controls>
               <source :src="item.url" type="video/mp4" />
               Your browser does not support the Video tag
             </video>
-            <img v-else :src="item.url" alt="" @click="handlePreview(swipeData, index)" />
+
+            <van-image
+              class="img"
+              lazy-load
+              v-else
+              :src="item.url"
+              alt=""
+              @click="handlePreview(swipeData, index)"
+            >
+              <template v-slot:loading>
+                <van-loading type="spinner" size="20" />
+              </template>
+            </van-image>
           </van-swipe-item>
 
           <template #indicator="{ active, total }">
@@ -277,14 +298,19 @@ const handleSelectTag = (unitId: string, tagId: string) => {
             <source :src="item.url" type="video/mp4" />
             Your browser does not support the Video tag
           </video>
-          <img v-else :src="item.url" alt="" />
+
+          <van-image class="img" lazy-load v-else :src="item.url" alt="">
+            <template v-slot:loading>
+              <van-loading type="spinner" size="20" />
+            </template>
+          </van-image>
         </div>
       </div>
       <div class="info">
         <span class="unit">$</span>
         <span class="price">{{ skuInfo['online_price'] }}</span>
         <span class="start">
-          <van-rate v-model="reviewData['totalScore']" readonly />
+          <van-rate v-model="reviewData['totalScore']" allow-half readonly />
         </span>
         <span class="count">{{ reviewData['reviewCount'] }}+ </span>
         <span class="tips">Reviews</span>
@@ -307,7 +333,11 @@ const handleSelectTag = (unitId: string, tagId: string) => {
             :key="item"
             @click="jumpSku(item)"
           >
-            <img :src="item.url" :alt="item['online_objectKey']" />
+            <van-image class="img" lazy-load :src="item.url" :alt="item['online_objectKey']">
+              <template v-slot:loading>
+                <van-loading type="spinner" size="20" />
+              </template>
+            </van-image>
           </div>
         </div>
       </div>
@@ -336,9 +366,24 @@ const handleSelectTag = (unitId: string, tagId: string) => {
     <div class="product-details">
       <div class="top">Product Introduction</div>
       <div class="swipe-container">
-        <van-swipe ref="swipe" lazy-render :show-indicators="false">
-          <van-swipe-item v-for="item in imageList" :key="item.url">
-            <img :src="item.url" :alt="item['online_objectKey']" />
+        <van-swipe :autoplay="3000" ref="swipe" lazy-render :show-indicators="false">
+          <van-swipe-item v-for="(item, index) in imageList" :key="item.url">
+            <van-image
+              class="img"
+              lazy-load
+              :src="item.url"
+              :alt="item['online_objectKey']"
+              @click="
+                showImagePreview({
+                  images: imageList.map((d) => d['url']),
+                  startPosition: index
+                })
+              "
+            >
+              <template v-slot:loading>
+                <van-loading type="spinner" size="20" />
+              </template>
+            </van-image>
           </van-swipe-item>
         </van-swipe>
         <div class="switch-btn left" @click="swipe['prev']">
@@ -400,7 +445,9 @@ const handleSelectTag = (unitId: string, tagId: string) => {
               v-for="(url, index) in item['imageList']"
               :key="url"
             >
-              <img
+              <van-image
+                class="img"
+                lazy-load:src="url"
                 :src="url"
                 alt=""
                 @click="
@@ -409,7 +456,11 @@ const handleSelectTag = (unitId: string, tagId: string) => {
                     startPosition: index
                   })
                 "
-              />
+              >
+                <template v-slot:loading>
+                  <van-loading type="spinner" size="20" />
+                </template>
+              </van-image>
             </div>
           </div>
         </div>
@@ -478,6 +529,9 @@ const handleSelectTag = (unitId: string, tagId: string) => {
       m-b-0.24rem;
       @include title-font-26;
       color: $text-high-color;
+
+      font-family: 'Sinerva', Arial, sans-serif;
+      transform: translateY(0.04rem);
     }
 
     .banner {
@@ -492,7 +546,7 @@ const handleSelectTag = (unitId: string, tagId: string) => {
         rd-0.06rem
         overflow-hidden;
 
-        img {
+        .img {
           @apply block
           w-full
           h-full;
@@ -542,7 +596,7 @@ const handleSelectTag = (unitId: string, tagId: string) => {
 
         border: 2px solid transparent;
 
-        img {
+        .img {
           @apply block
           w-full
           h-full;
@@ -643,7 +697,7 @@ const handleSelectTag = (unitId: string, tagId: string) => {
             @apply m-r-0;
           }
 
-          img {
+          .img {
             @apply block
             w-full
             h-full
@@ -722,11 +776,13 @@ const handleSelectTag = (unitId: string, tagId: string) => {
 
       @include title-font-22;
       color: $text-high-color;
+      font-family: 'Sinerva', Arial, sans-serif;
+      transform: translateY(0.04rem);
     }
 
     .swipe-container {
       @apply w-full
-      h-5.2rem
+      h-2.92rem
       relative;
 
       .van-swipe {
@@ -740,7 +796,7 @@ const handleSelectTag = (unitId: string, tagId: string) => {
           }
         }
 
-        img {
+        .img {
           @apply block
           w-full
           h-full;
@@ -781,6 +837,9 @@ const handleSelectTag = (unitId: string, tagId: string) => {
 
       color: $text-high-color;
       @include title-font-26;
+
+      font-family: 'Sinerva', Arial, sans-serif;
+      transform: translateY(0.05rem);
     }
 
     .details {
@@ -858,6 +917,8 @@ const handleSelectTag = (unitId: string, tagId: string) => {
         flex: 1;
         @include title-font-22;
         color: $text-high-color;
+        font-family: 'Sinerva', Arial, sans-serif;
+        transform: translateY(0.04rem);
       }
 
       .count {
