@@ -69,7 +69,11 @@ const onOversize = () => {
       <div class="card info">
         <div class="panel">
           <div class="pic">
-            <img :src="skuInfo.url" alt="" />
+            <van-image class="img" lazy-load :src="skuInfo.url" alt="">
+              <template v-slot:loading>
+                <van-loading type="spinner" size="20" />
+              </template>
+            </van-image>
           </div>
           <div class="info-container">
             <div class="info-title">
@@ -159,7 +163,7 @@ const onOversize = () => {
           rd-0.04rem
           overflow-hidden;
 
-          img {
+          .img {
             @apply block
             w-full
             h-full;

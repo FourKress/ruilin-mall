@@ -68,7 +68,11 @@ const jumpBlogDetails = (index: string | number) => {
                 height: 'calc((100vw - 0.32rem) * (9/16))'
               }"
             >
-              <img :src="item.url" alt="" />
+              <van-image class="img" lazy-load :src="item.url" alt="">
+                <template v-slot:loading>
+                  <van-loading type="spinner" size="20" />
+                </template>
+              </van-image>
             </div>
             <div class="info">
               <div class="title">{{ item.name }}</div>
@@ -108,7 +112,7 @@ const jumpBlogDetails = (index: string | number) => {
       .image {
         @apply w-full;
 
-        img {
+        .img {
           @apply block
           w-full
           h-full;
