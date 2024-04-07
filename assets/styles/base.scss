@@ -208,3 +208,31 @@ body {
     }
   }
 }
+
+.vjs-big-play-button {
+  margin: 0 !important;
+  width: 0.4rem !important;
+  height: 0.28rem !important;
+  transform: translate(-50%, -50%);
+  border-radius: 0.06rem !important;
+}
+
+.vjs-icon-placeholder {
+  width: 100% !important;
+  height: 100% !important;
+  display: flex !important;
+  justify-content: center !important;
+  align-items: center !important;
+
+  &:before {
+    font-size: 0.18rem !important;
+    position: unset !important;
+    width: unset !important;
+    height: unset !important;
+  }
+}
+
+
+.vjs-control-bar {
+  justify-content: space-between;
+}

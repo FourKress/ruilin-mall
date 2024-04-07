@@ -5,6 +5,8 @@ import { useCartStore } from '~/stores'
 import Pagination from '~/components/Pagination.vue'
 import { useHttpPost } from '~/utils/useHttp'
 
+import videoInit from '~/utils/videoInit'
+
 const useCart = useCartStore()
 const modifyTime = computed(() => useCart.modifyTime)
 
@@ -102,7 +104,7 @@ useHttpGet({
 useHttpGet({
   url: `/product-banner/online-list/${productId}`,
   isLoading: true
-}).then(({ data }) => {
+}).then(async ({ data }) => {
   if (data.value) {
     data.value.forEach((d: any) => {
       if (d.type === 'image') {
@@ -111,6 +113,10 @@ useHttpGet({
         videoInfo.value = d
       }
     })
+
+    await nextTick()
+
+    videoInit()
   }
 })
 
@@ -262,7 +268,12 @@ const handleSelectTag = (unitId: string, tagId: string) => {
       <div class="banner">
         <van-swipe :autoplay="3000" ref="topSwipe" lazy-render @change="handleChangeSwipe">
           <van-swipe-item v-for="(item, index) in swipeData" :key="item.id">
-            <video v-if="item.fileType === 'video/mp4'" width="100%" height="100%" controls>
+            <video
+              v-if="item.fileType === 'video/mp4'"
+              class="my-video video-js"
+              playsinline
+              controls
+            >
               <source :src="item.url" type="video/mp4" />
               Your browser does not support the Video tag
             </video>
@@ -398,7 +409,7 @@ const handleSelectTag = (unitId: string, tagId: string) => {
       <div class="details" v-html="currentColor['productDesc']"></div>
 
       <div class="video-container" v-if="videoInfo">
-        <video width="100%" height="100%" controls>
+        <video width="100%" height="100%" class="my-video video-js" playsinline controls>
           <source :src="videoInfo['url']" type="video/mp4" />
           Your browser does not support the Video tag
         </video>
@@ -547,6 +558,12 @@ const handleSelectTag = (unitId: string, tagId: string) => {
         overflow-hidden;
 
         .img {
+          @apply block
+          w-full
+          h-full;
+        }
+
+        .my-video {
           @apply block
           w-full
           h-full;
@@ -854,6 +871,12 @@ const handleSelectTag = (unitId: string, tagId: string) => {
     .video-container {
       @apply w-full
       h-2.92rem;
+
+      .my-video {
+        @apply block
+        w-full
+        h-full;
+      }
     }
 
     .menu {

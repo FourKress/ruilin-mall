@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import videoInit from '~/utils/videoInit'
 const insMediaList = ref([])
 
 useFetch(`https://service.vinnhair.com/api/v1/media/ins/list`, {
@@ -6,9 +7,13 @@ useFetch(`https://service.vinnhair.com/api/v1/media/ins/list`, {
   transform: (res: any) => {
     return res.data
   }
-}).then(({ data }) => {
+}).then(async ({ data }) => {
   if (data.value) {
     insMediaList.value = data.value
+
+    await nextTick()
+
+    videoInit()
   }
 })
 
@@ -45,7 +50,14 @@ const jumpFaceBook = () => {
           </template>
         </van-image>
 
-        <video v-if="item['media_type'] === 'VIDEO'" width="100%" height="100%" controls>
+        <video
+          v-if="item['media_type'] === 'VIDEO'"
+          width="100%"
+          height="100%"
+          class="my-video video-js"
+          playsinline
+          controls
+        >
           <source :src="item['media_url']" type="video/mp4" />
           Your browser does not support the Video tag
         </video>
