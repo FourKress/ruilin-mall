@@ -13,8 +13,14 @@ useFetch(`https://service.vinnhair.com/api/v1/media/ins/list`, {
 
     await nextTick()
 
-    videoInit()
+    if (process.client) {
+      videoInit()
+    }
   }
+})
+
+onMounted(() => {
+  videoInit()
 })
 
 const jumpIns = () => {

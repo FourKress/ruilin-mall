@@ -116,8 +116,14 @@ useHttpGet({
 
     await nextTick()
 
-    videoInit()
+    if (process.client) {
+      videoInit()
+    }
   }
+})
+
+onMounted(() => {
+  videoInit()
 })
 
 useHttpGet({
