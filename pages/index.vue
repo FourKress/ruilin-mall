@@ -104,8 +104,6 @@ const jumpBlogDetails = (index: string | number) => {
                 <van-loading type="spinner" size="20" />
               </template>
             </van-image>
-
-            <!--            <img :src="item['mobile_url']" :alt="item['objectKey']" />-->
           </div>
         </van-swipe-item>
 

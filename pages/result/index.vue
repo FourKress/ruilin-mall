@@ -44,7 +44,7 @@ if (data.value) {
         </div>
       </div>
     </div>
-    <div class="btn-list error">
+    <div class="btn-list">
       <nuxt-link class="btn" to="/">Home</nuxt-link>
       <nuxt-link class="btn" :to="`/order/${order.id}`">Order Details</nuxt-link>
     </div>
@@ -83,6 +83,8 @@ if (data.value) {
       margin: 0.16rem auto 0.04rem;
       @include title-font-18;
       color: $primary-color;
+
+      font-family: 'Sinerva', Arial, sans-serif;
     }
 
     .tips {
@@ -169,18 +171,6 @@ if (data.value) {
       &:last-child {
         background-color: $primary-color;
         color: $white-color;
-      }
-    }
-
-    &.error {
-      .btn {
-        border-color: $red-color;
-        color: $red-color;
-
-        &:last-child {
-          color: $white-color;
-          background-color: $red-color;
-        }
       }
     }
   }

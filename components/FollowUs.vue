@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import videoInit from '~/utils/videoInit'
 const insMediaList = ref([])
 
 useFetch(`https://service.vinnhair.com/api/v1/media/ins/list`, {
@@ -6,9 +7,13 @@ useFetch(`https://service.vinnhair.com/api/v1/media/ins/list`, {
   transform: (res: any) => {
     return res.data
   }
-}).then(({ data }) => {
+}).then(async ({ data }) => {
   if (data.value) {
     insMediaList.value = data.value
+
+    await nextTick()
+
+    videoInit()
   }
 })
 
@@ -17,6 +22,12 @@ const jumpIns = () => {
 }
 const jumpFaceBook = () => {
   window.open('https://www.facebook.com/vinnhair/', '_blank')
+}
+const jumpPin = () => {
+  window.open('https://www.pinterest.ca/Vinnhair/', '_blank')
+}
+const jumpYoutube = () => {
+  window.open('https://www.youtube.com/@Vinnhair', '_blank')
 }
 </script>
 
@@ -45,14 +56,21 @@ const jumpFaceBook = () => {
           </template>
         </van-image>
 
-        <video v-if="item['media_type'] === 'VIDEO'" width="100%" height="100%" controls>
+        <video
+          v-if="item['media_type'] === 'VIDEO'"
+          width="100%"
+          height="100%"
+          class="my-video video-js"
+          playsinline
+          controls
+        >
           <source :src="item['media_url']" type="video/mp4" />
           Your browser does not support the Video tag
         </video>
       </div>
     </div>
 
-    <div class="jump-btn">
+    <div class="jump-btn" @click="jumpIns">
       <span>@RuiLinHair</span>
       <van-icon name="arrow" />
     </div>
@@ -64,8 +82,11 @@ const jumpFaceBook = () => {
       <div class="btn" @click="jumpFaceBook">
         <img src="https://assets.vinnhair.com/static/facebook-fill.png" alt="" />
       </div>
-      <div class="btn">
-        <img src="" alt="" />
+      <div class="btn" @click="jumpYoutube">
+        <img src="https://assets.vinnhair.com/static/Youtube.png" alt="" />
+      </div>
+      <div class="btn" @click="jumpPin">
+        <img src="https://assets.vinnhair.com/static/pinterest.png" alt="" />
       </div>
     </div>
   </div>

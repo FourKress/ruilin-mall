@@ -131,8 +131,7 @@ const handleCheckOut = async () => {
     forbidClick: true
   })
   await router.push({
-    path: '/payment',
-    replace: true
+    path: '/payment'
   })
   closeToast()
 }
@@ -894,6 +893,27 @@ const checkDisabledProduct = (cart: any) =>
               justify-between
               items-center
               p-r-0.16rem;
+
+              &:after {
+                @apply h-1px
+                absolute
+                bottom-0
+                left-0.28rem
+                m-r-0.16rem;
+
+                content: '';
+                width: calc(100% - 0.44rem);
+
+                background-color: $border-color;
+              }
+            }
+
+            &:last-child {
+              .swipe-container {
+                &:after {
+                  display: none;
+                }
+              }
             }
 
             :deep(.van-swipe-cell__right) {

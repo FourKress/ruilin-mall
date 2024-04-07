@@ -27,6 +27,7 @@
   "dependencies": {
     "@pinia/nuxt": "^0.5.1",
     "decimal.js": "^10.4.3",
-    "md5": "^2.3.0"
+    "md5": "^2.3.0",
+    "video.js": "^8.10.0"
   }
 }

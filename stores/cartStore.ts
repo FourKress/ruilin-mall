@@ -206,7 +206,7 @@ export const useCartStore = defineStore('cart', {
 
       const res = await this.handleFetchCrate(newCart)
       if (!res) return
-
+      await this.getFetchCartList()
       this.modifySku()
     },
 
