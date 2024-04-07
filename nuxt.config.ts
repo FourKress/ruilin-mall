@@ -32,7 +32,7 @@ export default defineNuxtConfig({
   },
   devServer: {
     port: 7777,
-    host: '192.168.2.6'
+    host: '192.168.2.36'
   },
   css: ['~/assets/styles/base.scss', 'video.js/dist/video-js.css'],
   vite: {
