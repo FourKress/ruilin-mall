@@ -131,8 +131,7 @@ const handleCheckOut = async () => {
     forbidClick: true
   })
   await router.push({
-    path: '/payment',
-    replace: true
+    path: '/payment'
   })
   closeToast()
 }
