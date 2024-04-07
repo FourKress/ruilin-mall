@@ -23,6 +23,12 @@ const jumpIns = () => {
 const jumpFaceBook = () => {
   window.open('https://www.facebook.com/vinnhair/', '_blank')
 }
+const jumpPin = () => {
+  window.open('https://www.pinterest.ca/Vinnhair/', '_blank')
+}
+const jumpYoutube = () => {
+  window.open('https://www.youtube.com/@Vinnhair', '_blank')
+}
 </script>
 
 <template>
@@ -76,8 +82,11 @@ const jumpFaceBook = () => {
       <div class="btn" @click="jumpFaceBook">
         <img src="https://assets.vinnhair.com/static/facebook-fill.png" alt="" />
       </div>
-      <div class="btn">
-        <img src="" alt="" />
+      <div class="btn" @click="jumpYoutube">
+        <img src="https://assets.vinnhair.com/static/Youtube.png" alt="" />
+      </div>
+      <div class="btn" @click="jumpPin">
+        <img src="https://assets.vinnhair.com/static/pinterest.png" alt="" />
       </div>
     </div>
   </div>
