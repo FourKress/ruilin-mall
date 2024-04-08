@@ -46,7 +46,9 @@ if (data.value) {
 .blog-details-page {
   @apply p-0.16rem
   flex-1
-  relative;
+  relative
+  flex
+  flex-col;
 
   background-color: $white-color;
 
@@ -65,14 +67,16 @@ if (data.value) {
     color: $text-low-color;
   }
 
+  .container {
+    @apply flex-1;
+  }
+
   .btn-list {
     @apply flex
     justify-between
     items-center
     m-t-0.16rem
-    absolute
-    left-0
-    bottom-0.32rem
+
     w-full
     p-x-0.16rem;
 
