@@ -198,13 +198,13 @@ const handleJumpView = (order: any) => {
             <p class="tips" v-if="order.status === 2">
               Your order is being prepared and will be shipped out to you shortly upon completion
             </p>
-            <p class="tips" v-if="order.status === 3">
+            <div class="tips" v-if="order.status === 3">
               <p v-if="scanEvents[0]['exceptionDescription']">
                 {{ scanEvents[0]['exceptionDescription'] }}
               </p>
               {{ scanEvents[0]['scanLocation']['city'] }}
               {{ scanEvents[0]['scanLocation']['countryCode'] }}
-            </p>
+            </div>
             <p class="tips" v-if="order.status === 4">
               The item has been delivered. Please collect it promptly. If there are any issues with
               the item, feel free to contact us for assistance
@@ -401,16 +401,16 @@ const handleJumpView = (order: any) => {
               <template #active-icon>
                 <div class="active-icon"></div>
               </template>
-              <p class="bold">  {{ item['eventDescription'] }}</p>
+              <p class="bold">{{ item['eventDescription'] }}</p>
 
-              <p class="tips">
+              <div class="tips">
                 <p v-if="item['exceptionDescription']">
                   {{ item['exceptionDescription'] }}
                 </p>
                 {{ item['scanLocation']['city'] }}
                 {{ item['scanLocation']['countryCode'] }}
-              </p>
-              <p class="tips"> {{ item['date'].substring(0, 16).replace('T', ' ') }}</p>
+              </div>
+              <p class="tips">{{ item['date'].substring(0, 16).replace('T', ' ') }}</p>
             </van-step>
             <van-step v-for="item in statusMap">
               <template #active-icon>
@@ -423,9 +423,7 @@ const handleJumpView = (order: any) => {
               <p class="tips" v-if="item.status === 2">
                 Your order is being prepared and will be shipped out to you shortly upon completion
               </p>
-              <p class="tips" v-if="item.status === 3">
-                Shipment information sent to FedEx
-              </p>
+              <p class="tips" v-if="item.status === 3">Shipment information sent to FedEx</p>
               <p class="tips" v-if="item.status === 4">
                 The item has been delivered. Please collect it promptly. If there are any issues
                 with the item, feel free to contact us for assistance

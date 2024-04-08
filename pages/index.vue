@@ -234,7 +234,8 @@ const jumpBlogDetails = (index: string | number) => {
           bottom-0.8rem
           flex
           flex-col
-          items-start;
+          items-start
+          z-3;
 
           .name {
             font-size: 0.56rem;
