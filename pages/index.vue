@@ -239,16 +239,28 @@ const jumpBlogDetails = (index: string | number) => {
 
           .name {
             font-size: 0.56rem;
-            color: $white-color;
+            color: $text-high-color;
             line-height: 0.56rem;
             font-family: 'Sinerva', Arial, sans-serif;
             transform: translateY(0.04rem);
+
+            text-shadow:
+              #fff 1px 0 8px,
+              #fff 0 1px 8px,
+              #fff -1px 0 8px,
+              #fff 0 -1px 8px;
           }
 
           .subtitle {
             @apply m-b-0.2rem;
             @include primary-font-16;
-            color: $white-color;
+            color: $text-high-color;
+
+            text-shadow:
+              #fff 1px 0 4px,
+              #fff 0 1px 4px,
+              #fff -1px 0 4px,
+              #fff 0 -1px 4px;
           }
 
           .btn-list {
