@@ -1,7 +1,11 @@
-<script setup lang="ts"></script>
+<script setup lang="ts">
+import { useInfoStore } from '~/stores'
+
+const mallInfo = computed(() => useInfoStore().details)
+</script>
 
 <template>
-  <div class="copy-right">COPYRIGHT 2024 QINGDAO RUI LIN HAIR <br />ALL RIGHTS RESERVED</div>
+  <div class="copy-right">COPYRIGHT 2024 {{ mallInfo.name }} <br />ALL RIGHTS RESERVED</div>
 </template>
 
 <style scoped lang="scss">

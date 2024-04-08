@@ -77,7 +77,7 @@ const jumpYoutube = () => {
     </div>
 
     <div class="jump-btn" @click="jumpIns">
-      <span>@RuiLinHair</span>
+      <span>@vinnhairextensions</span>
       <van-icon name="arrow" />
     </div>
 

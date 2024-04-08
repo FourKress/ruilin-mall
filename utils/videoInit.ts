@@ -2,7 +2,6 @@ import videoJs from 'video.js'
 
 const videoInit = () => {
   const videoElList = document.querySelectorAll('.my-video')
-  console.log(videoElList)
   videoElList.forEach((d) => {
     videoJs(d, {
       controls: true,
