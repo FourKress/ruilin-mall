@@ -272,7 +272,7 @@ const handleSelectTag = (unitId: string, tagId: string) => {
         {{ skuInfo['color_name'] }} ({{ skuInfo['product_name'] }})
       </div>
       <div class="banner">
-        <van-swipe :autoplay="3000" ref="topSwipe" lazy-render @change="handleChangeSwipe">
+        <van-swipe :autoplay="0" ref="topSwipe" lazy-render @change="handleChangeSwipe">
           <van-swipe-item v-for="(item, index) in swipeData" :key="item.id">
             <video
               v-if="item.fileType === 'video/mp4'"

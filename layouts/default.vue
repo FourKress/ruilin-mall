@@ -5,6 +5,12 @@ useProductStore().getProductList()
 useRuleStore().getRuleList()
 useInfoStore().getInfoDetails()
 
+const mallInfo = computed(() => useInfoStore().details)
+
+useHead({
+  title: mallInfo.value.name
+})
+
 const warpRef = ref<HTMLDivElement>()
 
 const handleOpenModal = (status: boolean) => {
