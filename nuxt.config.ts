@@ -27,7 +27,7 @@ export default defineNuxtConfig({
             'width=device-width,initial-scale=1.0,minimum-scale=1.0,maximum-scale=1.0,user-scalable=0'
         }
       ],
-      title: 'Ruilin Hair'
+      title: 'Vinn Hair'
     }
   },
   devServer: {

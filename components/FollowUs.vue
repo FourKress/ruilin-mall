@@ -69,6 +69,7 @@ const jumpYoutube = () => {
           class="my-video video-js"
           playsinline
           controls
+          :poster="item['thumbnail_url']"
         >
           <source :src="item['media_url']" type="video/mp4" />
           Your browser does not support the Video tag

@@ -4,8 +4,7 @@ export const useInfoStore = defineStore('info', {
   state: () => ({
     details: ref<Record<string, any>>({
       url: 'https://assets.vinnhair.com/static/Logo.png',
-      name: 'RuiLin Hair',
-      email: 'service@vinnhair.com'
+      name: 'Vinn Hair'
     })
   }),
   actions: {

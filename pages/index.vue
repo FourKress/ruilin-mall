@@ -138,7 +138,7 @@ const jumpBlogDetails = (index: string | number) => {
             </van-image>
           </div>
           <div class="info">
-            <div class="title">{{ item['color_name'] }}</div>
+            <div class="title">{{ item['product_name'] }}（{{ item['color_name'] }}）</div>
             <div class="row">
               <span class="unit">$</span>
               <span class="price">{{ item['online_price'] }}</span>
