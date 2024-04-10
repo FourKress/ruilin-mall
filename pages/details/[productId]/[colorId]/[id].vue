@@ -84,7 +84,11 @@ useHttpGet({
       productDesc: targetColor.productDesc.replace(/\n/g, '<br />')
     }
     swipeData.value = [
-      { url: targetColor.url, id: targetColor.id, fileType: targetColor.fileType },
+      {
+        url: targetColor.url.replace('/thumbnail', ''),
+        id: targetColor.id,
+        fileType: targetColor.fileType
+      },
       ...fileUrlList
     ]
     currentSwipeId.value = targetColor.id
