@@ -30,6 +30,7 @@ const videoInfo = ref(null)
 const goodsCount = ref(1)
 const isMaxStock = ref(false)
 const isNotStock = ref(false)
+const typeConfig = ref({})
 
 const swipe = ref<SwipeInstance>()
 const topSwipe = ref<SwipeInstance>()
@@ -98,6 +99,14 @@ useHttpGet({
 }).then(({ data }) => {
   if (data.value) {
     unitList.value = data.value
+    const config: any = {}
+    skuInfo.value['unitIds'].forEach((s: any) => {
+      const unitTarget = data.value.find((t: any) => s === t.id)
+      config[s] = skuInfo.value['tagIds'].find((t: any) =>
+        unitTarget.tags.some((c: any) => c.id === t)
+      )
+    })
+    typeConfig.value = config
   }
 })
 
@@ -255,8 +264,14 @@ const jumpSku = (item: any) => {
 }
 
 const handleSelectTag = (unitId: string, tagId: string) => {
-  const targetSku: Record<string, any> | undefined = skuList.value.find(
-    (s) => s.unitIds.includes(unitId) && s.tagIds.includes(tagId)
+  const newTypeConfig = {
+    ...typeConfig.value,
+    [unitId]: tagId
+  }
+  typeConfig.value = newTypeConfig
+  const tagIds = Object.values(newTypeConfig)
+  const targetSku: Record<string, any> | undefined = skuList.value.find((s) =>
+    s.tagIds.every((d: any) => tagIds.includes(d))
   )
   if (targetSku) {
     skuInfo.value = targetSku
@@ -368,7 +383,7 @@ const handleSelectTag = (unitId: string, tagId: string) => {
             class="item"
             v-for="item in unit.tags"
             :class="[
-              skuInfo['tagIds'] && skuInfo['tagIds'].some((d) => d === item.id) && 'active',
+              typeConfig[unit.id] === item.id && 'active',
               skuList.every((d) => !d['tagIds'].includes(item.id)) && 'disabled'
             ]"
             :key="item.id"
