@@ -331,11 +331,17 @@ const handleSelectTag = (unitId: string, tagId: string) => {
           @click="handleSwitchSwipe(index)"
         >
           <video v-if="item.fileType === 'video/mp4'" width="100%" height="100%">
-            <source :src="item.url.replace('/thumbnail/1200', '/thumbnail/80')" type="video/mp4" />
+            <source :src="item.url" type="video/mp4" />
             Your browser does not support the Video tag
           </video>
 
-          <van-image class="img" lazy-load v-else :src="item.url" alt="">
+          <van-image
+            class="img"
+            lazy-load
+            v-else
+            :src="item.url.replace('/thumbnail/1200', '/thumbnail/80')"
+            alt=""
+          >
             <template v-slot:loading>
               <van-loading type="spinner" size="20" />
             </template>
