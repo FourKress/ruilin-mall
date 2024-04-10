@@ -85,7 +85,7 @@ useHttpGet({
     }
     swipeData.value = [
       {
-        url: targetColor.url.replace('/thumbnail/80', ''),
+        url: targetColor.url.replace('/thumbnail/80', '/thumbnail/1200'),
         id: targetColor.id,
         fileType: targetColor.fileType
       },
@@ -331,7 +331,7 @@ const handleSelectTag = (unitId: string, tagId: string) => {
           @click="handleSwitchSwipe(index)"
         >
           <video v-if="item.fileType === 'video/mp4'" width="100%" height="100%">
-            <source :src="item.url" type="video/mp4" />
+            <source :src="item.url.replace('/thumbnail/1200', '/thumbnail/80')" type="video/mp4" />
             Your browser does not support the Video tag
           </video>
 
