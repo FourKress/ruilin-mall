@@ -146,7 +146,7 @@ const jumpBlogDetails = (index: string | number) => {
           </div>
 
           <div class="tag grey" v-if="item['online_stock'] <= 0">Out of Stock</div>
-          <div class="tag yellow" v-else-if="item['online_stock'] <= 100">Low Stock</div>
+          <div class="tag yellow" v-else-if="item['online_stock'] <= 20">Low Stock</div>
         </div>
       </div>
 

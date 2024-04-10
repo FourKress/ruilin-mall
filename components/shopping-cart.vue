@@ -20,6 +20,7 @@ const cartSelectList = computed(() => useCart.getCartSelectList())
 
 const ruleList = useRule.ruleList
 const matchedRule = ref<any>({})
+const typeConfig = ref({})
 
 const isSelectAll = computed(
   () => cartSelectList.value.length === cartCount.value && cartCount.value > 0
@@ -166,15 +167,27 @@ const handleOpenUnitDialog = async (productId: string, sku: Record<string, any>)
   })
   if (!res.value) return
   unitList.value = res.value
-
+  const config: any = {}
+  skuInfo.value['unitIds'].forEach((s: any) => {
+    const unitTarget = res.value.find((t: any) => s === t.id)
+    config[s] = skuInfo.value['tagIds'].find((t: any) =>
+      unitTarget.tags.some((c: any) => c.id === t)
+    )
+  })
+  typeConfig.value = config
   showUnitDialog.value = true
 }
 
 const handleSelectTag = (unitId: string, tagId: string) => {
-  const targetSku: Record<string, any> | undefined = skuList.value.find(
-    (s) => s.unitIds.includes(unitId) && s.tagIds.includes(tagId)
+  const newTypeConfig = {
+    ...typeConfig.value,
+    [unitId]: tagId
+  }
+  typeConfig.value = newTypeConfig
+  const tagIds = Object.values(newTypeConfig)
+  const targetSku: Record<string, any> | undefined = skuList.value.find((s) =>
+    s.tagIds.every((d: any) => tagIds.includes(d))
   )
-
   if (!targetSku) return
   skuInfo.value = targetSku
 }
@@ -368,7 +381,7 @@ const checkDisabledProduct = (cart: any) =>
                   <div
                     class="item"
                     :class="[
-                      skuInfo['tagIds'] && skuInfo['tagIds'].some((d) => d === tag.id) && 'active',
+                      typeConfig[unit.id] === tag.id && 'active',
                       skuList.every((d) => !d['tagIds'].includes(tag.id)) && 'disabled'
                     ]"
                     v-for="tag in unit.tags"
