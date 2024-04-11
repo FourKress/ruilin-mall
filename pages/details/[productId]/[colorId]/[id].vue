@@ -303,18 +303,15 @@ const handleSelectTag = (unitId: string, tagId: string) => {
               Your browser does not support the Video tag
             </video>
 
-            <van-image
+            <img
               class="img"
-              lazy-load
               v-else
               :src="item.url"
               alt=""
+              object-fit="fill"
+              loading="lazy"
               @click="handlePreview(swipeData, index)"
-            >
-              <template v-slot:loading>
-                <van-loading type="spinner" size="20" />
-              </template>
-            </van-image>
+            />
           </van-swipe-item>
 
           <template #indicator="{ active, total }">
@@ -337,7 +334,6 @@ const handleSelectTag = (unitId: string, tagId: string) => {
 
           <van-image
             class="img"
-            lazy-load
             v-else
             :src="item.url.replace('/thumbnail/1200', '/thumbnail/80')"
             alt=""
@@ -375,7 +371,7 @@ const handleSelectTag = (unitId: string, tagId: string) => {
             :key="item"
             @click="jumpSku(item)"
           >
-            <van-image class="img" lazy-load :src="item.url" :alt="item['online_objectKey']">
+            <van-image class="img" :src="item.url" :alt="item['online_objectKey']">
               <template v-slot:loading>
                 <van-loading type="spinner" size="20" />
               </template>

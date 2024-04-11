@@ -116,7 +116,7 @@ const jumpSku = (sku: any) => {
           @click="jumpSku(item)"
         >
           <div class="image">
-            <van-image class="img" lazy-load :src="item['url']" :alt="item['online_objectKey']">
+            <van-image class="img" :src="item['url']" :alt="item['online_objectKey']">
               <template v-slot:loading>
                 <van-loading type="spinner" size="20" />
               </template>

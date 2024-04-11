@@ -99,11 +99,13 @@ const jumpBlogDetails = (index: string | number) => {
               </div>
             </div>
 
-            <van-image class="img" lazy-load :src="item['mobile_url']" :alt="item['objectKey']">
-              <template v-slot:loading>
-                <van-loading type="spinner" size="20" />
-              </template>
-            </van-image>
+            <img
+              class="img"
+              :src="item['mobile_url']"
+              :alt="item['objectKey']"
+              object-fit="fill"
+              loading="lazy"
+            />
           </div>
         </van-swipe-item>
 
@@ -131,7 +133,7 @@ const jumpBlogDetails = (index: string | number) => {
       <div class="list">
         <div class="item" v-for="(item, index) in skuList" :key="index" @click="jumpSku(item)">
           <div class="image">
-            <van-image class="img" lazy-load :src="item['url']" :alt="item['online_objectKey']">
+            <van-image class="img" :src="item['url']" :alt="item['online_objectKey']">
               <template v-slot:loading>
                 <van-loading type="spinner" size="20" />
               </template>
