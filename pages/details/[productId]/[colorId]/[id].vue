@@ -315,7 +315,7 @@ const handleSelectTag = (unitId: string, tagId: string) => {
           </van-swipe-item>
 
           <template #indicator="{ active, total }">
-            <div class="custom-indicator">{{ active + 1 }}/{{ total }}</div>
+            <div class="custom-indicator" v-if="!isNaN(active)">{{ active + 1 }}/{{ total }}</div>
           </template>
         </van-swipe>
       </div>
