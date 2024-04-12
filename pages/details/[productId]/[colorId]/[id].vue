@@ -139,6 +139,12 @@ onMounted(() => {
   videoInit()
 })
 
+const canplay = (event: any) => {
+  setTimeout(() => {
+    event.target.pause()
+  }, 200)
+}
+
 useHttpGet({
   url: `/product-summary/online-list/${productId}`,
   transform: (res: any) => {
@@ -295,9 +301,8 @@ const handleSelectTag = (unitId: string, tagId: string) => {
           <van-swipe-item v-for="(item, index) in swipeData" :key="item.id">
             <video
               v-if="item.fileType === 'video/mp4'"
-              class="my-video video-js"
+              class="my-video video-js banner-video"
               playsinline
-              controls
             >
               <source :src="item.url" type="video/mp4" />
               Your browser does not support the Video tag
@@ -327,7 +332,17 @@ const handleSelectTag = (unitId: string, tagId: string) => {
           :key="item.id"
           @click="handleSwitchSwipe(index)"
         >
-          <video v-if="item.fileType === 'video/mp4'" width="100%" height="100%">
+          <video
+            v-if="item.fileType === 'video/mp4'"
+            class="banner-video"
+            width="100%"
+            height="100%"
+            preload="auto"
+            muted="muted"
+            playsinline
+            autoplay
+            @canplay="canplay($event)"
+          >
             <source :src="item.url" type="video/mp4" />
             Your browser does not support the Video tag
           </video>

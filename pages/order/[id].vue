@@ -163,12 +163,12 @@ const handleCopy = async () => {
     })
 }
 
-const handleJumpView = (order: any) => {
-  const reviewId = order['reviewId']
+const handleJumpView = (sku: any) => {
+  const reviewId = sku['reviewId']
   if (reviewId) {
-    router.push(`/details/${order.productId}/${order.colorId}/${order.skuId}`)
+    router.push(`/details/${sku.productId}/${sku.colorId}/${sku.skuId}`)
   } else {
-    router.push(`/review/${order.id}`)
+    router.push(`/review/${sku.id}`)
   }
 }
 </script>

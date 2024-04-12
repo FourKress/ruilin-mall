@@ -18,9 +18,6 @@ const { data: skuInfo } = await useHttpGet({
 })
 
 const handleConfirm = async () => {
-  console.log(startValue.value)
-  console.log(content.value)
-  console.log(fileList.value)
   if (!content.value) {
     showToast('Please fill in the comments')
     return
