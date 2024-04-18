@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import type { FormInstance } from 'vant'
 import md5 from 'md5'
-import phoneCode from '~/utils/phoneCode'
 
 const runtimeConfig = useRuntimeConfig()
 const baseUrl = runtimeConfig.public.baseUrl
@@ -15,13 +14,7 @@ const lastName = ref('')
 const email = ref('')
 const firstPassword = ref('')
 const secondPassword = ref('')
-const phone = ref('')
-const code = ref('+1')
-const address = ref('')
 const formRef = ref<FormInstance>()
-
-const showPicker = ref(false)
-const currentItem = ref([code.value])
 
 const checkPasswordLength = (val: string) => {
   if (val.length < 6) return false
@@ -33,16 +26,13 @@ const handleCreate = () => {
 }
 
 const onSubmit = async (values: any) => {
-  const { email, secondPassword, firstName, lastName, phone = '', address = '', code = '' } = values
+  const { email, secondPassword, firstName, lastName } = values
   const { data, error } = await useHttpPost({
     url: '/customer/register',
     body: {
       email,
       password: md5(secondPassword).substring(8, 26),
-      nickname: `${firstName} ${lastName}`,
-      code: code ? code.replace('+', '') : '',
-      phone,
-      address
+      nickname: `${firstName} ${lastName}`
     },
     isLoading: true
   })
@@ -66,11 +56,6 @@ const handleReset = () => {
   firstPassword.value = ''
   secondPassword.value = ''
   formRef?.value?.resetValidation()
-}
-
-const onConfirm = ({ selectedOptions }: { selectedOptions: any[] }) => {
-  showPicker.value = false
-  code.value = `+${selectedOptions[0].code}`
 }
 </script>
 
@@ -130,7 +115,7 @@ const onConfirm = ({ selectedOptions }: { selectedOptions: any[] }) => {
             placeholder="Please enter"
             :border="false"
             :rules="[
-              { required: true, message: 'Please choose' },
+              { required: true, message: 'Please enter' },
               {
                 validator: checkPasswordLength,
                 message: 'Password length is 6-20'
@@ -161,38 +146,6 @@ const onConfirm = ({ selectedOptions }: { selectedOptions: any[] }) => {
               }
             ]"
           />
-
-          <van-field
-            required="auto"
-            v-model="code"
-            readonly
-            clearable
-            name="code"
-            label="Phone code"
-            placeholder="Please enter"
-            :border="false"
-            @click="showPicker = true"
-          />
-
-          <van-field
-            required="auto"
-            v-model="phone"
-            clearable
-            name="phone"
-            label="Phone number"
-            placeholder="Please enter"
-            :border="false"
-          />
-
-          <van-field
-            required="auto"
-            v-model="address"
-            clearable
-            name="address"
-            label="Contact address"
-            placeholder="Please enter"
-            :border="false"
-          />
         </van-cell-group>
       </van-form>
 
@@ -211,18 +164,6 @@ const onConfirm = ({ selectedOptions }: { selectedOptions: any[] }) => {
         Already have an account?<nuxt-link class="link" to="/login?redirect=/">Log in</nuxt-link>
       </div>
     </div>
-
-    <van-popup v-model:show="showPicker" round position="bottom">
-      <van-picker
-        v-model="currentItem"
-        :columns="phoneCode"
-        :columns-field-names="{ text: 'name', value: 'code' }"
-        confirm-button-text="Confirm"
-        cancel-button-text="Cancel"
-        @cancel="showPicker = false"
-        @confirm="onConfirm"
-      />
-    </van-popup>
   </div>
 </template>
 
