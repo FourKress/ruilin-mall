@@ -18,6 +18,7 @@ const matchedRule = ref<any>({})
 
 const orderAmount = ref('0.0')
 const rawAmount = ref('0.0')
+const customerRemark = ref('')
 
 watchEffect(() => {
   const totalPrice = cartTotalPrice.value
@@ -66,7 +67,8 @@ const handlePayment = async () => {
         pre.push(...ids)
         return pre
       }, []),
-      couponId: promoInfo.value?.id || undefined
+      couponId: promoInfo.value?.id || undefined,
+      customerRemark: customerRemark.value
     },
     isLoading: true
   })
@@ -196,6 +198,26 @@ const handleActivePromoCode = async () => {
             <span class="label">PayPal</span>
             <van-icon name="checked" />
           </div>
+        </div>
+      </div>
+
+      <div class="card-row">
+        <div class="row" style="align-items: flex-start">
+          <div class="label" style="padding-top: 0.16rem">Remark</div>
+          <van-field
+            style="margin-right: -0.14rem; margin-top: 0.02rem"
+            v-model="customerRemark"
+            clearable
+            name="customerRemark"
+            input-align="right"
+            autosize
+            rows="1"
+            type="textarea"
+            maxlength="2000"
+            placeholder="Please enter"
+            :border="false"
+          >
+          </van-field>
         </div>
       </div>
     </div>

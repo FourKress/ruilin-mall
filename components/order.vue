@@ -124,7 +124,7 @@ const handleJump = (order: any) => {
     justify-between;
 
     .left {
-      @apply max-w-1.5rem
+      @apply max-w-1.7rem
       overflow-hidden;
 
       @include general-font-14;

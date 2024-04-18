@@ -344,6 +344,17 @@ const handleJumpView = (sku: any) => {
           <span class="value">FedEx</span>
         </div>
       </div>
+
+      <div class="card order-info" v-if="order['customerRemark']">
+        <div class="row" style="height: auto; align-items: flex-start">
+          <span class="label">Remark</span>
+          <span
+            class="value"
+            style="text-align: right; word-break: break-all; padding-left: 0.16rem"
+            >{{ order['customerRemark'] }}</span
+          >
+        </div>
+      </div>
     </div>
 
     <div class="footer-bar">
