@@ -21,6 +21,12 @@ const userInfo = ref<any>(userCookie.value || {})
         <van-icon name="arrow" />
       </nuxt-link>
 
+      <nuxt-link class="row" to="/center/info/address" style="margin-bottom: 0.16rem">
+        <span class="label">Contact address</span>
+        <span class="value empty">Revise</span>
+        <van-icon name="arrow" />
+      </nuxt-link>
+
       <nuxt-link class="row" to="/center/info/password">
         <span class="label">Password</span>
         <span class="value empty">Revise</span>
@@ -48,8 +54,6 @@ const userInfo = ref<any>(userCookie.value || {})
     @apply w-full
     m-t-0.16rem;
 
-    background-color: $white-color;
-
     .row {
       @apply w-full
       h-0.6rem
@@ -57,6 +61,8 @@ const userInfo = ref<any>(userCookie.value || {})
       justify-between
       items-center
       px-0.16rem;
+
+      background-color: $white-color;
 
       border-bottom: 1px solid $view-color;
 

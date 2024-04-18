@@ -50,7 +50,7 @@ const emits = defineEmits<{
   }
 
   .van-pagination__item--active {
-    background-color: rgba(198, 156, 109, 0.3);
+    background-color: #dee3e8;
   }
 
   .van-hairline--surround:after {

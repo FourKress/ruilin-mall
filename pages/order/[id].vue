@@ -462,6 +462,7 @@ const handleJumpView = (sku: any) => {
             rows="6"
             type="textarea"
             name="refundRemark"
+            maxlength="2000"
             placeholder="Please tell us why you refunded the money in order to facilitate our efforts to improve"
             :border="false"
           >

@@ -63,7 +63,7 @@ const menuList = ref<any[]>(
 
   padding-bottom: env(safe-area-inset-bottom);
 
-  background-color: rgba(198, 156, 109, 0.3);
+  background-color: #dee3e8;
 
   .item {
     @apply w-full

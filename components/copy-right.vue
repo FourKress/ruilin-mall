@@ -14,8 +14,8 @@ const mallInfo = computed(() => useInfoStore().details)
 
   @include general-font-loose-12;
   @include english-font;
-  color: #a5927c;
+  color: $text-low-color;
 
-  background-color: rgba(198, 156, 109, 0.3);
+  background-color: #dee3e8;
 }
 </style>
