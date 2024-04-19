@@ -41,6 +41,10 @@ watch(
       '/review'
     ].some((d) => toPath.includes(d))
     hasFooter.value = !(toPath === '/blog' || toPath === '/FAQ')
+
+    useHttpPost({
+      url: '/statistic/pv'
+    })
   },
   { immediate: true, deep: true }
 )
