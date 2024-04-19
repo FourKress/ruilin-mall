@@ -61,40 +61,53 @@ const handleLogOut = async () => {
   <div class="modify-page">
     <main-nav-bar title="Information" />
 
-    <div class="form">
-      <van-field
-        v-model="oldPassword"
-        clearable
-        type="password"
-        maxlength="20"
-        name="oldPassword"
-        placeholder="Existing password"
-        :border="false"
-      >
-      </van-field>
-      <van-field
-        v-model="newPassword"
-        clearable
-        type="password"
-        maxlength="20"
-        :readonly="!oldPassword"
-        name="newPassword"
-        placeholder="New password"
-        :border="false"
-        style="margin-top: 0.16rem; border: none"
-      >
-      </van-field>
-      <van-field
-        v-model="confirmPassword"
-        clearable
-        maxlength="20"
-        type="password"
-        :readonly="!oldPassword"
-        name="confirmPassword"
-        placeholder="Password confirmation"
-        :border="false"
-      >
-      </van-field>
+    <div class="row-container">
+      <div class="row">
+        <span class="label">Current password</span>
+        <van-field
+          class="value"
+          v-model="oldPassword"
+          clearable
+          type="password"
+          maxlength="20"
+          name="oldPassword"
+          placeholder="Please enter"
+          :border="false"
+        >
+        </van-field>
+      </div>
+
+      <div class="row">
+        <span class="label" style="margin-top: 0.4rem">New password</span>
+        <van-field
+          class="value"
+          v-model="newPassword"
+          clearable
+          type="password"
+          maxlength="20"
+          :readonly="!oldPassword"
+          name="newPassword"
+          placeholder="Please enter"
+          :border="false"
+        >
+        </van-field>
+      </div>
+
+      <div class="row">
+        <span class="label">Password confirmation</span>
+        <van-field
+          class="value"
+          v-model="confirmPassword"
+          clearable
+          maxlength="20"
+          type="password"
+          :readonly="!oldPassword"
+          name="confirmPassword"
+          placeholder="Please enter"
+          :border="false"
+        >
+        </van-field>
+      </div>
     </div>
 
     <div class="container">
@@ -106,4 +119,41 @@ const handleLogOut = async () => {
 
 <style scoped lang="scss">
 @import '../style';
+
+.row {
+  @apply w-full
+  flex
+  flex-col
+  justify-start
+  items-start;
+
+  .label {
+    @apply p-x-0.16rem
+    m-b-0.08rem
+    m-t-0.16rem;
+
+    @include primary-font-16;
+    color: $text-mid-color;
+    font-weight: normal;
+  }
+
+  .value {
+    @apply w-full
+    min-h-0.64rem
+    flex
+    justify-between
+    items-center
+    p-x-0.16rem;
+
+    text-align: right;
+    @include general-font-14;
+    color: $text-high-color;
+
+    background-color: $white-color;
+  }
+
+  .van-icon {
+    color: $text-high-color;
+  }
+}
 </style>
