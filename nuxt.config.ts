@@ -27,6 +27,10 @@ export default defineNuxtConfig({
             'width=device-width,initial-scale=1.0,minimum-scale=1.0,maximum-scale=1.0,user-scalable=0'
         },
         {
+          name: 'p:domain_verify',
+          content: '748b2800fb68415bcac306baf7ab441c'
+        },
+        {
           name: 'keywords',
           content: 'Vinn Hair'
         }
@@ -35,8 +39,8 @@ export default defineNuxtConfig({
     }
   },
   devServer: {
-    port: 7777,
-    host: '192.168.2.36'
+    port: 7777
+    // host: '192.168.2.'
   },
   css: ['~/assets/styles/base.scss', 'video.js/dist/video-js.css'],
   vite: {
