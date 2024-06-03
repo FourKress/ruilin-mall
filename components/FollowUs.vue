@@ -132,7 +132,7 @@ const jumpYoutube = () => {
       h-1.18rem;
 
       .img,
-      video {
+      .my-video {
         @apply block
         w-full
         h-full;
