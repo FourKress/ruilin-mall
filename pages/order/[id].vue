@@ -192,9 +192,6 @@ const handleJumpView = (sku: any) => {
               {{ scanEvents[0]['eventDescription'] }}
             </p>
 
-            <p class="tips" v-if="order.status === 1">
-              Your order is awaiting merchant review, please be patient
-            </p>
             <p class="tips" v-if="order.status === 2">
               Your order is being prepared and will be shipped out to you shortly upon completion
             </p>
@@ -370,9 +367,6 @@ const handleJumpView = (sku: any) => {
         <div class="btn" @click="handleCancelOrder(order)">Cancel order</div>
         <div class="btn" @click="handlePayNow(order)">Pay Now</div>
       </div>
-      <div class="btn-list" v-if="order.status === 1">
-        <div class="btn cancel" @click="handleOpenRefund()">Request refund</div>
-      </div>
       <div class="btn-list" v-if="[2, 3, 4].includes(order.status)">
         <div class="btn" @click="handleOpenRefund()">Request refund</div>
         <div class="btn" v-if="order.status === 2" @click="handleRemindOrder(order)">
@@ -428,9 +422,6 @@ const handleJumpView = (sku: any) => {
                 <div class="active-icon"></div>
               </template>
               <p class="bold">{{ orderStatusTipsMap[item.status] }}</p>
-              <p class="tips" v-if="item.status === 1">
-                Your order is awaiting merchant review, please be patient
-              </p>
               <p class="tips" v-if="item.status === 2">
                 Your order is being prepared and will be shipped out to you shortly upon completion
               </p>

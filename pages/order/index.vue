@@ -11,7 +11,6 @@ const showAction = ref(false)
 const actions = [
   { name: 'All', value: -2 },
   { name: orderStatusTipsMap[0], value: 0 },
-  { name: orderStatusTipsMap[1], value: 1 },
   { name: orderStatusTipsMap[2], value: 2 },
   { name: orderStatusTipsMap[3], value: 3 },
   { name: orderStatusTipsMap[4], value: 4 },
