@@ -46,7 +46,7 @@ if (data.value) {
   const { statusMap: map, status, updateTime } = data.value
   goodsList.value = Object.values(grouped)
   statusMap.value = [
-    ...map.filter((d: any) => ![6].includes(d.status)),
+    ...map.filter((d: any) => ![6, 7].includes(d.status)),
     {
       status,
       time: updateTime
@@ -376,7 +376,7 @@ const handleJumpView = (sku: any) => {
           Confirm receipt
         </div>
       </div>
-      <div class="btn-list" v-if="[-1, 5, 6, 8].includes(order.status)">
+      <div class="btn-list" v-if="[-1, 5, 6, 7, 8].includes(order.status)">
         <div class="btn" @click="handleReOrder(order)">ReOrder</div>
       </div>
     </div>
